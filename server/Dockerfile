@@ -1,0 +1,41 @@
+# ==============================================================================
+# Pahad Footprint Backend — Production Dockerfile
+# Multi-stage build for Node.js, Express, and PostgreSQL/Sequelize
+# ==============================================================================
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code and build
+COPY tsconfig.json ./
+COPY src/ ./src/
+RUN npm run build
+
+# ==============================================================================
+# Production Image
+# ==============================================================================
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=5000
+
+# Install production dependencies only
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy compiled files from builder
+COPY --from=builder /app/dist ./dist
+
+# Create non-root user
+USER node
+
+EXPOSE 5000
+
+CMD ["node", "dist/server.js"]

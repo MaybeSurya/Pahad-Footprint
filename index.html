@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pahad Footprint — Uttarakhand Carbon Accounting</title>
+  <meta name="description" content="Calculate and offset your carbon footprint from mountain travel across Uttarakhand's sensitive Himalayan ecosystems. Track, compare, and restore." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/styles/main.css" />
+</head>
+<body>
+
+<!-- Accessible Skip Link -->
+<a href="#page-calculator" class="skip-link">Skip to main content</a>
+
+<!-- ======================= SHARED NAVIGATION ======================= -->
+<header class="nav-primary" id="main-nav" role="banner">
+  <div class="nav-primary-inner">
+    <!-- Brand -->
+    <div class="nav-brand">
+      <div class="nav-brand-icon" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4 15h4v5h8v-5h4L12 2zm0 4.2L15.3 12H13v5h-2v-5H8.7L12 6.2z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <a href="javascript:void(0)" onclick="navigate('calculator')" class="flex items-center gap-2" aria-label="Pahad Footprint - home">
+        <span class="text-headline-sm font-weight-700 text-on-primary" style="font-weight:700;font-size:16px;">Pahad Footprint</span>
+      </a>
+      <div class="badge" style="background:rgba(255,255,255,0.18);color:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.25);font-size:11px;" class="hidden sm-show">Sample Demo Data</div>
+    </div>
+
+    <!-- Desktop Nav Links (User App) -->
+    <nav class="nav-links nav-links-desktop" id="user-nav" aria-label="Main navigation">
+      <a href="javascript:void(0)" onclick="navigate('calculator')" class="nav-link" data-page="calculator">Calculator</a>
+      <a href="javascript:void(0)" onclick="navigate('methodology')" class="nav-link" data-page="methodology">Methodology &amp; Sources</a>
+      <a href="javascript:void(0)" onclick="navigate('restoration')" class="nav-link" data-page="restoration">Local Restoration</a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" style="color:white;border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);font-size:12px;gap:6px;" aria-label="Switch language between English and Hindi" id="lang-btn" onclick="showToast('Language localization: Hindi / Kumaoni / Garhwali — coming in next release')">
+        <svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        EN | HI
+      </button>
+      <button class="btn btn-ghost btn-sm hidden" style="color:white;border-color:rgba(255,255,255,0.3);background:transparent;font-size:12px;" id="sample-itinerary-btn">Load Sample Itinerary</button>
+
+      <!-- Preview Switcher -->
+      <div class="preview-switcher" role="group" aria-label="View mode" id="preview-switcher">
+        <button class="preview-option active" id="user-view-btn" onclick="setUserMode()" aria-pressed="true">User App</button>
+        <button class="preview-option" id="admin-view-btn" onclick="setAdminMode()" aria-pressed="false">Admin View</button>
+      </div>
+
+      <!-- Mobile menu toggle -->
+      <button class="btn-icon nav-links-mobile-toggle" style="background:rgba(255,255,255,0.12);color:white;border-radius:8px;border:none;" id="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor"/></svg>
+      </button>
+
+      <!-- Avatar -->
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;" title="User account" aria-label="User account">
+        <svg class="icon-sm" viewBox="0 0 24 24" stroke="white"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu dropdown -->
+  <div id="mobile-menu" class="hidden" style="background:var(--clr-primary-hover);padding:8px 16px;border-top:1px solid rgba(255,255,255,0.1);">
+    <a href="javascript:void(0)" onclick="navigate('calculator');closeMobileMenu()" class="nav-link" style="display:block;padding:10px 0;">Calculator</a>
+    <a href="javascript:void(0)" onclick="navigate('methodology');closeMobileMenu()" class="nav-link" style="display:block;padding:10px 0;">Methodology &amp; Sources</a>
+    <a href="javascript:void(0)" onclick="navigate('restoration');closeMobileMenu()" class="nav-link" style="display:block;padding:10px 0;">Local Restoration</a>
+  </div>
+</header>
+
+<!-- ============ ADMIN RIBBON (hidden in user mode) ============ -->
+<div id="admin-ribbon" class="admin-ribbon hidden" style="position:sticky;top:64px;z-index:40;">
+  <div class="admin-ribbon-inner">
+    <!-- Identity -->
+    <div class="flex items-center gap-md">
+      <div class="flex items-center gap-2" style="color:rgba(255,255,255,0.9);">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4 15h4v5h8v-5h4L12 2z" fill="currentColor" stroke="none"/></svg>
+        <span class="text-headline-sm" style="font-weight:700;">Admin Portal</span>
+      </div>
+      <div class="flex items-center gap-2" style="background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:var(--radius-full);font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);">
+        <span class="pulse-dot animate-pulse"></span>
+        <span>Role: Regional Auditor (Authenticated)</span>
+      </div>
+    </div>
+
+    <!-- Admin Tab Nav -->
+    <nav class="tab-nav" role="tablist" aria-label="Admin sections" id="admin-tab-nav">
+      <button class="tab-nav-btn active" data-admin-page="admin" onclick="navigateAdmin('admin')" role="tab" aria-selected="true">
+        <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </button>
+      <button class="tab-nav-btn" data-admin-page="admin-trips" onclick="navigateAdmin('admin-trips')" role="tab" aria-selected="false">
+        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Trip Audit Log
+      </button>
+      <button class="tab-nav-btn" data-admin-page="admin-factors" onclick="navigateAdmin('admin-factors')" role="tab" aria-selected="false">
+        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        Factor Configuration
+      </button>
+      <button class="tab-nav-btn" data-admin-page="admin-partners" onclick="navigateAdmin('admin-partners')" role="tab" aria-selected="false">
+        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Restoration Partners
+      </button>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-sm">
+      <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);font-size:12px;" onclick="handleExportCSV()">
+        <svg class="icon-sm" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= PAGES ======================= -->
+
+<!-- ======== PAGE: CALCULATOR ======== -->
+<main class="page active" id="page-calculator" aria-label="Carbon Calculator">
+  <div style="background:var(--clr-bg);min-height:calc(100vh - 64px);padding-top:0;">
+
+    <!-- Context Bar -->
+    <div style="background:var(--clr-surface-mist);border-bottom:1px solid var(--clr-border);padding:10px 0;">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="badge badge-verified" style="gap:6px;">
+            <span class="pulse-dot animate-pulse"></span>
+            Uttarakhand Eco-Carbon Accounting Calculator
+          </span>
+          <span class="text-body-sm" style="color:var(--clr-text-secondary);">Live Analytical Engine • Model v1.2-2026</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="load-sample-btn" onclick="loadSampleItinerary()">Load Sample Itinerary</button>
+      </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="container" style="padding-top:24px;padding-bottom:0;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+        <div>
+          <h1 class="text-headline-lg" style="color:var(--clr-text);margin-bottom:4px;">Configure Your Mountain Itinerary</h1>
+          <p class="text-body-md" style="color:var(--clr-text-secondary);">Results recalculate live as you adjust inputs across altitudinal gradients.</p>
+        </div>
+      </div>
+
+      <!-- 2-column grid: config + results -->
+      <div class="grid-calc" style="padding-bottom:40px;">
+
+        <!-- LEFT: Configuration -->
+        <section class="card card-body animate-fade-in" aria-label="Trip configuration" style="display:flex;flex-direction:column;gap:28px;">
+
+          <!-- Section 1: Route & Elevation -->
+          <div>
+            <div class="section-label" style="margin-bottom:14px;">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke="var(--clr-primary)"/></svg>
+              1. Route &amp; Elevation Zone
+            </div>
+
+            <!-- Circuit Preset -->
+            <div style="margin-bottom:16px;">
+              <label for="route-preset" class="text-label-md" style="display:block;margin-bottom:6px;font-weight:600;">Circuit Route Preset</label>
+              <div class="relative">
+                <select id="route-preset" class="select" style="padding-left:44px;" aria-describedby="route-hint">
+                  <option value="kumaon">Kumaon Hill Circuit: Kathgodam – Nainital – Mukteshwar – Almora (320 km)</option>
+                  <option value="garhwal">Garhwal Pilgrim Loop: Rishikesh – Devprayag – Rudraprayag – Chopta (410 km)</option>
+                  <option value="corbett">Foothill Wildlife Traverse: Ramnagar – Corbett – Marchula – Ranikhet (210 km)</option>
+                  <option value="custom">Custom Mountain Itinerary (Direct Distance Input)</option>
+                </select>
+                <svg class="icon" viewBox="0 0 24 24" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--clr-primary);pointer-events:none;"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064" stroke="currentColor"/></svg>
+                <svg class="icon-sm" viewBox="0 0 24 24" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--clr-text-secondary);pointer-events:none;"><path d="M19 9l-7 7-7-7"/></svg>
+              </div>
+              <p id="route-hint" class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:4px;">Standard Uttarakhand corridors with validated elevation profiles.</p>
+            </div>
+
+            <!-- Terrain Zone -->
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <label class="text-label-md" style="font-weight:600;">Terrain Zone Multiplier <span class="text-body-sm" style="font-weight:400;color:var(--clr-text-secondary);">(illustrative mountain drag)</span></label>
+                <span id="terrain-badge" class="badge" style="background:var(--clr-success-fill);color:var(--clr-success-text);">Slope Incline: 1.25×</span>
+              </div>
+              <div class="terrain-group" role="radiogroup" aria-label="Terrain zone multiplier">
+                <button class="terrain-btn" data-terrain="1.0" aria-pressed="false" type="button">Foothills (1.0×)</button>
+                <button class="terrain-btn active" data-terrain="1.25" aria-pressed="true" type="button">Mid-Hills (1.25×)</button>
+                <button class="terrain-btn" data-terrain="1.4" aria-pressed="false" type="button">High Altitude (1.40×)</button>
+              </div>
+            </div>
+
+            <!-- Distance Slider -->
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <label for="distance-range" class="text-label-md" style="font-weight:600;">Round-Trip Circuit Distance</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="number" id="distance-number" min="50" max="1000" value="320" class="input" style="width:80px;height:36px;text-align:right;font-weight:700;font-size:15px;" aria-label="Distance in km" />
+                  <span class="text-label-md" style="color:var(--clr-text-secondary);">km</span>
+                </div>
+              </div>
+              <input type="range" id="distance-range" min="50" max="1000" step="5" value="320" class="range-input" aria-label="Distance slider 50 to 1000 km" />
+              <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">50 km</span>
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">500 km</span>
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">1,000 km</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 2: Transport -->
+          <div>
+            <div class="section-label" style="margin-bottom:14px;">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke="var(--clr-primary)"/></svg>
+              2. Transport Mode &amp; Occupancy
+              <span style="margin-left:auto;" class="text-body-sm" style="color:var(--clr-text-secondary);">ARAI &amp; UTC Reference Data</span>
+            </div>
+
+            <!-- 2x2 Transport Cards -->
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;" id="transport-grid" role="radiogroup" aria-label="Transport mode selection">
+              <!-- SUV -->
+              <button class="transport-card active" data-mode="suv" data-factor="180" data-unit="vkm" aria-pressed="true" type="button">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%;">
+                  <div class="transport-icon-wrap"><svg class="icon" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/></svg></div>
+                  <div class="transport-check" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="white"/></svg></div>
+                </div>
+                <div>
+                  <p class="text-headline-sm" style="font-weight:700;">Private SUV (Diesel)</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">180 g CO₂e/vkm</p>
+                </div>
+              </button>
+              <!-- Sedan -->
+              <button class="transport-card" data-mode="sedan" data-factor="140" data-unit="vkm" aria-pressed="false" type="button">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%;">
+                  <div class="transport-icon-wrap"><svg class="icon" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 10H9m10 0a2 2 0 100-4 2 2 0 000 4zm-4 0a2 2 0 100-4 2 2 0 000 4z"/></svg></div>
+                  <div class="transport-check" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="white"/></svg></div>
+                </div>
+                <div>
+                  <p class="text-headline-sm" style="font-weight:700;">Petrol Sedan</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">140 g CO₂e/vkm</p>
+                </div>
+              </button>
+              <!-- Bus -->
+              <button class="transport-card" data-mode="bus" data-factor="30" data-unit="pkm" aria-pressed="false" type="button">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%;">
+                  <div class="transport-icon-wrap"><svg class="icon" viewBox="0 0 24 24"><path d="M8 6v6M15 6v6M2 12l1 4v2a1 1 0 001 1h1a1 1 0 001-1v-1h10v1a1 1 0 001 1h1a1 1 0 001-1v-2l1-4-2-5a2 2 0 00-2-1H6a2 2 0 00-2 1L2 12z"/><circle cx="7" cy="17" r="1" fill="currentColor"/><circle cx="17" cy="17" r="1" fill="currentColor"/></svg></div>
+                  <div class="transport-check" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="white"/></svg></div>
+                </div>
+                <div>
+                  <p class="text-headline-sm" style="font-weight:700;">Shared UTC Bus</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">30 g CO₂e/pkm <span style="color:var(--clr-primary);font-weight:600;">Eco</span></p>
+                </div>
+              </button>
+              <!-- EV -->
+              <button class="transport-card" data-mode="ev" data-factor="45" data-unit="vkm" aria-pressed="false" type="button">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;width:100%;">
+                  <div class="transport-icon-wrap"><svg class="icon" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                  <div class="transport-check" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="white"/></svg></div>
+                </div>
+                <div>
+                  <p class="text-headline-sm" style="font-weight:700;">Electric Vehicle (EV)</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">45 g CO₂e/vkm <span style="color:var(--clr-primary);font-weight:600;">Low-Grid</span></p>
+                </div>
+              </button>
+            </div>
+
+            <!-- Passenger Stepper -->
+            <div style="background:var(--clr-surface-mist);border:1px solid var(--clr-border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+              <div>
+                <p class="text-label-md" style="font-weight:600;">Passengers Count</p>
+                <p class="text-body-sm" style="color:var(--clr-text-secondary);" id="occupancy-helper">Vehicle emissions divided across 3 travelers</p>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <button class="stepper-btn" id="passenger-dec" type="button" aria-label="Decrease passengers" disabled>−</button>
+                <span class="text-headline-sm" style="font-weight:700;min-width:120px;text-align:center;" id="passenger-val" aria-live="polite">3 Travelers</span>
+                <button class="stepper-btn" id="passenger-inc" type="button" aria-label="Increase passengers">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 3: Accommodation -->
+          <div>
+            <div class="section-label" style="margin-bottom:14px;">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="var(--clr-primary)"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+              3. Accommodation Profile
+              <span style="margin-left:auto;" class="text-body-sm" style="color:var(--clr-text-secondary);">Per Guest-Night Basis</span>
+            </div>
+
+            <!-- Duration Slider -->
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <label for="nights-range" class="text-label-md" style="font-weight:600;">Duration of Stay</label>
+                <span id="nights-display" style="background:var(--clr-surface-mist);border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:4px 12px;font-weight:700;font-size:15px;" aria-live="polite">4 Nights</span>
+              </div>
+              <input type="range" id="nights-range" min="1" max="14" step="1" value="4" class="range-input" aria-label="Number of nights 1 to 14" />
+              <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">1 Night</span>
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">7 Nights</span>
+                <span class="text-body-sm" style="color:var(--clr-text-secondary);">14 Nights</span>
+              </div>
+            </div>
+
+            <!-- Stay Type -->
+            <div>
+              <label class="text-label-md" style="font-weight:600;display:block;margin-bottom:8px;">Lodging Type &amp; Energy Intensity</label>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;" id="stay-group" role="radiogroup" aria-label="Lodging type selection">
+                <button class="stay-pill" data-stay="24.0" aria-pressed="false" type="button">
+                  <span class="text-headline-sm" style="font-size:13px;font-weight:700;">Luxury Resort</span>
+                  <span class="text-body-sm" style="color:var(--clr-text-secondary);">24.0 kg/night</span>
+                </button>
+                <button class="stay-pill active" data-stay="9.0" aria-pressed="true" type="button">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span class="text-headline-sm" style="font-size:13px;font-weight:700;">Standard Hotel</span>
+                    <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  </div>
+                  <span class="text-body-sm" style="color:var(--clr-text-secondary);">9.0 kg (Selected)</span>
+                </button>
+                <button class="stay-pill" data-stay="6.0" aria-pressed="false" type="button">
+                  <span class="text-headline-sm" style="font-size:13px;font-weight:700;">Pahadi Homestay</span>
+                  <span class="text-body-sm" style="color:var(--clr-primary);font-weight:600;">6.0 kg/night ✓ Eco</span>
+                </button>
+                <button class="stay-pill" data-stay="3.5" aria-pressed="false" type="button">
+                  <span class="text-headline-sm" style="font-size:13px;font-weight:700;">Eco-Camp</span>
+                  <span class="text-body-sm" style="color:var(--clr-primary);font-weight:600;">3.5 kg/night ✓ Best</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 4: Eco-Habit Credits -->
+          <div>
+            <div class="section-label" style="margin-bottom:14px;">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--clr-primary)"/></svg>
+              4. Optional Eco-Habit Credits
+              <span style="margin-left:auto;" class="text-body-sm" style="color:var(--clr-text-secondary);">Unchecked Baseline</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <label class="habit-label">
+                <input type="checkbox" id="credit-water" aria-label="Refilled reusable water bottle, saves 2 kg CO2e per person" />
+                <div style="flex:1;">
+                  <p class="text-body-md" style="font-weight:600;">Refilled reusable water bottle</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">Saves single-use mountain plastics &amp; supply freight: −2.0 kg CO₂e / person</p>
+                </div>
+                <span style="background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600;color:var(--clr-primary);">−2.0 kg</span>
+              </label>
+              <label class="habit-label">
+                <input type="checkbox" id="credit-food" aria-label="Chose local seasonal Pahadi cuisine, saves 3 kg CO2e per person" />
+                <div style="flex:1;">
+                  <p class="text-body-md" style="font-weight:600;">Chose local seasonal Pahadi cuisine</p>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">Millet, Bhatt ki Churkani &amp; low food-mile farm ingredients: −3.0 kg CO₂e / person</p>
+                </div>
+                <span style="background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600;color:var(--clr-primary);">−3.0 kg</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Save CTA -->
+          <button class="btn btn-primary btn-lg btn-full" id="save-trip-btn" type="button" onclick="handleSaveTrip()" style="margin-top:8px;">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            Save Trip to Log &amp; View Full Methodology
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </section>
+
+        <!-- RIGHT: Results -->
+        <aside style="display:flex;flex-direction:column;gap:20px;" aria-label="Carbon footprint results">
+
+          <!-- Card 1: Footprint -->
+          <div class="card card-body animate-fade-in" style="background:var(--clr-surface-mist);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+              <span class="section-label">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="var(--clr-primary)"/></svg>
+                Estimated Carbon Footprint
+              </span>
+              <span id="impact-badge" class="badge" style="background:var(--clr-pending-fill);color:var(--clr-pending-text);">⚠ Moderate Mountain Impact</span>
+            </div>
+
+            <!-- Dual metrics -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;background:var(--clr-surface);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;">
+              <div>
+                <p class="text-label-md" style="color:var(--clr-text-secondary);">Per Person</p>
+                <div style="display:flex;align-items:baseline;gap:4px;margin-top:4px;">
+                  <span class="text-metric-lg" id="metric-per-person" aria-live="polite">60.0</span>
+                  <span class="text-label-md" style="color:var(--clr-text-secondary);">kg CO₂e</span>
+                </div>
+                <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:2px;">Normalized individual burden</p>
+              </div>
+              <div style="padding-left:16px;border-left:1px solid var(--clr-border);">
+                <p class="text-label-md" style="color:var(--clr-text-secondary);">Whole Trip (<span id="metric-party-count">3 Travelers</span>)</p>
+                <div style="display:flex;align-items:baseline;gap:4px;margin-top:4px;">
+                  <span class="text-metric-md" id="metric-whole-trip" aria-live="polite">180.0</span>
+                  <span class="text-label-md" style="color:var(--clr-text-secondary);">kg CO₂e</span>
+                </div>
+                <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:2px;">Gross convoy footprint</p>
+              </div>
+            </div>
+
+            <!-- Uphill chip -->
+            <div class="uphill-chip" id="uphill-chip" style="margin-bottom:14px;">
+              <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);flex-shrink:0;"><path d="M3 17l9-9 4 4 5-5M13 17l9-9M3 12h18M3 7h18M3 2h18"/></svg>
+              <span id="uphill-chip-text" class="text-body-sm" aria-live="polite">Includes <strong>+4.8 kg/person</strong> (+14.4 kg total) from 1.25× Mid-Hills transport multiplier (illustrative assumption)</span>
+            </div>
+
+            <!-- Breakdown bar -->
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span class="text-label-sm" style="font-weight:600;">Emissions Distribution</span>
+                <span id="breakdown-ratio-label" class="text-body-sm" style="color:var(--clr-text-secondary);" aria-live="polite">40% Transit | 60% Stay</span>
+              </div>
+              <div class="breakdown-bar" role="img" id="breakdown-bar" aria-label="Emissions distribution bar">
+                <div class="breakdown-transport" id="bar-transport" style="width:40%;" aria-label="Transport portion">
+                  <svg class="icon-sm" viewBox="0 0 24 24" stroke="white" style="flex-shrink:0;"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10"/></svg>
+                  <span style="font-size:11px;margin-left:2px;">Transit</span>
+                </div>
+                <div class="breakdown-stay" id="bar-stay" style="width:60%;" aria-label="Accommodation portion">
+                  <svg class="icon-sm" viewBox="0 0 24 24" stroke="white" style="flex-shrink:0;"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                  <span style="font-size:11px;margin-left:2px;">Stay</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formula breakdown -->
+            <div style="background:var(--clr-surface);border-radius:var(--radius-lg);padding:14px;font-size:13px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:var(--clr-primary);flex-shrink:0;display:inline-block;"></span>
+                  <span style="font-weight:600;">Transport Component</span>
+                </div>
+                <span class="font-mono" id="calc-transport-text" aria-live="polite">24.0 kg/p</span>
+              </div>
+              <p id="formula-transport" class="text-body-sm" style="color:var(--clr-text-secondary);padding-left:18px;margin-bottom:12px;" aria-live="polite">320 km × 180 g × 1.25 ÷ 3 travelers = 24.0 kg CO₂e</p>
+              <div class="divider" style="margin-bottom:12px;"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:10px;height:10px;border-radius:50%;background:var(--clr-secondary);flex-shrink:0;display:inline-block;"></span>
+                  <span style="font-weight:600;">Accommodation Component</span>
+                </div>
+                <span class="font-mono" id="calc-stay-text" aria-live="polite">36.0 kg/p</span>
+              </div>
+              <p id="formula-stay" class="text-body-sm" style="color:var(--clr-text-secondary);padding-left:18px;" aria-live="polite">4 nights × 9.0 kg guest-night = 36.0 kg CO₂e</p>
+              <div id="habit-deduction-row" class="hidden" style="margin-top:12px;">
+                <div class="divider" style="margin-bottom:12px;"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:var(--clr-primary-light);flex-shrink:0;display:inline-block;"></span>
+                    <span style="font-weight:600;color:var(--clr-primary);">Eco-Habit Deductions</span>
+                  </div>
+                  <span class="font-mono" id="calc-habit-text" style="color:var(--clr-primary);">−0.0 kg/p</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Eco Swap -->
+          <div class="card card-body animate-fade-in" style="position:relative;overflow:hidden;">
+            <div class="eco-swap-accent"></div>
+            <div style="padding-left:12px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <div style="width:32px;height:32px;border-radius:var(--radius-md);background:rgba(27,67,50,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </div>
+                <h3 class="text-headline-sm" style="font-weight:700;">Verified Eco-Swap Alternative</h3>
+              </div>
+              <p class="text-label-sm" style="font-weight:700;color:var(--clr-primary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Shared UTC Bus + Pahadi Homestay</p>
+              <div style="background:var(--clr-surface-mist);border-radius:var(--radius-lg);padding:14px;margin-bottom:12px;">
+                <p class="text-headline-sm" id="swap-headline" style="color:var(--clr-primary);font-weight:700;margin-bottom:6px;">Emissions drop from 60.0 kg to 36.0 kg CO₂e/person (−40%)</p>
+                <p class="text-body-sm" id="swap-body" style="color:var(--clr-text-secondary);line-height:1.6;">Switching to a Shared UTC Bus (12.0 kg/person) and a Pahadi Homestay (24.0 kg/person) lowers emissions to 36.0 kg CO₂e/person (108.0 kg whole trip) — saving 24.0 kg CO₂e per person (72.0 kg per trip), a 40% reduction.</p>
+              </div>
+              <div style="background:var(--clr-surface-mist);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:flex-start;gap:10px;">
+                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-secondary);flex-shrink:0;margin-top:2px;"><path d="M12 1v6m0 0l-3-3m3 3l3-3M12 7v12M12 1a9 9 0 110 18A9 9 0 0112 1z"/></svg>
+                <p class="text-body-sm" style="color:var(--clr-text-secondary);line-height:1.6;"><strong style="color:var(--clr-text);">Potential travel-cost saving:</strong> Switching from an eligible out-of-state private car to shared public transport may avoid the ₹80 vehicle-entry Green Cess (per Uttarakhand Transport Dept. May 2025 schedule; subject to exemptions).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Restoration Pledge -->
+          <div class="card card-body animate-fade-in" style="background:var(--clr-surface-mist);">
+            <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;">
+              <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg class="icon" viewBox="0 0 24 24" stroke="white"><path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z" fill="white" stroke="none"/></svg>
+              </div>
+              <div>
+                <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:4px;">Local Restoration Pledge: Himalayan Banj Oak</h3>
+                <p class="text-body-sm" id="restoration-text" style="color:var(--clr-text-secondary);line-height:1.6;">Suggested illustrative contribution: <strong>3 saplings per person</strong> (<span id="total-saplings">9 saplings</span> for this group trip). Note: Pledges support community Van Panchayat planting drives and do not represent a certified carbon offset.</p>
+              </div>
+            </div>
+
+            <!-- Forest illustration -->
+            <div style="background:var(--clr-primary);border-radius:var(--radius-lg);padding:16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                <!-- Forest SVG illustration -->
+                <svg viewBox="0 0 56 56" style="width:56px;height:56px;">
+                  <rect width="56" height="56" rx="8" fill="rgba(255,255,255,0.1)"/>
+                  <g transform="translate(8,4)">
+                    <polygon points="20,2 8,20 14,20 14,30 26,30 26,20 32,20" fill="#86AF99"/>
+                    <polygon points="10,10 2,24 7,24 7,30 13,30 13,24 18,24" fill="#A5D0B9"/>
+                    <polygon points="30,8 22,22 27,22 27,30 33,30 33,22 38,22" fill="#74C69D"/>
+                    <rect x="18" y="30" width="4" height="6" fill="#6B4A2A"/>
+                    <rect x="6" y="28" width="3" height="4" fill="#6B4A2A"/>
+                    <rect x="30" y="28" width="3" height="4" fill="#6B4A2A"/>
+                  </g>
+                </svg>
+              </div>
+              <div>
+                <p class="text-label-md" style="color:white;font-weight:700;">Banj Oak (Quercus leucotrichophora)</p>
+                <p class="text-body-sm" style="color:rgba(255,255,255,0.7);margin-top:2px;">Key ecosystem keystone: stabilizes fragile mountain soil &amp; restores Himalayan water tables.</p>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-ghost btn-full" onclick="navigate('restoration')" style="color:var(--clr-primary);border-color:var(--clr-primary);">
+                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Pledge Restoration Support
+              </button>
+              <a href="javascript:void(0)" onclick="navigate('methodology')" class="text-body-sm" style="color:var(--clr-primary);font-weight:600;display:flex;align-items:center;gap:4px;">
+                Factor Version v1.2-2026 | Estimation Disclaimer &amp; Sources
+                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: METHODOLOGY ======== -->
+<main class="page" id="page-methodology" aria-label="Methodology and Sources">
+  <div style="padding:40px 0;min-height:calc(100vh - 64px);">
+    <div class="container">
+      <div style="max-width:800px;margin:0 auto;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <div style="width:48px;height:48px;border-radius:var(--radius-xl);background:var(--clr-primary);display:flex;align-items:center;justify-content:center;">
+            <svg class="icon-lg" viewBox="0 0 24 24" stroke="white"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div>
+            <h1 class="text-headline-lg" style="font-weight:700;">Methodology &amp; Sources</h1>
+            <p class="text-body-md" style="color:var(--clr-text-secondary);">Calculation framework, data sources, and illustrative assumptions</p>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="info-banner" style="margin-bottom:24px;background:var(--clr-pending-fill);border-color:#FCD34D;">
+          <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-warning);flex-shrink:0;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <p class="text-body-sm"><strong style="color:var(--clr-warning);">Illustrative Methodology Notice:</strong> All emission factors, terrain multipliers, and accommodation intensities are illustrative sample values used for prototype demonstration. They are not verified against official scientific databases and should not be used for certified carbon reporting or offset claims.</p>
+        </div>
+
+        <!-- Method sections -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card card-body">
+            <h2 class="text-headline-sm" style="font-weight:700;margin-bottom:12px;color:var(--clr-primary);">1. Transport Emission Calculation</h2>
+            <div style="font-size:14px;background:var(--clr-surface-mist);padding:14px;border-radius:var(--radius-lg);font-family:monospace;margin-bottom:12px;">
+              <div><strong>For vehicle-based modes (SUV, Sedan, EV):</strong></div>
+              <div style="margin-top:8px;color:var(--clr-primary);">kg CO₂e/person = (distance_km × emission_factor_g × terrain_multiplier) ÷ (passengers × 1000)</div>
+              <div style="margin-top:12px;"><strong>For shared public modes (UTC Bus):</strong></div>
+              <div style="margin-top:8px;color:var(--clr-primary);">kg CO₂e/person = (distance_km × emission_factor_g × terrain_multiplier) ÷ 1000</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Diesel SUV</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">per vehicle-km</div></div><span class="factor-locked-val">180 g</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Petrol Sedan</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">per vehicle-km</div></div><span class="factor-locked-val">140 g</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Shared UTC Bus</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">per passenger-km</div></div><span class="factor-locked-val">30 g</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Electric Vehicle</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">per vehicle-km</div></div><span class="factor-locked-val">45 g</span></div>
+            </div>
+          </div>
+
+          <div class="card card-body">
+            <h2 class="text-headline-sm" style="font-weight:700;margin-bottom:12px;color:var(--clr-primary);">2. Terrain Elevation Multipliers (Illustrative)</h2>
+            <p class="text-body-md" style="color:var(--clr-text-secondary);margin-bottom:12px;">Mountain terrain creates additional fuel consumption due to continuous gradient negotiation, engine load, and reduced fuel efficiency at altitude. These multipliers are illustrative approximations.</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div class="factor-row" style="flex-direction:column;align-items:flex-start;gap:4px;"><div class="text-label-md" style="font-weight:600;">Foothills</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">&lt;800m AMSL</div><span class="factor-locked-val">1.00×</span></div>
+              <div class="factor-row" style="flex-direction:column;align-items:flex-start;gap:4px;"><div class="text-label-md" style="font-weight:600;">Mid-Hills</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">800–2,400m AMSL</div><span class="factor-locked-val">1.25×</span></div>
+              <div class="factor-row" style="flex-direction:column;align-items:flex-start;gap:4px;"><div class="text-label-md" style="font-weight:600;">High Altitude</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">&gt;2,400m AMSL</div><span class="factor-locked-val">1.40×</span></div>
+            </div>
+          </div>
+
+          <div class="card card-body">
+            <h2 class="text-headline-sm" style="font-weight:700;margin-bottom:12px;color:var(--clr-primary);">3. Accommodation Emission Intensities (Illustrative)</h2>
+            <p class="text-body-md" style="color:var(--clr-text-secondary);margin-bottom:12px;">Accommodation intensities estimate energy use (electricity, heating, water) per guest-night. Values are illustrative and not derived from certified LCA studies.</p>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Luxury Resort</div></div><span class="factor-locked-val">24.0 kg/night</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Standard Hotel</div></div><span class="factor-locked-val">9.0 kg/night</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Pahadi Homestay</div></div><span class="factor-locked-val">6.0 kg/night</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Eco-Camp</div></div><span class="factor-locked-val">3.5 kg/night</span></div>
+            </div>
+          </div>
+
+          <div class="card card-body">
+            <h2 class="text-headline-sm" style="font-weight:700;margin-bottom:12px;color:var(--clr-primary);">4. Version &amp; Governance</h2>
+            <p class="text-body-md" style="color:var(--clr-text-secondary);">Active model version: <strong>v1.2-2026</strong>. Factor updates are versioned and logged to the Regional Van Panchayat registry. Proposed updates require Regional Auditor review and confirmation before publication.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: RESTORATION ======== -->
+<main class="page" id="page-restoration" aria-label="Local Restoration Initiatives">
+  <div style="padding:40px 0;min-height:calc(100vh - 64px);">
+    <div class="container">
+      <div style="max-width:900px;margin:0 auto;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <div style="width:48px;height:48px;border-radius:var(--radius-xl);background:var(--clr-primary);display:flex;align-items:center;justify-content:center;">
+            <svg class="icon-lg" viewBox="0 0 24 24" stroke="white"><path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z" fill="white" stroke="none"/></svg>
+          </div>
+          <div>
+            <h1 class="text-headline-lg" style="font-weight:700;">Local Restoration Initiatives</h1>
+            <p class="text-body-md" style="color:var(--clr-text-secondary);">Van Panchayat community reforestation programs across Uttarakhand</p>
+          </div>
+        </div>
+
+        <div class="info-banner" style="margin-bottom:28px;">
+          <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);flex-shrink:0;"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="text-body-sm"><strong>Disclaimer:</strong> Restoration pledges support community Van Panchayat planting drives and do not constitute certified carbon offsets. Sapling counts are illustrative contributions toward ecological restoration.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-bottom:32px;">
+          <!-- Initiative 1 -->
+          <div class="card card-body">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-primary);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <svg class="icon" viewBox="0 0 24 24" stroke="white"><path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z" fill="white" stroke="none"/></svg>
+            </div>
+            <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:6px;">Banj Oak Reforestation Drive</h3>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:12px;line-height:1.6;">Community-led planting of Quercus leucotrichophora across degraded mid-hill slopes. Supports watershed recharge and biodiversity corridors.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="color:var(--clr-text-secondary);">Saplings planted (2026)</span>
+              <span class="text-headline-sm" style="font-weight:700;color:var(--clr-primary);">6,420</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:65%;background:var(--clr-primary);"></div></div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:6px;">65% of 2026 target (9,870 saplings)</p>
+          </div>
+
+          <!-- Initiative 2 -->
+          <div class="card card-body">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-primary-light);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <svg class="icon" viewBox="0 0 24 24" stroke="white"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"/></svg>
+            </div>
+            <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:6px;">Glacial Catchment Restoration</h3>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:12px;line-height:1.6;">Revegetation of high-altitude slopes around glacier boundaries in the Kedarnath and Nanda Devi buffer zones to reduce melt acceleration.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="color:var(--clr-text-secondary);">Hectares restored</span>
+              <span class="text-headline-sm" style="font-weight:700;color:var(--clr-primary);">142 ha</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:47%;background:var(--clr-primary-light);"></div></div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:6px;">47% of 2026 target (300 ha)</p>
+          </div>
+
+          <!-- Initiative 3 -->
+          <div class="card card-body">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-secondary);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <svg class="icon" viewBox="0 0 24 24" stroke="white"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:6px;">Van Panchayat Community Program</h3>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:12px;line-height:1.6;">Direct support to 23 Van Panchayat councils for seed nursery operations, forest guard training, and wildlife corridor maintenance.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="color:var(--clr-text-secondary);">Active Van Panchayats</span>
+              <span class="text-headline-sm" style="font-weight:700;color:var(--clr-primary);">23</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:85%;background:var(--clr-secondary);"></div></div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:6px;">85% operational capacity</p>
+          </div>
+        </div>
+
+        <!-- Pledge Form -->
+        <div class="card card-body" style="background:var(--clr-surface-mist);">
+          <h2 class="text-headline-md" style="font-weight:700;margin-bottom:6px;">Make a Restoration Pledge</h2>
+          <p class="text-body-md" style="color:var(--clr-text-secondary);margin-bottom:20px;">Support community reforestation. Your pledge is logged to the Van Panchayat registry as an illustrative contribution.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div><label for="pledge-name" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Your Name</label><input type="text" id="pledge-name" class="input" placeholder="e.g. Priya Sharma" /></div>
+            <div><label for="pledge-saplings" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Number of Saplings</label><input type="number" id="pledge-saplings" class="input" min="1" max="500" value="9" placeholder="9" /></div>
+          </div>
+          <div style="margin-bottom:16px;"><label for="pledge-initiative" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Initiative</label>
+            <select id="pledge-initiative" class="select"><option>Banj Oak Reforestation Drive</option><option>Glacial Catchment Restoration</option><option>Van Panchayat Community Program</option></select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="handlePledge()" type="button">
+            <svg class="icon-sm" viewBox="0 0 24 24" stroke="white"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Confirm Restoration Pledge
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: ADMIN OVERVIEW ======== -->
+<main class="page" id="page-admin" aria-label="Admin Dashboard Overview">
+  <div style="min-height:calc(100vh - 64px);padding:24px 0 40px;">
+    <!-- Reporting Context Bar -->
+    <div class="context-bar" style="margin-bottom:24px;">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;background:var(--clr-surface-mist);color:var(--clr-primary);border:1px solid var(--clr-border);padding:3px 12px;border-radius:var(--radius-full);font-size:12px;font-weight:600;">
+            <span class="pulse-dot animate-pulse"></span>
+            Dataset: Sample Demonstration Records (v1.2-2026)
+          </span>
+          <span class="text-body-sm" style="color:var(--clr-text-secondary);">Last Reconciled: 22 Oct 2026, 12:00 IST</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="text-body-sm" style="color:var(--clr-text-secondary);">Reporting Window:</span>
+          <div id="date-filter-container" style="position:relative;">
+            <button class="btn btn-ghost btn-sm" onclick="toggleDateFilter()" id="date-filter-btn" style="font-size:12px;gap:6px;" aria-expanded="false" aria-haspopup="listbox">
+              <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span id="date-filter-label">Last 30 Days (23 Sep – 22 Oct 2026)</span>
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="date-filter-dropdown" class="hidden" role="listbox" aria-label="Reporting period selection" style="position:absolute;right:0;top:calc(100% + 4px);background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);z-index:100;min-width:220px;padding:4px;">
+              <button role="option" aria-selected="true" onclick="selectDateFilter('Last 30 Days (23 Sep – 22 Oct 2026)')" style="display:block;width:100%;text-align:left;padding:8px 12px;font-size:13px;border:none;background:var(--clr-surface-mist);border-radius:var(--radius-md);cursor:pointer;color:var(--clr-text);margin-bottom:2px;">Last 30 Days</button>
+              <button role="option" aria-selected="false" onclick="selectDateFilter('Last 90 Days (24 Jul – 22 Oct 2026)')" style="display:block;width:100%;text-align:left;padding:8px 12px;font-size:13px;border:none;background:transparent;border-radius:var(--radius-md);cursor:pointer;color:var(--clr-text);">Last 90 Days</button>
+              <button role="option" aria-selected="false" onclick="selectDateFilter('Year to Date (Jan – Oct 2026)')" style="display:block;width:100%;text-align:left;padding:8px 12px;font-size:13px;border:none;background:transparent;border-radius:var(--radius-md);cursor:pointer;color:var(--clr-text);">Year to Date</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- KPI Cards -->
+      <section aria-labelledby="kpi-heading" style="margin-bottom:24px;">
+        <h2 class="sr-only" id="kpi-heading">Key Performance Indicators</h2>
+        <div class="grid-4col">
+          <article class="kpi-card" data-purpose="kpi-trips">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--clr-text-secondary);">Total Trips Logged</span>
+              <div class="kpi-icon-wrap" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
+            </div>
+            <div>
+              <div class="text-metric-lg">1,482 <span class="text-headline-sm" style="color:var(--clr-text-secondary);">Trips</span></div>
+              <div style="margin-top:8px;"><span class="trend-up">▲ +14% vs. prior 30 days</span></div>
+            </div>
+          </article>
+          <article class="kpi-card" data-purpose="kpi-carbon">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--clr-text-secondary);">Total Carbon Tracked</span>
+              <div class="kpi-icon-wrap" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            </div>
+            <div>
+              <div style="font-size:28px;font-weight:700;letter-spacing:-0.01em;font-feature-settings:'tnum' 1;">214.8 <span class="text-body-lg" style="color:var(--clr-text-secondary);font-weight:500;">t CO₂e</span></div>
+              <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:8px;">Summed across 5 monitored hill circuits</p>
+            </div>
+          </article>
+          <article class="kpi-card" data-purpose="kpi-avg">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--clr-text-secondary);">Avg. Footprint / Trip</span>
+              <div class="kpi-icon-wrap" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+            </div>
+            <div>
+              <div style="font-size:28px;font-weight:700;letter-spacing:-0.01em;font-feature-settings:'tnum' 1;">145.0 <span class="text-body-lg" style="color:var(--clr-text-secondary);font-weight:500;">kg CO₂e</span></div>
+              <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-top:8px;">Avg. 2.42 pax/trip (~60.0 kg/person)</p>
+            </div>
+          </article>
+          <article class="kpi-card" data-purpose="kpi-saplings">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span class="text-label-sm" style="text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--clr-text-secondary);">Restoration Pledges</span>
+              <div class="kpi-icon-wrap" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);fill:currentColor;"><path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z"/></svg></div>
+            </div>
+            <div>
+              <div style="font-size:28px;font-weight:700;letter-spacing:-0.01em;font-feature-settings:'tnum' 1;">9,780 <span class="text-body-lg" style="color:var(--clr-text-secondary);font-weight:500;">Saplings</span></div>
+              <p class="text-body-sm" style="margin-top:8px;"><span style="color:var(--clr-primary);font-weight:600;">6,420 Verified</span> | 3,360 Pledged</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Row 2: Charts -->
+      <section aria-labelledby="charts-heading" style="margin-bottom:24px;">
+        <h2 class="sr-only" id="charts-heading">Regional Tourism Pressure</h2>
+        <div class="grid-7-5">
+          <!-- Circuit Carbon -->
+          <div class="card card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <h3 class="text-headline-sm" style="font-weight:700;">Carbon Load by Monitored Hill Circuit</h3>
+              <span class="badge badge-eco" style="font-size:11px;">5 Corridors</span>
+            </div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:20px;">Aggregate sum of transport mountain drag &amp; lodging intensities across routes</p>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#1B4332;display:inline-block;"></span>Kumaon Circuit (Nainital – Almora – Mukteshwar)</span>
+                  <span class="text-body-sm" style="font-weight:700;">68.0 t <span style="font-weight:400;color:var(--clr-text-secondary);">(31.7%)</span></span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:31.7%;background:#1B4332;" role="img" aria-label="31.7%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#2D6A4F;display:inline-block;"></span>Mussoorie – Dhanaulti Ridge Corridor</span>
+                  <span class="text-body-sm" style="font-weight:700;">54.0 t <span style="font-weight:400;color:var(--clr-text-secondary);">(25.1%)</span></span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:25.1%;background:#2D6A4F;" role="img" aria-label="25.1%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#40916C;display:inline-block;"></span>Rishikesh – Tehri Lake Ascent</span>
+                  <span class="text-body-sm" style="font-weight:700;">42.0 t <span style="font-weight:400;color:var(--clr-text-secondary);">(19.6%)</span></span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:19.6%;background:#40916C;" role="img" aria-label="19.6%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#52B788;display:inline-block;"></span>Kedarnath / Garhwal Pilgrim Gateway</span>
+                  <span class="text-body-sm" style="font-weight:700;">35.0 t <span style="font-weight:400;color:var(--clr-text-secondary);">(16.3%)</span></span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:16.3%;background:#52B788;" role="img" aria-label="16.3%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#74C69D;display:inline-block;"></span>Auli – Joshimath High Alpine Corridor</span>
+                  <span class="text-body-sm" style="font-weight:700;">15.8 t <span style="font-weight:400;color:var(--clr-text-secondary);">(7.3%)</span></span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:7.3%;background:#74C69D;" role="img" aria-label="7.3%"></div></div>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--clr-border);margin-top:20px;padding-top:14px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:13px;font-weight:600;color:var(--clr-primary);display:flex;align-items:center;gap:6px;">
+                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M5 13l4 4L19 7"/></svg>
+                Reconciled Sum: 214.8 Metric Tons CO₂e (100.0%)
+              </span>
+              <a href="javascript:void(0)" style="font-size:12px;font-weight:600;color:var(--clr-primary);" onclick="showToast('Circuit boundary map — coming in production build')">View Circuit Boundary Map →</a>
+            </div>
+          </div>
+
+          <!-- Transport Mode Share -->
+          <div class="card card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <h3 class="text-headline-sm" style="font-weight:700;">Transport Mode Share</h3>
+              <span class="text-body-sm" style="color:var(--clr-text-secondary);">1,482 logged trips</span>
+            </div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:16px;">Sample fleet distribution entering Himalayan gate check-posts</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="padding:10px;border-radius:var(--radius-lg);border:1px solid var(--clr-border);background:var(--clr-bg);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;">Private SUV (Diesel)</span>
+                  <span class="text-body-sm" style="font-weight:700;">46% <span style="font-weight:400;color:var(--clr-text-secondary);">(682 trips)</span></span>
+                </div>
+                <div class="progress-track-sm"><div class="progress-fill" style="width:46%;background:var(--clr-primary);" role="img" aria-label="46%"></div></div>
+              </div>
+              <div style="padding:10px;border-radius:var(--radius-lg);border:1px solid var(--clr-border);background:var(--clr-bg);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;">Petrol Sedan</span>
+                  <span class="text-body-sm" style="font-weight:700;">28% <span style="font-weight:400;color:var(--clr-text-secondary);">(415 trips)</span></span>
+                </div>
+                <div class="progress-track-sm"><div class="progress-fill" style="width:28%;background:var(--clr-primary-light);" role="img" aria-label="28%"></div></div>
+              </div>
+              <div style="padding:10px;border-radius:var(--radius-lg);border:1px solid #86EFAC;background:#F0FDF4;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;">Shared UTC Bus <span class="badge badge-eco" style="font-size:10px;padding:1px 6px;margin-left:4px;">Eco-Option</span></span>
+                  <span class="text-body-sm" style="font-weight:700;color:var(--clr-primary);">18% <span style="font-weight:400;color:var(--clr-text-secondary);">(267 trips)</span></span>
+                </div>
+                <div class="progress-track-sm" style="background:#BBF7D0;"><div class="progress-fill" style="width:18%;background:#16A34A;" role="img" aria-label="18%"></div></div>
+              </div>
+              <div style="padding:10px;border-radius:var(--radius-lg);border:1px solid var(--clr-border);background:var(--clr-bg);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span class="text-body-sm" style="font-weight:600;">Electric Vehicle (EV)</span>
+                  <span class="text-body-sm" style="font-weight:700;">8% <span style="font-weight:400;color:var(--clr-text-secondary);">(118 trips)</span></span>
+                </div>
+                <div class="progress-track-sm"><div class="progress-fill" style="width:8%;background:#74C69D;" role="img" aria-label="8%"></div></div>
+              </div>
+            </div>
+            <div class="info-banner" style="margin-top:16px;">
+              <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-warning);flex-shrink:0;"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="text-body-sm"><strong>Auditor Insight:</strong> High SUV share (46%) drives 68% of total transit footprint due to mountain elevation fuel burn penalties.</span>
+            </div>
+            <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;" class="text-body-sm">
+              <span style="color:var(--clr-text-secondary);">Target EV transition goal: 20% by 2027</span>
+              <span style="color:var(--clr-secondary);font-weight:700;">Deficit: −12%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 3: Audit Table + Engine Constants -->
+      <section aria-labelledby="ops-heading">
+        <h2 class="sr-only" id="ops-heading">Operations Audit Trail and Engine Parameters</h2>
+        <div class="grid-8-4">
+          <!-- Audit Table -->
+          <div class="card card-body">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                <div>
+                  <h3 class="text-headline-sm" style="font-weight:700;">Recent Tourist Submissions</h3>
+                  <p class="text-body-sm" style="color:var(--clr-text-secondary);">Validated against telemetry and hill toll plaza receipts</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="position:relative;">
+                    <label for="trip-search" class="sr-only">Search Trip ID</label>
+                    <input type="search" id="trip-search" class="input input-sm" style="padding-left:32px;width:180px;" placeholder="Search Trip ID..." oninput="filterTrips(this.value)" />
+                    <svg class="icon-sm" viewBox="0 0 24 24" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--clr-text-secondary);pointer-events:none;"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </div>
+                  <button class="btn btn-mist btn-sm" onclick="toggleFilters()" aria-expanded="false" id="filters-toggle-btn">Filters</button>
+                </div>
+              </div>
+
+              <!-- Filter pills -->
+              <div id="filter-pills" style="display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:4px;" role="group" aria-label="Table filters">
+                <button class="filter-pill active" data-filter="all" onclick="setTableFilter('all', this)">All (1,482)</button>
+                <button class="filter-pill" data-filter="suv" onclick="setTableFilter('suv', this)">Diesel SUV (682)</button>
+                <button class="filter-pill" data-filter="bus" onclick="setTableFilter('bus', this)">Shared Bus (267)</button>
+                <button class="filter-pill" data-filter="verified" onclick="setTableFilter('verified', this)">Verified (890)</button>
+                <button class="filter-pill" data-filter="pending" onclick="setTableFilter('pending', this)">Pledged Pending (412)</button>
+              </div>
+
+              <!-- Table -->
+              <div style="overflow-x:auto;">
+                <table class="table" id="audit-table" aria-label="Tourist trip submissions audit log">
+                  <thead>
+                    <tr>
+                      <th scope="col">Trip ID</th>
+                      <th scope="col">Circuit / Route</th>
+                      <th scope="col">Transport Mode</th>
+                      <th scope="col">Footprint</th>
+                      <th scope="col">Restoration</th>
+                    </tr>
+                  </thead>
+                  <tbody id="audit-table-body">
+                    <!-- JS populates this -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <div style="border-top:1px solid var(--clr-border);padding-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <span id="pagination-label" class="text-body-sm" style="color:var(--clr-text-secondary);">Showing <strong>5</strong> of <strong>1,482</strong> audited submissions</span>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <button id="prev-btn" class="btn btn-ghost btn-sm" onclick="prevPage()" disabled aria-label="Previous page">Previous</button>
+                  <button id="page-1-btn" class="btn btn-primary btn-sm" onclick="goToPage(1)" aria-current="page" aria-label="Page 1">1</button>
+                  <button id="page-2-btn" class="btn btn-ghost btn-sm" onclick="goToPage(2)" aria-label="Page 2">2</button>
+                  <button id="next-btn" class="btn btn-ghost btn-sm" onclick="nextPage()" aria-label="Next page">Next →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Engine Constants Panel (read-only on overview) -->
+          <div class="card card-body" style="background:var(--clr-surface-mist);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <h3 class="text-headline-sm" style="font-weight:700;">Engine Constants (v1.2-2026)</h3>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#16A34A;background:white;border:1px solid var(--clr-border);padding:2px 8px;border-radius:var(--radius-full);">
+                <span style="width:6px;height:6px;border-radius:50%;background:#10B981;"></span>Active Model
+              </span>
+            </div>
+            <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:16px;">Governs live client calculator formulas across all mountain elevation tiers.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Mid-Hills Multiplier</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Terrain inclination adjustment</div></div><span class="factor-locked-val">1.25×</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">High-Altitude Multiplier</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Elevations &gt;2,400m AMSL</div></div><span class="factor-locked-val">1.40×</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Diesel SUV Factor</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Baseline per vehicle-km</div></div><span class="factor-locked-val">180 g</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Standard Hotel Factor</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Energy &amp; water per guest night</div></div><span class="factor-locked-val">9.0 kg</span></div>
+              <div class="factor-row"><div><div class="text-label-md" style="font-weight:600;">Pahadi Homestay Factor</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Low-impact solar &amp; cookstove</div></div><span class="factor-locked-val">6.0 kg</span></div>
+            </div>
+            <div class="governance-notice" style="margin-top:16px;">
+              <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);flex-shrink:0;"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <span class="text-body-sm">Updates compile a new cryptographic snapshot (<code style="background:var(--clr-surface-mist);padding:1px 4px;border-radius:3px;color:var(--clr-primary);font-weight:600;">v1.3</code>) recorded to the Regional Van Panchayat registry.</span>
+            </div>
+            <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="navigateAdmin('admin-factors')">
+              <svg class="icon-sm" viewBox="0 0 24 24" stroke="white"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Review &amp; Publish New Factor Version
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: ADMIN TRIPS ======== -->
+<main class="page" id="page-admin-trips" aria-label="Trip Audit Log">
+  <div style="min-height:calc(100vh - 64px);padding:24px 0 40px;">
+    <div class="container">
+      <div style="margin-bottom:24px;">
+        <h2 class="text-headline-lg" style="font-weight:700;margin-bottom:4px;">Trip Audit Log</h2>
+        <p class="text-body-md" style="color:var(--clr-text-secondary);">Full paginated audit log of all 1,482 logged tourist submissions</p>
+      </div>
+      <div class="card card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <div style="position:relative;">
+            <label for="trips-search-full" class="sr-only">Search Trip ID or circuit</label>
+            <input type="search" id="trips-search-full" class="input" style="padding-left:36px;width:280px;" placeholder="Search Trip ID, circuit..." />
+            <svg class="icon-sm" viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--clr-text-secondary);pointer-events:none;"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="handleExportCSV()">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export CSV
+          </button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;" role="group" aria-label="Table filters">
+          <button class="filter-pill active">All (1,482)</button>
+          <button class="filter-pill">Diesel SUV (682)</button>
+          <button class="filter-pill">Homestay Only (512)</button>
+          <button class="filter-pill">With Restoration (890)</button>
+          <button class="filter-pill">Eco Low (267)</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="table" aria-label="Full trip audit log">
+            <thead>
+              <tr>
+                <th scope="col">Trip ID</th><th scope="col">Circuit / Route</th><th scope="col">Transport Mode</th>
+                <th scope="col">Trip Footprint</th><th scope="col">Severity</th><th scope="col">Restoration Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="font-family:monospace;font-weight:700;color:var(--clr-primary);">#PF-4092</td><td>Kumaon Circuit <span style="color:var(--clr-text-secondary);font-size:12px;">(320 km)</span></td><td style="color:var(--clr-text-secondary);">Diesel SUV (3 pax)</td><td style="font-weight:600;">180.0 kg</td><td><span class="badge" style="background:var(--clr-pending-fill);color:var(--clr-pending-text);font-size:10px;">Moderate</span></td><td><span class="badge badge-verified">✓ Verified</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700;">#PF-4091</td><td>Mussoorie–Dhanaulti <span style="color:var(--clr-text-secondary);font-size:12px;">(185 km)</span></td><td style="color:var(--clr-text-secondary);">Shared UTC Bus (2 pax)</td><td style="font-weight:600;color:#16A34A;">38.2 kg</td><td><span class="badge badge-eco" style="font-size:10px;">Eco Low</span></td><td><span class="badge badge-pledged">⏱ Pledged (Pending)</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700;">#PF-4090</td><td>Rishikesh–Tehri <span style="color:var(--clr-text-secondary);font-size:12px;">(210 km)</span></td><td style="color:var(--clr-text-secondary);">Petrol Sedan (4 pax)</td><td style="font-weight:600;">112.4 kg</td><td><span class="badge" style="background:var(--clr-pending-fill);color:var(--clr-pending-text);font-size:10px;">Moderate</span></td><td><span class="badge badge-calculated">◎ Calculated Only</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700;">#PF-4089</td><td>Auli–Joshimath <span style="color:var(--clr-text-secondary);font-size:12px;">(460 km)</span></td><td style="color:var(--clr-text-secondary);">Electric Vehicle (2 pax)</td><td style="font-weight:600;">64.8 kg</td><td><span class="badge badge-eco" style="font-size:10px;">Low-Grid</span></td><td><span class="badge badge-verified">✓ Verified</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700;">#PF-4088</td><td>Auli–Joshimath <span style="color:var(--clr-text-secondary);font-size:12px;">(460 km)</span></td><td style="color:var(--clr-text-secondary);">Diesel SUV (2 pax)</td><td style="font-weight:600;color:var(--clr-secondary);">289.8 kg</td><td><span class="badge" style="background:var(--clr-error-fill);color:var(--clr-error);font-size:10px;">High</span></td><td><span class="badge badge-pledged">⏱ Pledged (Pending)</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700;">#PF-4087</td><td>Kumaon Circuit <span style="color:var(--clr-text-secondary);font-size:12px;">(320 km)</span></td><td style="color:var(--clr-text-secondary);">Pahadi Homestay (5 pax)</td><td style="font-weight:600;color:#16A34A;">51.0 kg</td><td><span class="badge badge-eco" style="font-size:10px;">Low</span></td><td><span class="badge badge-verified">✓ Verified</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="border-top:1px solid var(--clr-border);padding-top:14px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <span class="text-body-sm" style="color:var(--clr-text-secondary);">Showing <strong>6</strong> of <strong>1,482</strong> audited submissions</span>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <button class="btn btn-ghost btn-sm" disabled>Previous</button>
+            <button class="btn btn-primary btn-sm" aria-current="page">1</button>
+            <button class="btn btn-ghost btn-sm">2</button>
+            <button class="btn btn-ghost btn-sm">3</button>
+            <button class="btn btn-ghost btn-sm">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: ADMIN FACTORS ======== -->
+<main class="page" id="page-admin-factors" aria-label="Factor Configuration">
+  <div style="min-height:calc(100vh - 64px);padding:24px 0 40px;">
+    <div class="container">
+      <div style="max-width:720px;margin:0 auto;">
+        <div style="margin-bottom:24px;">
+          <h2 class="text-headline-lg" style="font-weight:700;margin-bottom:4px;">Factor Configuration</h2>
+          <p class="text-body-md" style="color:var(--clr-text-secondary);">Active emission factors and terrain multipliers governing live calculator outputs (v1.2-2026)</p>
+        </div>
+
+        <div class="info-banner" style="margin-bottom:24px;background:var(--clr-pending-fill);border-color:#FCD34D;">
+          <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-warning);flex-shrink:0;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <p class="text-body-sm"><strong style="color:var(--clr-warning);">Governance Notice:</strong> Modifying these factors produces a versioned snapshot (v1.3) logged permanently to the regional auditor ledger. All changes require review confirmation.</p>
+        </div>
+
+        <div class="card card-body" style="margin-bottom:24px;">
+          <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:4px;">Terrain Multipliers</h3>
+          <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:20px;">Illustrative elevation-based fuel consumption adjustment factors</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <label for="factor-mid" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Mid-Hills Multiplier <span class="text-body-sm" style="font-weight:400;color:var(--clr-text-secondary);">(800–2,400m AMSL)</span></label>
+              <div class="factor-input-wrap"><input type="number" id="factor-mid" class="factor-input" value="1.25" min="1.0" max="2.0" step="0.05" /><span class="factor-unit">× incline factor</span></div>
+            </div>
+            <div>
+              <label for="factor-high" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">High-Altitude Multiplier <span class="text-body-sm" style="font-weight:400;color:var(--clr-text-secondary);">(&gt;2,400m AMSL)</span></label>
+              <div class="factor-input-wrap"><input type="number" id="factor-high" class="factor-input" value="1.40" min="1.0" max="2.0" step="0.05" /><span class="factor-unit">× incline factor</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-body" style="margin-bottom:24px;">
+          <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:4px;">Vehicle Emission Constants</h3>
+          <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:20px;">Baseline emission factors per vehicle-km or passenger-km</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <label for="factor-suv" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Diesel SUV Emission Constant</label>
+              <div class="factor-input-wrap"><input type="number" id="factor-suv" class="factor-input" value="180" min="100" max="400" step="5" /><span class="factor-unit">g CO₂e/vkm</span></div>
+            </div>
+            <div>
+              <label for="factor-sedan" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Petrol Sedan Emission Constant</label>
+              <div class="factor-input-wrap"><input type="number" id="factor-sedan" class="factor-input" value="140" min="80" max="300" step="5" /><span class="factor-unit">g CO₂e/vkm</span></div>
+            </div>
+            <div>
+              <label for="factor-ev" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Electric Vehicle Emission Constant</label>
+              <div class="factor-input-wrap"><input type="number" id="factor-ev" class="factor-input" value="45" min="10" max="120" step="5" /><span class="factor-unit">g CO₂e/vkm</span></div>
+            </div>
+            <div>
+              <label for="factor-bus" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Shared UTC Bus Constant</label>
+              <div class="factor-input-wrap"><input type="number" id="factor-bus" class="factor-input" value="30" min="10" max="100" step="5" /><span class="factor-unit">g CO₂e/pkm</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-body" style="margin-bottom:24px;">
+          <h3 class="text-headline-sm" style="font-weight:700;margin-bottom:4px;">Accommodation Intensity Factors</h3>
+          <p class="text-body-sm" style="color:var(--clr-text-secondary);margin-bottom:20px;">Energy and water use per guest-night</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label for="factor-luxury" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Luxury Resort</label><div class="factor-input-wrap"><input type="number" id="factor-luxury" class="factor-input" value="24.0" min="5" max="50" step="0.5" style="width:120px;" /><span class="factor-unit">kg/night</span></div></div>
+            <div><label for="factor-hotel" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Standard Hotel</label><div class="factor-input-wrap"><input type="number" id="factor-hotel" class="factor-input" value="9.0" min="2" max="30" step="0.5" style="width:120px;" /><span class="factor-unit">kg/night</span></div></div>
+            <div><label for="factor-homestay" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Pahadi Homestay</label><div class="factor-input-wrap"><input type="number" id="factor-homestay" class="factor-input" value="6.0" min="1" max="15" step="0.5" style="width:120px;" /><span class="factor-unit">kg/night</span></div></div>
+            <div><label for="factor-camp" class="text-label-md" style="font-weight:600;display:block;margin-bottom:6px;">Eco-Camp</label><div class="factor-input-wrap"><input type="number" id="factor-camp" class="factor-input" value="3.5" min="0.5" max="10" step="0.5" style="width:120px;" /><span class="factor-unit">kg/night</span></div></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-full" onclick="handlePublishFactors()">
+          <svg class="icon" viewBox="0 0 24 24" stroke="white"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Review &amp; Publish New Factor Version
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======== PAGE: ADMIN PARTNERS ======== -->
+<main class="page" id="page-admin-partners" aria-label="Restoration Partners">
+  <div style="min-height:calc(100vh - 64px);padding:24px 0 40px;">
+    <div class="container">
+      <div style="margin-bottom:24px;">
+        <h2 class="text-headline-lg" style="font-weight:700;margin-bottom:4px;">Restoration Partners</h2>
+        <p class="text-body-md" style="color:var(--clr-text-secondary);">Verified Van Panchayat and NGO partners for restoration pledge routing</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;">
+        <div class="card card-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:white;font-size:18px;font-weight:700;">VP</span></div>
+            <div><div class="text-headline-sm" style="font-weight:700;">Nainital Van Panchayat</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Kumaon Division</div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Saplings Verified 2026</span><span style="font-weight:700;color:var(--clr-primary);">2,140</span></div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Status</span><span class="badge badge-verified">Active Partner</span></div>
+        </div>
+        <div class="card card-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:white;font-size:18px;font-weight:700;">VP</span></div>
+            <div><div class="text-headline-sm" style="font-weight:700;">Tehri Van Panchayat</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Garhwal Division</div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Saplings Verified 2026</span><span style="font-weight:700;color:var(--clr-primary);">1,850</span></div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Status</span><span class="badge badge-verified">Active Partner</span></div>
+        </div>
+        <div class="card card-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:var(--clr-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:white;font-size:16px;font-weight:700;">NGO</span></div>
+            <div><div class="text-headline-sm" style="font-weight:700;">Himalayan Green Initiative</div><div class="text-body-sm" style="color:var(--clr-text-secondary);">Dehradun</div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Saplings Verified 2026</span><span style="font-weight:700;color:var(--clr-primary);">2,430</span></div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span class="text-body-sm" style="color:var(--clr-text-secondary);">Status</span><span class="badge badge-pledged">Pending Verification</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======================= SHARED FOOTER ======================= -->
+<footer style="background:var(--clr-bg);border-top:1px solid var(--clr-border);padding:24px 0;margin-top:auto;" role="contentinfo">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div style="display:flex;align-items:center;gap:8px;color:var(--clr-text-secondary);">
+      <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--clr-primary);"><path d="M12 2L4 15h4v5h8v-5h4L12 2z" fill="currentColor" stroke="none"/></svg>
+      <span class="text-body-sm" style="font-weight:500;">Pahad Footprint • Uttarakhand Carbon Accounting Engine</span>
+    </div>
+    <p class="text-body-sm" style="color:var(--clr-text-secondary);">© 2026 Pahad Footprint. Grounded in Himalayan ecological data protocols.</p>
+  </div>
+</footer>
+
+<!-- ======================= MODAL: PUBLISH CONFIRM ======================= -->
+<div class="modal-overlay" id="publish-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h2 id="modal-title" class="text-headline-md" style="font-weight:700;margin-bottom:8px;">Review &amp; Publish Factor Version v1.3</h2>
+    <p class="text-body-md" style="color:var(--clr-text-secondary);margin-bottom:20px;">Publishing will create a new versioned snapshot logged permanently to the Regional Van Panchayat registry. This action cannot be undone.</p>
+    <div style="background:var(--clr-surface-mist);border-radius:var(--radius-lg);padding:14px;margin-bottom:20px;font-size:13px;">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--clr-primary);">Changes to be published:</div>
+      <div id="publish-changes-list"></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closePublishModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmPublish()">
+        <svg class="icon-sm" viewBox="0 0 24 24" stroke="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Confirm &amp; Publish v1.3
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= TOAST ======================= -->
+<div class="toast hidden" id="toast" role="alert" aria-live="assertive">
+  <svg class="icon-sm" viewBox="0 0 24 24" stroke="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  <span id="toast-msg">Action completed</span>
+</div>
+
+<script>
+/* ============================================================
+   PAHAD FOOTPRINT — Interactive JS Engine
+   ============================================================ */
+
+// ---- State ----
+const state = {
+  currentPage: 'calculator',
+  isAdminMode: false,
+  distance: 320,
+  terrainMultiplier: 1.25,
+  transportMode: 'suv',
+  transportFactor: 180,
+  transportUnit: 'vkm',
+  passengers: 3,
+  nights: 4,
+  stayFactor: 9.0,
+  habitWater: false,
+  habitFood: false,
+  currentTablePage: 1,
+  tableFilter: 'all',
+  publishedVersion: 'v1.2',
+};
+
+const presetRoutes = { kumaon: 320, garhwal: 410, corbett: 210 };
+
+// ---- Audit table data ----
+const tripData = [
+  { id:'#PF-4092', circuit:'Kumaon Circuit', km:320, mode:'Diesel SUV', pax:3, kg:180.0, paxKg:60.0, type:'suv', status:'verified', extra:{terrain:'Mid-Hills (1.25× grade multiplier)',stay:'Standard Hotel (4 nights @ 9.0 kg/night)',engine:'v1.2-2026 Baseline',checkpost:'Almora North Gate'} },
+  { id:'#PF-4091', circuit:'Mussoorie–Dhanaulti', km:185, mode:'Shared UTC Bus', pax:2, kg:38.2, paxKg:19.1, type:'bus', status:'pledged', extra:{terrain:'Mid-Hills (1.25× grade multiplier)',stay:'Pahadi Homestay (3 nights)',engine:'v1.2-2026 Baseline',checkpost:'Mussoorie Gate'} },
+  { id:'#PF-4090', circuit:'Rishikesh–Tehri', km:210, mode:'Petrol Sedan', pax:4, kg:112.4, paxKg:28.1, type:'sedan', status:'calculated', extra:{terrain:'Mid-Hills (1.25×)',stay:'Standard Hotel (3 nights)',engine:'v1.2-2026',checkpost:'Devprayag Toll'} },
+  { id:'#PF-4089', circuit:'Auli–Joshimath', km:460, mode:'Electric Vehicle', pax:2, kg:64.8, paxKg:32.4, type:'ev', status:'verified', extra:{terrain:'High Altitude (1.40×)',stay:'Pahadi Homestay (5 nights)',engine:'v1.2-2026',checkpost:'Joshimath Gate'} },
+  { id:'#PF-4088', circuit:'Auli–Joshimath', km:460, mode:'Diesel SUV', pax:2, kg:289.8, paxKg:144.9, type:'suv', status:'pledged', extra:{terrain:'High Altitude (1.40×)',stay:'Luxury Resort (6 nights)',engine:'v1.2-2026',checkpost:'Chamoli Toll'} },
+  { id:'#PF-4087', circuit:'Kumaon Circuit', km:320, mode:'Shared UTC Bus', pax:1, kg:36.0, paxKg:36.0, type:'bus', status:'verified', extra:{terrain:'Mid-Hills (1.25×)',stay:'Pahadi Homestay (2 nights)',engine:'v1.2-2026',checkpost:'Nainital Gate'} },
+  { id:'#PF-4086', circuit:'Kedarnath Gateway', km:380, mode:'Diesel SUV', pax:4, kg:213.8, paxKg:53.4, type:'suv', status:'pledged', extra:{terrain:'High Altitude (1.40×)',stay:'Standard Hotel (3 nights)',engine:'v1.2-2026',checkpost:'Gaurikund'} },
+  { id:'#PF-4085', circuit:'Mussoorie–Dhanaulti', km:185, mode:'Electric Vehicle', pax:2, kg:38.5, paxKg:19.3, type:'ev', status:'calculated', extra:{terrain:'Mid-Hills (1.25×)',stay:'Eco-Camp (4 nights)',engine:'v1.2-2026',checkpost:'Mussoorie Gate'} },
+  { id:'#PF-4084', circuit:'Rishikesh–Tehri', km:210, mode:'Diesel SUV', pax:3, kg:158.5, paxKg:52.8, type:'suv', status:'verified', extra:{terrain:'Mid-Hills (1.25×)',stay:'Standard Hotel (2 nights)',engine:'v1.2-2026',checkpost:'Rishikesh Toll'} },
+  { id:'#PF-4083', circuit:'Garhwal Pilgrim Loop', km:410, mode:'Shared UTC Bus', pax:5, kg:61.5, paxKg:12.3, type:'bus', status:'verified', extra:{terrain:'High Altitude (1.40×)',stay:'Pahadi Homestay (5 nights)',engine:'v1.2-2026',checkpost:'Devprayag'} },
+];
+
+let expandedRow = null;
+let currentPageRows = [];
+
+// ---- Router ----
+function navigate(page) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target page
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  state.currentPage = page;
+  // Update nav active states
+  updateNavActive(page);
+  // Scroll top
+  window.scrollTo(0, 0);
+  // Handle admin mode display
+  const isAdmin = page.startsWith('admin');
+  if (isAdmin && !state.isAdminMode) setAdminMode();
+  else if (!isAdmin && state.isAdminMode) setUserMode();
+}
+
+function navigateAdmin(page) {
+  navigate(page);
+  // Update admin tab buttons
+  document.querySelectorAll('.tab-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.adminPage === page);
+    btn.setAttribute('aria-selected', btn.dataset.adminPage === page ? 'true' : 'false');
+  });
+}
+
+function updateNavActive(page) {
+  // User nav
+  document.querySelectorAll('[data-page]').forEach(link => {
+    link.classList.toggle('active', link.dataset.page === page);
+  });
+}
+
+function setAdminMode() {
+  state.isAdminMode = true;
+  document.getElementById('admin-ribbon').classList.remove('hidden');
+  document.getElementById('user-view-btn').classList.remove('active');
+  document.getElementById('admin-view-btn').classList.add('active');
+  document.getElementById('user-view-btn').setAttribute('aria-pressed', 'false');
+  document.getElementById('admin-view-btn').setAttribute('aria-pressed', 'true');
+  // Show user nav links in admin mode too
+}
+
+function setUserMode() {
+  state.isAdminMode = false;
+  document.getElementById('admin-ribbon').classList.add('hidden');
+  document.getElementById('user-view-btn').classList.add('active');
+  document.getElementById('admin-view-btn').classList.remove('active');
+  document.getElementById('user-view-btn').setAttribute('aria-pressed', 'true');
+  document.getElementById('admin-view-btn').setAttribute('aria-pressed', 'false');
+  if (state.currentPage.startsWith('admin')) {
+    navigate('calculator');
+  }
+}
+
+// ---- Mobile Menu ----
+document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('mobile-menu-btn');
+  const isOpen = !menu.classList.contains('hidden');
+  menu.classList.toggle('hidden', isOpen);
+  btn.setAttribute('aria-expanded', !isOpen);
+});
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.add('hidden');
+  document.getElementById('mobile-menu-btn').setAttribute('aria-expanded', 'false');
+}
+
+// ---- Calculator Engine ----
+function calculate() {
+  let transportKgPerPerson = 0;
+  let baselineTransport = 0;
+
+  if (state.transportUnit === 'vkm') {
+    transportKgPerPerson = (state.distance * state.transportFactor * state.terrainMultiplier) / (state.passengers * 1000);
+    baselineTransport = (state.distance * state.transportFactor) / (state.passengers * 1000);
+  } else {
+    // pkm (bus) — already per-person
+    transportKgPerPerson = (state.distance * state.transportFactor * state.terrainMultiplier) / 1000;
+    baselineTransport = (state.distance * state.transportFactor) / 1000;
+  }
+
+  const uphillDeltaPP = Math.max(0, transportKgPerPerson - baselineTransport);
+  const uphillDeltaTotal = uphillDeltaPP * state.passengers;
+  const stayKgPP = state.nights * state.stayFactor;
+
+  let habitsPerPerson = 0;
+  if (state.habitWater) habitsPerPerson += 2.0;
+  if (state.habitFood)  habitsPerPerson += 3.0;
+
+  const totalGrossPP = transportKgPerPerson + stayKgPP;
+  const totalNetPP = Math.max(0.5, totalGrossPP - habitsPerPerson);
+  const totalTrip = totalNetPP * state.passengers;
+
+  // Update metrics
+  document.getElementById('metric-per-person').textContent = totalNetPP.toFixed(1);
+  document.getElementById('metric-whole-trip').textContent  = totalTrip.toFixed(1);
+  document.getElementById('metric-party-count').textContent = state.passengers + (state.passengers === 1 ? ' Traveler' : ' Travelers');
+  document.getElementById('passenger-val').textContent = state.passengers + (state.passengers === 1 ? ' Traveler' : ' Travelers');
+  document.getElementById('occupancy-helper').textContent = 'Vehicle emissions divided across ' + state.passengers + (state.passengers === 1 ? ' traveler' : ' travelers');
+
+  // Impact badge
+  const badge = document.getElementById('impact-badge');
+  if (totalNetPP < 30) {
+    badge.style.cssText = 'background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;font-weight:700;';
+    badge.textContent = '✓ Low Mountain Impact';
+  } else if (totalNetPP <= 75) {
+    badge.style.cssText = 'background:#FEF3C7;color:#78350F;border:1px solid #FDE68A;font-weight:700;';
+    badge.textContent = '⚠ Moderate Mountain Impact';
+  } else {
+    badge.style.cssText = 'background:#FEE2E2;color:#991B1B;border:1px solid #FECACA;font-weight:700;';
+    badge.textContent = '⛰ High Mountain Impact';
+  }
+
+  // Uphill chip
+  const terrainName = state.terrainMultiplier === 1.0 ? 'Foothills' : (state.terrainMultiplier === 1.25 ? 'Mid-Hills' : 'High Altitude');
+  document.getElementById('uphill-chip-text').innerHTML = `Includes <strong>+${uphillDeltaPP.toFixed(1)} kg/person</strong> (+${uphillDeltaTotal.toFixed(1)} kg total) from ${state.terrainMultiplier.toFixed(2)}× ${terrainName} transport multiplier (illustrative assumption)`;
+
+  // Breakdown bar
+  const transportPct = Math.round((transportKgPerPerson / totalGrossPP) * 100) || 40;
+  const stayPct = 100 - transportPct;
+  document.getElementById('bar-transport').style.width = transportPct + '%';
+  document.getElementById('bar-stay').style.width = stayPct + '%';
+  document.getElementById('breakdown-ratio-label').textContent = `${transportPct}% Transit | ${stayPct}% Stay`;
+
+  // Formula breakdown
+  document.getElementById('calc-transport-text').textContent = transportKgPerPerson.toFixed(1) + ' kg/p';
+  if (state.transportUnit === 'vkm') {
+    document.getElementById('formula-transport').textContent = `${state.distance} km × ${state.transportFactor} g × ${state.terrainMultiplier.toFixed(2)} ÷ ${state.passengers} travelers = ${transportKgPerPerson.toFixed(1)} kg CO₂e`;
+  } else {
+    document.getElementById('formula-transport').textContent = `${state.distance} km × ${state.transportFactor} g × ${state.terrainMultiplier.toFixed(2)} (shared bus) = ${transportKgPerPerson.toFixed(1)} kg CO₂e`;
+  }
+  document.getElementById('calc-stay-text').textContent = stayKgPP.toFixed(1) + ' kg/p';
+  document.getElementById('formula-stay').textContent = `${state.nights} nights × ${state.stayFactor.toFixed(1)} kg guest-night = ${stayKgPP.toFixed(1)} kg CO₂e`;
+
+  // Habit row
+  const habitRow = document.getElementById('habit-deduction-row');
+  if (habitsPerPerson > 0) {
+    habitRow.classList.remove('hidden');
+    document.getElementById('calc-habit-text').textContent = `−${habitsPerPerson.toFixed(1)} kg/p`;
+  } else {
+    habitRow.classList.add('hidden');
+  }
+
+  // Eco-swap
+  const swapTransportPP = (state.distance * 30 * state.terrainMultiplier) / 1000;
+  const swapStayPP = state.nights * 6.0;
+  const swapTotalPP = swapTransportPP + swapStayPP;
+  const swapTrip = swapTotalPP * state.passengers;
+  const savingPP = Math.max(0, totalNetPP - swapTotalPP);
+  const savingTrip = Math.max(0, totalTrip - swapTrip);
+  const pctReduction = totalNetPP > 0 ? Math.round((savingPP / totalNetPP) * 100) : 0;
+
+  document.getElementById('swap-headline').textContent = `Emissions drop from ${totalNetPP.toFixed(1)} kg to ${swapTotalPP.toFixed(1)} kg CO₂e/person (−${pctReduction}%)`;
+  document.getElementById('swap-body').textContent = `Switching to a Shared UTC Bus (${swapTransportPP.toFixed(1)} kg/person) and a Pahadi Homestay (${swapStayPP.toFixed(1)} kg/person) lowers emissions to ${swapTotalPP.toFixed(1)} kg CO₂e/person (${swapTrip.toFixed(1)} kg whole trip) — saving ${savingPP.toFixed(1)} kg CO₂e per person (${savingTrip.toFixed(1)} kg per trip), a ${pctReduction}% reduction.`;
+
+  // Saplings
+  const saplingsPerPerson = Math.max(2, Math.round(totalNetPP / 20));
+  const groupSaplings = saplingsPerPerson * state.passengers;
+  document.getElementById('total-saplings').textContent = groupSaplings + ' saplings';
+  document.getElementById('restoration-text').innerHTML = `Suggested illustrative contribution: <strong>${saplingsPerPerson} saplings per person</strong> (<span id="total-saplings">${groupSaplings} saplings</span> for this group trip). Note: Pledges support community Van Panchayat planting drives and do not represent a certified carbon offset.`;
+}
+
+// ---- Input event bindings ----
+// Route preset
+document.getElementById('route-preset').addEventListener('change', function() {
+  const val = this.value;
+  if (presetRoutes[val]) {
+    state.distance = presetRoutes[val];
+    document.getElementById('distance-range').value = state.distance;
+    document.getElementById('distance-number').value = state.distance;
+  }
+  calculate();
+});
+
+// Terrain buttons
+document.querySelectorAll('.terrain-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.terrain-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed','true');
+    state.terrainMultiplier = parseFloat(btn.dataset.terrain);
+    const nameMap = {'1.0':'Foothills','1.25':'Mid-Hills','1.4':'High Altitude'};
+    const badge = document.getElementById('terrain-badge');
+    badge.textContent = 'Slope Incline: ' + (state.terrainMultiplier === 1.0 ? '1.0×' : state.terrainMultiplier === 1.25 ? '1.25×' : '1.40×');
+    calculate();
+  });
+});
+
+// Distance slider
+document.getElementById('distance-range').addEventListener('input', function() {
+  state.distance = parseInt(this.value);
+  document.getElementById('distance-number').value = state.distance;
+  calculate();
+});
+document.getElementById('distance-number').addEventListener('input', function() {
+  let val = Math.max(50, Math.min(1000, parseInt(this.value) || 50));
+  state.distance = val;
+  document.getElementById('distance-range').value = val;
+  calculate();
+});
+
+// Transport cards
+document.querySelectorAll('.transport-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.transport-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed','false'); });
+    card.classList.add('active');
+    card.setAttribute('aria-pressed','true');
+    state.transportMode   = card.dataset.mode;
+    state.transportFactor = parseInt(card.dataset.factor);
+    state.transportUnit   = card.dataset.unit;
+    calculate();
+  });
+});
+
+// Passenger stepper
+document.getElementById('passenger-dec').addEventListener('click', () => {
+  if (state.passengers > 1) {
+    state.passengers--;
+    document.getElementById('passenger-dec').disabled = state.passengers <= 1;
+    calculate();
+  }
+});
+document.getElementById('passenger-inc').addEventListener('click', () => {
+  if (state.passengers < 8) {
+    state.passengers++;
+    document.getElementById('passenger-dec').disabled = false;
+    calculate();
+  }
+});
+
+// Nights slider
+document.getElementById('nights-range').addEventListener('input', function() {
+  state.nights = parseInt(this.value);
+  document.getElementById('nights-display').textContent = state.nights + (state.nights === 1 ? ' Night' : ' Nights');
+  calculate();
+});
+
+// Stay pills
+document.querySelectorAll('.stay-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.stay-pill').forEach(p => {
+      p.classList.remove('active'); p.setAttribute('aria-pressed','false');
+      // Reset display text (remove (Selected) marker)
+      const first = p.querySelector('span:last-child') || p.children[p.children.length - 1];
+    });
+    pill.classList.add('active');
+    pill.setAttribute('aria-pressed','true');
+    state.stayFactor = parseFloat(pill.dataset.stay);
+    calculate();
+  });
+});
+
+// Habit credits
+function syncHabitVisual(el) {
+  const label = el.closest('.habit-label');
+  if (label) {
+    if (el.checked) label.classList.add('checked');
+    else label.classList.remove('checked');
+  }
+}
+document.getElementById('credit-water').addEventListener('change', function() {
+  state.habitWater = this.checked;
+  syncHabitVisual(this);
+  calculate();
+});
+document.getElementById('credit-food').addEventListener('change', function() {
+  state.habitFood = this.checked;
+  syncHabitVisual(this);
+  calculate();
+});
+
+// Keyboard accessibility for interactive option cards
+document.querySelectorAll('.transport-card, .stay-pill').forEach(card => {
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      card.click();
+    }
+  });
+});
+
+// ---- Load Sample Itinerary ----
+function loadSampleItinerary() {
+  // Reset to default Kumaon + SUV + 3 pax + 4 nights + Standard Hotel
+  document.getElementById('route-preset').value = 'kumaon';
+  state.distance = 320; document.getElementById('distance-range').value = 320; document.getElementById('distance-number').value = 320;
+  document.querySelectorAll('.terrain-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+  document.querySelector('[data-terrain="1.25"]').classList.add('active'); document.querySelector('[data-terrain="1.25"]').setAttribute('aria-pressed','true');
+  state.terrainMultiplier = 1.25;
+  document.querySelectorAll('.transport-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed','false'); });
+  document.querySelector('[data-mode="suv"]').classList.add('active'); document.querySelector('[data-mode="suv"]').setAttribute('aria-pressed','true');
+  state.transportMode = 'suv'; state.transportFactor = 180; state.transportUnit = 'vkm';
+  state.passengers = 3; document.getElementById('passenger-dec').disabled = false;
+  document.getElementById('nights-range').value = 4; state.nights = 4; document.getElementById('nights-display').textContent = '4 Nights';
+  document.querySelectorAll('.stay-pill').forEach(p => { p.classList.remove('active'); p.setAttribute('aria-pressed','false'); });
+  document.querySelector('[data-stay="9.0"]').classList.add('active'); document.querySelector('[data-stay="9.0"]').setAttribute('aria-pressed','true');
+  state.stayFactor = 9.0;
+  document.getElementById('credit-water').checked = false; state.habitWater = false; syncHabitVisual(document.getElementById('credit-water'));
+  document.getElementById('credit-food').checked = false; state.habitFood = false; syncHabitVisual(document.getElementById('credit-food'));
+  calculate();
+  showToast('Sample Kumaon itinerary loaded — 3 travelers, Diesel SUV, 4 nights Standard Hotel');
+}
+
+// ---- Save Trip ----
+function handleSaveTrip() {
+  const perPerson = document.getElementById('metric-per-person').textContent;
+  showToast(`Trip saved! ${perPerson} kg CO₂e per person. View in Admin → Trip Audit Log.`);
+}
+
+// ---- Admin Table ----
+function renderTable() {
+  let filtered = tripData;
+  if (state.tableFilter === 'suv') filtered = filtered.filter(t => t.type === 'suv');
+  else if (state.tableFilter === 'bus') filtered = filtered.filter(t => t.type === 'bus');
+  else if (state.tableFilter === 'verified') filtered = filtered.filter(t => t.status === 'verified');
+  else if (state.tableFilter === 'pending') filtered = filtered.filter(t => t.status === 'pledged');
+
+  const perPage = 5;
+  const start = (state.currentTablePage - 1) * perPage;
+  currentPageRows = filtered.slice(start, start + perPage);
+  const totalPages = Math.ceil(filtered.length / perPage);
+
+  const tbody = document.getElementById('audit-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  currentPageRows.forEach((trip, i) => {
+    const statusBadge = trip.status === 'verified'
+      ? `<span class="badge badge-verified">✓ Verified</span>`
+      : trip.status === 'pledged'
+      ? `<span class="badge badge-pledged">⏱ Pledged (Pending)</span>`
+      : `<span class="badge badge-calculated">◎ Calculated Only</span>`;
+
+    const isExpanded = expandedRow === trip.id;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="font-family:monospace;font-weight:700;color:var(--clr-primary);cursor:pointer;" onclick="toggleRow('${trip.id}')">
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;transform:rotate(${isExpanded?'90deg':'0deg'})"><path d="M9 18l6-6-6-6"/></svg>
+          ${trip.id}
+        </span>
+      </td>
+      <td>${trip.circuit} <span style="color:var(--clr-text-secondary);font-size:12px;">(${trip.km} km)</span></td>
+      <td style="color:var(--clr-text-secondary);">${trip.mode} (${trip.pax} pax)</td>
+      <td style="font-weight:600;">${trip.kg.toFixed(1)} kg <span style="color:var(--clr-text-secondary);font-weight:400;font-size:12px;">(${trip.paxKg.toFixed(1)}/pax)</span></td>
+      <td>${statusBadge}</td>
+    `;
+    tbody.appendChild(row);
+
+    if (isExpanded && trip.extra) {
+      const expandRow = document.createElement('tr');
+      expandRow.innerHTML = `<td colspan="5" style="padding:0;">
+        <div style="background:var(--clr-surface-mist);border-left:3px solid var(--clr-primary);margin:2px 4px;padding:12px;border-radius:0 var(--radius-md) var(--radius-md) 0;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;">
+          <span><strong style="color:var(--clr-primary);">Terrain:</strong> ${trip.extra.terrain}</span>
+          <span><strong style="color:var(--clr-primary);">Accommodation:</strong> ${trip.extra.stay}</span>
+          <span><strong style="color:var(--clr-primary);">Engine Spec:</strong> ${trip.extra.engine}</span>
+          <span><strong style="color:var(--clr-primary);">Checkpost:</strong> ${trip.extra.checkpost}</span>
+        </div>
+      </td>`;
+      tbody.appendChild(expandRow);
+    }
+  });
+
+  // Update pagination
+  const total = filtered.length;
+  document.getElementById('pagination-label').innerHTML = `Showing <strong>${Math.min(perPage, total - start)}</strong> of <strong>${total.toLocaleString()}</strong> audited submissions`;
+  document.getElementById('prev-btn').disabled = state.currentTablePage === 1;
+  const page2btn = document.getElementById('page-2-btn');
+  if (page2btn) page2btn.style.display = totalPages >= 2 ? '' : 'none';
+}
+
+function toggleRow(id) {
+  expandedRow = expandedRow === id ? null : id;
+  renderTable();
+}
+
+function prevPage() { if (state.currentTablePage > 1) { state.currentTablePage--; renderTable(); } }
+function nextPage() { state.currentTablePage++; renderTable(); }
+function goToPage(p) { state.currentTablePage = p; renderTable(); }
+
+function setTableFilter(filter, btn) {
+  state.tableFilter = filter;
+  state.currentTablePage = 1;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderTable();
+}
+
+function filterTrips(val) {
+  // Simple visual filter on current rendered rows (full search would need backend)
+  const q = val.toLowerCase();
+  document.querySelectorAll('#audit-table-body tr').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = !q || text.includes(q) ? '' : 'none';
+  });
+}
+
+function toggleFilters() {
+  const fp = document.getElementById('filter-pills');
+  fp.style.display = fp.style.display === 'none' ? 'flex' : fp.style.display;
+}
+
+// ---- Date Filter ----
+function toggleDateFilter() {
+  const dd = document.getElementById('date-filter-dropdown');
+  const btn = document.getElementById('date-filter-btn');
+  const isOpen = !dd.classList.contains('hidden');
+  dd.classList.toggle('hidden', isOpen);
+  btn.setAttribute('aria-expanded', !isOpen);
+  if (!isOpen) {
+    document.addEventListener('click', closeDateFilter, { once: true });
+  }
+}
+function closeDateFilter() {
+  document.getElementById('date-filter-dropdown').classList.add('hidden');
+  document.getElementById('date-filter-btn').setAttribute('aria-expanded', 'false');
+}
+function selectDateFilter(label) {
+  document.getElementById('date-filter-label').textContent = label;
+  closeDateFilter();
+  showToast('Reporting window updated: ' + label);
+}
+
+// ---- Export CSV ----
+function handleExportCSV() {
+  const headers = ['Trip ID','Circuit','km','Transport Mode','Passengers','Footprint (kg CO2e)','Per Pax (kg CO2e)','Status'];
+  const rows = tripData.map(t => [t.id, t.circuit, t.km, t.mode, t.pax, t.kg, t.paxKg, t.status]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'pahad-footprint-audit-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('CSV export downloaded: pahad-footprint-audit.csv');
+}
+
+// ---- Publish Factors ----
+function handlePublishFactors() {
+  const factors = {
+    'Mid-Hills Multiplier': document.getElementById('factor-mid')?.value + '×',
+    'High-Altitude Multiplier': document.getElementById('factor-high')?.value + '×',
+    'Diesel SUV Factor': document.getElementById('factor-suv')?.value + ' g CO₂e/vkm',
+    'Petrol Sedan Factor': document.getElementById('factor-sedan')?.value + ' g CO₂e/vkm',
+    'EV Factor': document.getElementById('factor-ev')?.value + ' g CO₂e/vkm',
+    'Shared Bus Factor': document.getElementById('factor-bus')?.value + ' g CO₂e/pkm',
+    'Standard Hotel': document.getElementById('factor-hotel')?.value + ' kg/night',
+    'Pahadi Homestay': document.getElementById('factor-homestay')?.value + ' kg/night',
+  };
+  const list = document.getElementById('publish-changes-list');
+  list.innerHTML = Object.entries(factors).map(([k,v]) => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--clr-border);"><span style="color:var(--clr-text-secondary);">${k}</span><span style="font-weight:600;font-family:monospace;">${v}</span></div>`).join('');
+  document.getElementById('publish-modal').classList.add('open');
+}
+
+function closePublishModal() {
+  document.getElementById('publish-modal').classList.remove('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('publish-modal')) closePublishModal();
+}
+
+function confirmPublish() {
+  closePublishModal();
+  state.publishedVersion = 'v1.3';
+  showToast('✓ Factor version v1.3 published to Regional Van Panchayat registry');
+}
+
+// ---- Pledge Handler ----
+function handlePledge() {
+  const name = document.getElementById('pledge-name')?.value || 'Anonymous';
+  const saplings = document.getElementById('pledge-saplings')?.value || 9;
+  const initiative = document.getElementById('pledge-initiative')?.value || 'Banj Oak Reforestation';
+  if (!name.trim()) { showToast('Please enter your name to make a pledge.', true); return; }
+  showToast(`🌿 Pledge recorded: ${name} → ${saplings} saplings for ${initiative}`);
+}
+
+// ---- Toast ----
+let toastTimer = null;
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  toastMsg.textContent = msg;
+  toast.style.background = isError ? '#BA1A1A' : 'var(--clr-primary)';
+  toast.classList.remove('hidden');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.add('hidden'), 4000);
+}
+
+// ---- Initialize ----
+(function init() {
+  // Set initial nav active
+  document.querySelector('[data-page="calculator"]')?.classList.add('active');
+  // Calculate initial results
+  calculate();
+  // Render admin table (for when admin page loads)
+  renderTable();
+  // Bind preview buttons to correct mode
+  document.getElementById('user-view-btn').classList.add('active');
+})();
+</script>
+</body>
+</html>
