@@ -10,8 +10,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.22",
     "framer-motion": "^11.11.17",
     "gsap": "^3.12.5",
+    "leaflet": "^1.9.4",
     "lenis": "^1.1.18",
     "lucide-react": "^0.460.0",
     "next": "^15.5.28",

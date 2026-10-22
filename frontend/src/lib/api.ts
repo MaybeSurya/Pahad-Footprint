@@ -11,62 +11,89 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
   const terrainMap = { foothills: 1.0, mid_hills: 1.25, high_altitude: 1.4 };
   const terrainMultiplier = terrainMap[input.terrainZone] || 1.25;
 
-  let transportKgPP = 0;
-  let baselineTransportKgPP = 0;
+  const privateMatrix: Record<string, Record<string, number>> = {
+    suv: { diesel: 195, petrol: 185, cng: 135, lpg: 145, hybrid: 110, ev: 50 },
+    sedan: { diesel: 155, petrol: 140, cng: 110, lpg: 120, hybrid: 90, ev: 42 },
+    hatchback: { diesel: 130, petrol: 120, cng: 95, lpg: 105, hybrid: 78, ev: 36 },
+    coupe: { diesel: 165, petrol: 155, cng: 125, lpg: 135, hybrid: 100, ev: 48 },
+  };
 
-  if (input.transportMode === 'bus') {
-    transportKgPP = (distance * 30 * terrainMultiplier) / 1000;
-    baselineTransportKgPP = (distance * 30) / 1000;
-  } else {
-    const factorMap = { suv: 180, sedan: 140, ev: 45 };
-    const factor = factorMap[input.transportMode] || 180;
-    transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
-    baselineTransportKgPP = (distance * factor) / (1000 * passengers);
-  }
+  const transitFactors: Record<string, number> = {
+    train: 18,
+    bus: 30,
+    flight: 180,
+    helicopter: 450,
+  };
 
-  const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
-  const uphillDeltaTotal = uphillDeltaPP * passengers;
+  const isTransit =
+    input.transportCategory === 'transit' ||
+    ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
 
-  const stayMap = { luxury: 24.0, hotel: 9.0, homestay: 6.0, camp: 3.5 };
-  const stayFactor = stayMap[input.accommodationType] || 9.0;
-  const stayKgPP = nights * stayFactor;
+    let transportKgPP = 0;
+    let baselineTransportKgPP = 0;
+    let rateLabel = '';
+    if (isTransit) {
+      const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
+      const factor = transitFactors[modeKey] || 30;
+      rateLabel = `${factor} g CO₂e/pkm (${modeKey.toUpperCase()})`;
+      const activeMultiplier = modeKey === 'train' ? 1.0 : terrainMultiplier;
+      transportKgPP = (distance * factor * activeMultiplier) / 1000;
+      baselineTransportKgPP = (distance * factor) / 1000;
+    } else {
+      const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
+      const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
+      const factor =
+        privateMatrix[vType]?.[fType] ||
+        (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
+      rateLabel = `${factor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+      transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
+      baselineTransportKgPP = (distance * factor) / (1000 * passengers);
+    }
 
-  let habitCredits = 0;
-  if (input.habitWater) habitCredits += 2.0;
-  if (input.habitFood) habitCredits += 3.0;
+    const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
+    const uphillDeltaTotal = uphillDeltaPP * passengers;
 
-  const grossTotalPP = transportKgPP + stayKgPP;
-  const netTotalPP = Math.max(0.5, grossTotalPP - habitCredits);
-  const netTotalTrip = netTotalPP * passengers;
+    const stayMap = { luxury: 24.0, hotel: 9.0, homestay: 6.0, camp: 3.5 };
+    const stayFactor = stayMap[input.accommodationType] || 9.0;
+    const stayKgPP = nights * stayFactor;
 
-  const transportPct = grossTotalPP > 0 ? Math.round((transportKgPP / grossTotalPP) * 100) : 40;
-  const stayPct = 100 - transportPct;
+    let habitCredits = 0;
+    if (input.habitWater) habitCredits += 2.0;
+    if (input.habitFood) habitCredits += 3.0;
 
-  let impactSeverity: 'low' | 'moderate' | 'high' = 'moderate';
-  if (netTotalPP < 30) impactSeverity = 'low';
-  else if (netTotalPP <= 75) impactSeverity = 'moderate';
-  else impactSeverity = 'high';
+    const grossTotalPP = transportKgPP + stayKgPP;
+    const netTotalPP = Math.max(0.5, grossTotalPP - habitCredits);
+    const netTotalTrip = netTotalPP * passengers;
 
-  const swapTransportPP = (distance * 30 * terrainMultiplier) / 1000;
-  const swapStayPP = nights * 6.0;
-  const swapTotalPP = Math.max(0.5, swapTransportPP + swapStayPP);
-  const swapTotalTrip = swapTotalPP * passengers;
-  const savingsPP = Math.max(0, netTotalPP - swapTotalPP);
-  const savingsTotal = savingsPP * passengers;
-  const pctReduction = netTotalPP > 0 ? Math.round((savingsPP / netTotalPP) * 100) : 0;
+    const transportPct = grossTotalPP > 0 ? Math.round((transportKgPP / grossTotalPP) * 100) : 40;
+    const stayPct = 100 - transportPct;
 
-  const saplingsPP = Math.max(2, Math.round(netTotalPP / 20));
+    let impactSeverity: 'low' | 'moderate' | 'high' = 'moderate';
+    if (netTotalPP < 30) impactSeverity = 'low';
+    else if (netTotalPP <= 75) impactSeverity = 'moderate';
+    else impactSeverity = 'high';
 
-  return {
-    perPersonCo2e: Number(netTotalPP.toFixed(1)),
-    totalCo2e: Number(netTotalTrip.toFixed(1)),
-    breakdown: {
-      transportPerPerson: Number(transportKgPP.toFixed(1)),
-      accommodationPerPerson: Number(stayKgPP.toFixed(1)),
-      habitDeductionsPerPerson: Number(habitCredits.toFixed(1)),
-      transportPercent: transportPct,
-      accommodationPercent: stayPct,
-    },
+    const swapTransportPP = (distance * 30 * terrainMultiplier) / 1000;
+    const swapStayPP = nights * 6.0;
+    const swapTotalPP = Math.max(0.5, swapTransportPP + swapStayPP);
+    const swapTotalTrip = swapTotalPP * passengers;
+    const savingsPP = Math.max(0, netTotalPP - swapTotalPP);
+    const savingsTotal = savingsPP * passengers;
+    const pctReduction = netTotalPP > 0 ? Math.round((savingsPP / netTotalPP) * 100) : 0;
+
+    const saplingsPP = Math.max(2, Math.round(netTotalPP / 20));
+
+    return {
+      perPersonCo2e: Number(netTotalPP.toFixed(1)),
+      totalCo2e: Number(netTotalTrip.toFixed(1)),
+      breakdown: {
+        transportPerPerson: Number(transportKgPP.toFixed(1)),
+        accommodationPerPerson: Number(stayKgPP.toFixed(1)),
+        habitDeductionsPerPerson: Number(habitCredits.toFixed(1)),
+        transportPercent: transportPct,
+        accommodationPercent: stayPct,
+        transportRateLabel: rateLabel,
+      },
     terrainAdjustment: {
       multiplier: terrainMultiplier,
       uphillDeltaPerPerson: Number(uphillDeltaPP.toFixed(1)),

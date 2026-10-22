@@ -1,11 +1,30 @@
-export type TransportMode = 'suv' | 'sedan' | 'ev' | 'bus';
+export type PrivateVehicleType = 'suv' | 'sedan' | 'hatchback' | 'coupe';
+export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev';
+export type TransitMode = 'bus' | 'train' | 'helicopter' | 'flight';
+export type TransportCategory = 'private' | 'transit';
+
+export type TransportMode =
+  | 'suv'
+  | 'sedan'
+  | 'hatchback'
+  | 'coupe'
+  | 'ev'
+  | 'bus'
+  | 'train'
+  | 'helicopter'
+  | 'flight';
+
 export type TerrainZone = 'foothills' | 'mid_hills' | 'high_altitude';
 export type AccommodationType = 'luxury' | 'hotel' | 'homestay' | 'camp';
 
 export interface CalculationInput {
   distanceKm: number;
   terrainZone: TerrainZone;
-  transportMode: TransportMode;
+  transportCategory?: TransportCategory;
+  vehicleType?: PrivateVehicleType;
+  fuelType?: FuelType;
+  transitMode?: TransitMode;
+  transportMode: TransportMode | string;
   passengers: number;
   nights: number;
   accommodationType: AccommodationType;
@@ -22,6 +41,7 @@ export interface CalculationOutput {
     habitDeductionsPerPerson: number;
     transportPercent: number;
     accommodationPercent: number;
+    transportRateLabel?: string;
   };
   terrainAdjustment: {
     multiplier: number;

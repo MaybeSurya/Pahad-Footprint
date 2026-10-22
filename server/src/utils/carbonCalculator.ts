@@ -1,11 +1,30 @@
-export type TransportMode = 'suv' | 'sedan' | 'ev' | 'bus';
+export type PrivateVehicleType = 'suv' | 'sedan' | 'hatchback' | 'coupe';
+export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev';
+export type TransitMode = 'bus' | 'train' | 'helicopter' | 'flight';
+export type TransportCategory = 'private' | 'transit';
+
+export type TransportMode =
+  | 'suv'
+  | 'sedan'
+  | 'hatchback'
+  | 'coupe'
+  | 'ev'
+  | 'bus'
+  | 'train'
+  | 'helicopter'
+  | 'flight';
+
 export type TerrainZone = 'foothills' | 'mid_hills' | 'high_altitude';
 export type AccommodationType = 'luxury' | 'hotel' | 'homestay' | 'camp';
 
 export interface CalculationInput {
   distanceKm: number;
   terrainZone: TerrainZone;
-  transportMode: TransportMode;
+  transportCategory?: TransportCategory;
+  vehicleType?: PrivateVehicleType;
+  fuelType?: FuelType;
+  transitMode?: TransitMode;
+  transportMode: TransportMode | string;
   passengers: number;
   nights: number;
   accommodationType: AccommodationType;
@@ -22,6 +41,7 @@ export interface CalculationOutput {
     habitDeductionsPerPerson: number;
     transportPercent: number;
     accommodationPercent: number;
+    transportRateLabel: string;
   };
   terrainAdjustment: {
     multiplier: number;
@@ -46,19 +66,58 @@ export interface CalculationOutput {
   };
 }
 
-// Vehicle emission factors (g CO2e per vehicle-km)
+// Vehicle emission factors matrix (g CO2e per vehicle-km / vkm) based on ARAI/CEA baseline
+export const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType, number>> = {
+  suv: {
+    diesel: 195,
+    petrol: 185,
+    cng: 135,
+    lpg: 145,
+    hybrid: 110,
+    ev: 50,
+  },
+  sedan: {
+    diesel: 155,
+    petrol: 140,
+    cng: 110,
+    lpg: 120,
+    hybrid: 90,
+    ev: 42,
+  },
+  hatchback: {
+    diesel: 130,
+    petrol: 120,
+    cng: 95,
+    lpg: 105,
+    hybrid: 78,
+    ev: 36,
+  },
+  coupe: {
+    diesel: 165,
+    petrol: 155,
+    cng: 125,
+    lpg: 135,
+    hybrid: 100,
+    ev: 48,
+  },
+};
+
+// Public transit & aviation emission factors (g CO2e per passenger-km / pkm)
+export const TRANSIT_MODE_FACTORS: Record<TransitMode, number> = {
+  train: 18, // Electrified Indian Railways corridor
+  bus: 30, // Shared State/UTC Bus
+  flight: 180, // Regional Commercial Aviation (Jolly Grant / Pantnagar)
+  helicopter: 450, // Himalayan Alpine Heli-Shuttle (Kedarnath / Char Dham)
+};
+
+// Legacy fallback vehicle factors
 export const VEHICLE_FACTORS: Record<string, number> = {
   suv: 180,
   sedan: 140,
   ev: 45,
 };
 
-// Shared transit factor (g CO2e per passenger-km)
-export const TRANSIT_FACTORS: Record<string, number> = {
-  bus: 30,
-};
-
-// Terrain multipliers
+// Terrain multipliers (IPCC mountain grade fuel penalty)
 export const TERRAIN_MULTIPLIERS: Record<TerrainZone, number> = {
   foothills: 1.0,
   mid_hills: 1.25,
@@ -85,18 +144,36 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
   const nights = Math.max(1, Number(input.nights) || 1);
   const terrainMultiplier = TERRAIN_MULTIPLIERS[input.terrainZone] ?? 1.25;
 
-  // 1. Transport Calculation
   let transportKgPP = 0;
   let baselineTransportKgPP = 0;
+  let rateLabel = '';
 
-  if (input.transportMode === 'bus') {
-    const factor = TRANSIT_FACTORS.bus; // 30 g/pkm
-    transportKgPP = (distance * factor * terrainMultiplier) / 1000;
+  const isTransit =
+    input.transportCategory === 'transit' ||
+    ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
+
+  if (isTransit) {
+    const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase() as TransitMode;
+    const factor = TRANSIT_MODE_FACTORS[modeKey] ?? TRANSIT_MODE_FACTORS.bus;
+    rateLabel = `${factor} g CO₂e/pkm`;
+
+    // High altitude multiplier applies to bus and helicopter (hovering at >3000m burns significant fuel)
+    const activeMultiplier = modeKey === 'train' ? 1.0 : terrainMultiplier;
+    transportKgPP = (distance * factor * activeMultiplier) / 1000;
     baselineTransportKgPP = (distance * factor) / 1000;
   } else {
-    const factor = VEHICLE_FACTORS[input.transportMode] ?? VEHICLE_FACTORS.suv;
-    transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
-    baselineTransportKgPP = (distance * factor) / (1000 * passengers);
+    // Private vehicle mode
+    const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase() as PrivateVehicleType;
+    const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase() as FuelType;
+
+    const vkmFactor =
+      PRIVATE_VEHICLE_MATRIX[vType]?.[fType] ??
+      (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
+
+    rateLabel = `${vkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+
+    transportKgPP = (distance * vkmFactor * terrainMultiplier) / (1000 * passengers);
+    baselineTransportKgPP = (distance * vkmFactor) / (1000 * passengers);
   }
 
   const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
@@ -130,7 +207,7 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
   }
 
   // 6. Eco-Swap alternative: Shared UTC Bus + Pahadi Homestay
-  const swapTransportPP = (distance * TRANSIT_FACTORS.bus * terrainMultiplier) / 1000;
+  const swapTransportPP = (distance * TRANSIT_MODE_FACTORS.bus * terrainMultiplier) / 1000;
   const swapStayPP = nights * ACCOMMODATION_FACTORS.homestay;
   const swapTotalPP = Math.max(0.5, swapTransportPP + swapStayPP);
   const swapTotalTrip = swapTotalPP * passengers;
@@ -142,6 +219,8 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
   const saplingsPP = Math.max(2, Math.round(netTotalPP / 20));
   const saplingsTotal = saplingsPP * passengers;
 
+  const isEligibleForGreenCess = !['bus', 'train'].includes(String(input.transportMode).toLowerCase());
+
   return {
     perPersonCo2e: Number(netTotalPP.toFixed(1)),
     totalCo2e: Number(netTotalTrip.toFixed(1)),
@@ -151,6 +230,7 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
       habitDeductionsPerPerson: Number(habitCreditsPP.toFixed(1)),
       transportPercent: transportPct,
       accommodationPercent: stayPct,
+      transportRateLabel: rateLabel,
     },
     terrainAdjustment: {
       multiplier: terrainMultiplier,
@@ -166,7 +246,7 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
       savingsPerPerson: Number(savingsPP.toFixed(1)),
       savingsTotal: Number(savingsTotal.toFixed(1)),
       percentageReduction: pctReduction,
-      greenCessExemptionEligible: input.transportMode !== 'bus',
+      greenCessExemptionEligible: isEligibleForGreenCess,
       greenCessAmountInr: 80,
     },
     suggestedSaplings: {

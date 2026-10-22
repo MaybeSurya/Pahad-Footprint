@@ -1,18 +1,56 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ECO_HABIT_CREDITS = exports.ACCOMMODATION_FACTORS = exports.TERRAIN_MULTIPLIERS = exports.TRANSIT_FACTORS = exports.VEHICLE_FACTORS = void 0;
+exports.ECO_HABIT_CREDITS = exports.ACCOMMODATION_FACTORS = exports.TERRAIN_MULTIPLIERS = exports.VEHICLE_FACTORS = exports.TRANSIT_MODE_FACTORS = exports.PRIVATE_VEHICLE_MATRIX = void 0;
 exports.calculateCarbonFootprint = calculateCarbonFootprint;
-// Vehicle emission factors (g CO2e per vehicle-km)
+// Vehicle emission factors matrix (g CO2e per vehicle-km / vkm) based on ARAI/CEA baseline
+exports.PRIVATE_VEHICLE_MATRIX = {
+    suv: {
+        diesel: 195,
+        petrol: 185,
+        cng: 135,
+        lpg: 145,
+        hybrid: 110,
+        ev: 50,
+    },
+    sedan: {
+        diesel: 155,
+        petrol: 140,
+        cng: 110,
+        lpg: 120,
+        hybrid: 90,
+        ev: 42,
+    },
+    hatchback: {
+        diesel: 130,
+        petrol: 120,
+        cng: 95,
+        lpg: 105,
+        hybrid: 78,
+        ev: 36,
+    },
+    coupe: {
+        diesel: 165,
+        petrol: 155,
+        cng: 125,
+        lpg: 135,
+        hybrid: 100,
+        ev: 48,
+    },
+};
+// Public transit & aviation emission factors (g CO2e per passenger-km / pkm)
+exports.TRANSIT_MODE_FACTORS = {
+    train: 18, // Electrified Indian Railways corridor
+    bus: 30, // Shared State/UTC Bus
+    flight: 180, // Regional Commercial Aviation (Jolly Grant / Pantnagar)
+    helicopter: 450, // Himalayan Alpine Heli-Shuttle (Kedarnath / Char Dham)
+};
+// Legacy fallback vehicle factors
 exports.VEHICLE_FACTORS = {
     suv: 180,
     sedan: 140,
     ev: 45,
 };
-// Shared transit factor (g CO2e per passenger-km)
-exports.TRANSIT_FACTORS = {
-    bus: 30,
-};
-// Terrain multipliers
+// Terrain multipliers (IPCC mountain grade fuel penalty)
 exports.TERRAIN_MULTIPLIERS = {
     foothills: 1.0,
     mid_hills: 1.25,
@@ -35,18 +73,29 @@ function calculateCarbonFootprint(input) {
     const passengers = Math.max(1, Number(input.passengers) || 1);
     const nights = Math.max(1, Number(input.nights) || 1);
     const terrainMultiplier = exports.TERRAIN_MULTIPLIERS[input.terrainZone] ?? 1.25;
-    // 1. Transport Calculation
     let transportKgPP = 0;
     let baselineTransportKgPP = 0;
-    if (input.transportMode === 'bus') {
-        const factor = exports.TRANSIT_FACTORS.bus; // 30 g/pkm
-        transportKgPP = (distance * factor * terrainMultiplier) / 1000;
+    let rateLabel = '';
+    const isTransit = input.transportCategory === 'transit' ||
+        ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
+    if (isTransit) {
+        const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
+        const factor = exports.TRANSIT_MODE_FACTORS[modeKey] ?? exports.TRANSIT_MODE_FACTORS.bus;
+        rateLabel = `${factor} g CO₂e/pkm`;
+        // High altitude multiplier applies to bus and helicopter (hovering at >3000m burns significant fuel)
+        const activeMultiplier = modeKey === 'train' ? 1.0 : terrainMultiplier;
+        transportKgPP = (distance * factor * activeMultiplier) / 1000;
         baselineTransportKgPP = (distance * factor) / 1000;
     }
     else {
-        const factor = exports.VEHICLE_FACTORS[input.transportMode] ?? exports.VEHICLE_FACTORS.suv;
-        transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
-        baselineTransportKgPP = (distance * factor) / (1000 * passengers);
+        // Private vehicle mode
+        const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
+        const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
+        const vkmFactor = exports.PRIVATE_VEHICLE_MATRIX[vType]?.[fType] ??
+            (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
+        rateLabel = `${vkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+        transportKgPP = (distance * vkmFactor * terrainMultiplier) / (1000 * passengers);
+        baselineTransportKgPP = (distance * vkmFactor) / (1000 * passengers);
     }
     const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
     const uphillDeltaTotal = uphillDeltaPP * passengers;
@@ -77,7 +126,7 @@ function calculateCarbonFootprint(input) {
         impactSeverity = 'high';
     }
     // 6. Eco-Swap alternative: Shared UTC Bus + Pahadi Homestay
-    const swapTransportPP = (distance * exports.TRANSIT_FACTORS.bus * terrainMultiplier) / 1000;
+    const swapTransportPP = (distance * exports.TRANSIT_MODE_FACTORS.bus * terrainMultiplier) / 1000;
     const swapStayPP = nights * exports.ACCOMMODATION_FACTORS.homestay;
     const swapTotalPP = Math.max(0.5, swapTransportPP + swapStayPP);
     const swapTotalTrip = swapTotalPP * passengers;
@@ -87,6 +136,7 @@ function calculateCarbonFootprint(input) {
     // 7. Suggested Saplings (1 sapling per ~20kg net footprint, minimum 2)
     const saplingsPP = Math.max(2, Math.round(netTotalPP / 20));
     const saplingsTotal = saplingsPP * passengers;
+    const isEligibleForGreenCess = !['bus', 'train'].includes(String(input.transportMode).toLowerCase());
     return {
         perPersonCo2e: Number(netTotalPP.toFixed(1)),
         totalCo2e: Number(netTotalTrip.toFixed(1)),
@@ -96,6 +146,7 @@ function calculateCarbonFootprint(input) {
             habitDeductionsPerPerson: Number(habitCreditsPP.toFixed(1)),
             transportPercent: transportPct,
             accommodationPercent: stayPct,
+            transportRateLabel: rateLabel,
         },
         terrainAdjustment: {
             multiplier: terrainMultiplier,
@@ -111,7 +162,7 @@ function calculateCarbonFootprint(input) {
             savingsPerPerson: Number(savingsPP.toFixed(1)),
             savingsTotal: Number(savingsTotal.toFixed(1)),
             percentageReduction: pctReduction,
-            greenCessExemptionEligible: input.transportMode !== 'bus',
+            greenCessExemptionEligible: isEligibleForGreenCess,
             greenCessAmountInr: 80,
         },
         suggestedSaplings: {

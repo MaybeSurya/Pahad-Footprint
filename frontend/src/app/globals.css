@@ -1,48 +1,54 @@
+@import "leaflet/dist/leaflet.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-forest: #1B4332;
-  --color-mist: #EDF6F0;
-  --color-mist-border: #D8E8DF;
-  --color-alabaster: #F8FAF9;
-  --color-charcoal: #111827;
-  --color-slateText: #4B5563;
-  --color-terracotta: #C85A32;
+  --color-brand: #15803D;
+  --color-brand-light: #22C55E;
+  --color-brand-soft: #F0FDF4;
+  --color-slate-base: #F8FAFC;
+  --color-slate-card: #FFFFFF;
+  --color-slate-border: #E2E8F0;
+  --color-slate-title: #0F172A;
+  --color-slate-body: #334155;
+  --color-slate-muted: #64748B;
+  --color-terracotta: #EA580C;
+  --color-glacier: #2563EB;
 }
 
 body {
-  color: #111827;
-  background-color: #F8FAF9;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0F172A;
+  background-color: #F8FAFC;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
 /* Custom styled range slider */
 input[type="range"] {
-  accent-color: #1B4332;
+  accent-color: #15803D;
 }
 
-/* Card base class */
+/* Modern clean card base classes */
 .pahad-card {
   background-color: #FFFFFF;
-  border: 1px solid #D8E8DF;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 2px 8px -2px rgba(27,67,50,0.06), 0 1px 3px -1px rgba(27,67,50,0.03);
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease-in-out;
 }
 
 .pahad-card-mist {
-  background-color: #EDF6F0;
-  border: 1px solid #D8E8DF;
-  border-radius: 16px;
-  padding: 20px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 24px;
 }
 
-/* Accessible focus visible */
+/* Accessible focus visible with modern emerald ring */
 *:focus-visible {
-  outline: 2px solid #1B4332;
+  outline: 2px solid #16A34A;
   outline-offset: 2px;
 }

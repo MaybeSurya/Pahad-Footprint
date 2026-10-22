@@ -20,7 +20,11 @@ export const calculateTripSchema = z.object({
   body: z.object({
     distanceKm: z.number().min(1, 'Distance must be at least 1 km'),
     terrainZone: z.enum(['foothills', 'mid_hills', 'high_altitude']),
-    transportMode: z.enum(['suv', 'sedan', 'ev', 'bus']),
+    transportCategory: z.enum(['private', 'transit']).optional(),
+    vehicleType: z.enum(['suv', 'sedan', 'hatchback', 'coupe']).optional(),
+    fuelType: z.enum(['petrol', 'diesel', 'cng', 'lpg', 'hybrid', 'ev']).optional(),
+    transitMode: z.enum(['bus', 'train', 'helicopter', 'flight']).optional(),
+    transportMode: z.string(),
     passengers: z.number().int().min(1, 'Passengers must be at least 1').max(50),
     nights: z.number().int().min(1, 'Nights must be at least 1').max(60),
     accommodationType: z.enum(['luxury', 'hotel', 'homestay', 'camp']),

@@ -39,55 +39,58 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#1B4332] text-white shadow-md border-b border-[#2D6A4F]/40" role="banner">
-      <div className="max-w-[1440px] mx-auto h-[64px] px-6 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md text-slate-800 shadow-card border-b border-slate-200/80 transition-colors" role="banner">
+      <div className="max-w-[1440px] mx-auto h-[68px] px-4 sm:px-6 flex items-center justify-between gap-4">
         {/* Brand Identity */}
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-white/40 rounded-lg p-1"
+            className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-xl p-1"
             aria-label="Pahad Footprint - Home"
           >
-            <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center text-white" aria-hidden="true">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 border border-emerald-500/30 flex items-center justify-center text-white shadow-sm" aria-hidden="true">
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 2L4 15h4v5h8v-5h4L12 2zm0 4.2L15.3 12H13v5h-2v-5H8.7L12 6.2z" />
               </svg>
             </div>
-            <span className="text-[17px] font-bold tracking-tight text-white">Pahad Footprint</span>
+            <div>
+              <span className="text-[17px] font-bold tracking-tight text-slate-900 block leading-tight">Pahad Footprint</span>
+              <span className="text-[10.5px] font-medium text-slate-500 hidden sm:block">Uttarakhand Carbon Registry</span>
+            </div>
           </Link>
-          <span className="hidden sm:inline-flex items-center text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-white/15 text-white/90 border border-white/20">
-            Sample Demo Data
+          <span className="hidden md:inline-flex items-center text-[10.5px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+            ARAI Baseline
           </span>
         </div>
 
         {/* Public Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+        <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
           <Link
             href="/"
-            className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl text-[13.5px] font-medium transition-all ${
               pathname === '/'
-                ? 'bg-white/20 text-white font-semibold'
-                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                ? 'bg-emerald-50 text-emerald-800 font-semibold shadow-xs border border-emerald-200/60'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             Calculator
           </Link>
           <Link
             href="/methodology"
-            className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl text-[13.5px] font-medium transition-all ${
               pathname === '/methodology'
-                ? 'bg-white/20 text-white font-semibold'
-                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                ? 'bg-emerald-50 text-emerald-800 font-semibold shadow-xs border border-emerald-200/60'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             Methodology &amp; Sources
           </Link>
           <Link
             href="/restoration"
-            className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl text-[13.5px] font-medium transition-all ${
               pathname === '/restoration'
-                ? 'bg-white/20 text-white font-semibold'
-                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                ? 'bg-emerald-50 text-emerald-800 font-semibold shadow-xs border border-emerald-200/60'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             Restoration Initiatives
@@ -99,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
-            className="px-2.5 py-1 text-[12px] font-medium rounded-btn border border-white/25 bg-transparent hover:bg-white/10 text-white transition-colors"
+            className="px-2.5 py-1 text-[12px] font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors shadow-xs"
             aria-label="Toggle language between English and Hindi"
           >
             {language} | {language === 'EN' ? 'HI' : 'EN'}
@@ -107,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
 
           {/* Prototype View-Switcher */}
           <div
-            className="flex items-center bg-[#0E2319]/70 border border-white/20 rounded-full p-0.5"
+            className="flex items-center bg-slate-100 border border-slate-200 rounded-full p-0.5"
             role="group"
             aria-label="Prototype View Switcher"
           >
@@ -115,8 +118,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               onClick={() => router.push('/')}
               className={`px-3 py-1 text-[12px] font-semibold rounded-full transition-all ${
                 !isAdminRoute
-                  ? 'bg-white text-[#1B4332] shadow-sm'
-                  : 'text-white/75 hover:text-white'
+                  ? 'bg-white text-emerald-800 shadow-xs border border-slate-200/60'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
               aria-pressed={!isAdminRoute}
             >
@@ -126,8 +129,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               onClick={() => router.push('/admin')}
               className={`px-3 py-1 text-[12px] font-semibold rounded-full transition-all ${
                 isAdminRoute
-                  ? 'bg-[#FEF3C7] text-[#92400E] shadow-sm'
-                  : 'text-white/75 hover:text-white'
+                  ? 'bg-amber-100 text-amber-900 shadow-xs font-bold border border-amber-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
               aria-pressed={isAdminRoute}
             >
@@ -138,12 +141,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           {/* User Account / Session */}
           {session ? (
             <div className="flex items-center gap-2">
-              <span className="hidden md:inline-block text-[12px] text-white/90 font-medium">
+              <span className="hidden md:inline-block text-[12px] text-slate-700 font-medium">
                 {session.role === 'admin' ? '🛡️ Auditor' : '🌲 Tourist'}
               </span>
               <button
                 onClick={handleLogout}
-                className="text-[12px] font-medium text-white/80 hover:text-white underline p-1"
+                className="text-[12px] font-medium text-slate-500 hover:text-rose-600 underline p-1"
                 title="Log out"
               >
                 Logout
@@ -152,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           ) : (
             <button
               onClick={onOpenAuth}
-              className="px-3 py-1 text-[12px] font-semibold bg-white/15 hover:bg-white/25 border border-white/25 rounded-btn text-white transition-all"
+              className="px-3.5 py-1.5 text-[12.5px] font-semibold bg-emerald-700 hover:bg-emerald-800 border border-emerald-600 rounded-xl text-white shadow-xs transition-all"
             >
               Sign In
             </button>
@@ -161,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           {/* Mobile hamburger menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-btn bg-white/10 hover:bg-white/20 text-white"
+            className="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
             aria-label="Toggle mobile menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -178,32 +181,32 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#143225] px-6 py-4 border-t border-white/10 flex flex-col gap-2">
+        <div className="lg:hidden bg-white px-6 py-4 border-t border-slate-200 flex flex-col gap-2 shadow-elevated">
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 text-[14px] text-white font-medium hover:text-[#C1ECD4]"
+            className="py-2 text-[14px] text-slate-700 font-medium hover:text-emerald-700"
           >
             Calculator
           </Link>
           <Link
             href="/methodology"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 text-[14px] text-white font-medium hover:text-[#C1ECD4]"
+            className="py-2 text-[14px] text-slate-700 font-medium hover:text-emerald-700"
           >
             Methodology &amp; Sources
           </Link>
           <Link
             href="/restoration"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 text-[14px] text-white font-medium hover:text-[#C1ECD4]"
+            className="py-2 text-[14px] text-slate-700 font-medium hover:text-emerald-700"
           >
             Restoration Initiatives
           </Link>
           <Link
             href="/admin"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 text-[14px] text-[#FEF3C7] font-semibold"
+            className="py-2 text-[14px] text-amber-800 font-semibold"
           >
             Admin Analytics Portal
           </Link>

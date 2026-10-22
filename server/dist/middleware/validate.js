@@ -20,7 +20,11 @@ exports.calculateTripSchema = zod_1.z.object({
     body: zod_1.z.object({
         distanceKm: zod_1.z.number().min(1, 'Distance must be at least 1 km'),
         terrainZone: zod_1.z.enum(['foothills', 'mid_hills', 'high_altitude']),
-        transportMode: zod_1.z.enum(['suv', 'sedan', 'ev', 'bus']),
+        transportCategory: zod_1.z.enum(['private', 'transit']).optional(),
+        vehicleType: zod_1.z.enum(['suv', 'sedan', 'hatchback', 'coupe']).optional(),
+        fuelType: zod_1.z.enum(['petrol', 'diesel', 'cng', 'lpg', 'hybrid', 'ev']).optional(),
+        transitMode: zod_1.z.enum(['bus', 'train', 'helicopter', 'flight']).optional(),
+        transportMode: zod_1.z.string(),
         passengers: zod_1.z.number().int().min(1, 'Passengers must be at least 1').max(50),
         nights: zod_1.z.number().int().min(1, 'Nights must be at least 1').max(60),
         accommodationType: zod_1.z.enum(['luxury', 'hotel', 'homestay', 'camp']),
