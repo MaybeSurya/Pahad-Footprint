@@ -1,9 +1,12 @@
 import React from 'react';
 import { TripCalculatorForm } from '../components/TripCalculatorForm';
+import { TopographicHero } from '../components/TopographicHero';
 
 export default function HomePage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Topographic Alpine Hero with Parallax & Stats */}
+      <TopographicHero />
       {/* Context Banner */}
       <div className="bg-[#EDF6F0] border border-[#D8E8DF] rounded-card py-3 px-5 flex items-center justify-between flex-wrap gap-2 text-[12.5px]">
         <div className="flex items-center gap-2">

@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { Navbar } from '../components/Navbar';
+import { SmoothScrollProvider } from '../components/SmoothScrollProvider';
 
 export const metadata: Metadata = {
   title: 'Pahad Footprint — Uttarakhand Carbon Accounting & Analytics',
@@ -25,19 +26,21 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#F8FAF9] text-[#111827] min-h-screen flex flex-col font-sans">
-        {/* Skip to Content for Accessibility */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 z-[100] px-4 py-2 bg-white text-[#1B4332] font-bold border-2 border-[#1B4332] rounded-btn shadow-lg"
-        >
-          Skip to main content
-        </a>
+        <SmoothScrollProvider>
+          {/* Skip to Content for Accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 z-[100] px-4 py-2 bg-white text-[#1B4332] font-bold border-2 border-[#1B4332] rounded-btn shadow-lg"
+          >
+            Skip to main content
+          </a>
 
-        <Navbar />
+          <Navbar />
 
-        <main id="main-content" className="flex-1 max-w-[1440px] w-full mx-auto px-6 py-6">
-          {children}
-        </main>
+          <main id="main-content" className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-6">
+            {children}
+          </main>
+        </SmoothScrollProvider>
 
         {/* Global Footer */}
         <footer className="bg-white border-t border-[#D8E8DF] py-6 mt-auto">

@@ -1,6 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  MapPin,
+  MountainSnow,
+  CarFront,
+  Car,
+  BusFront,
+  Zap,
+  Users,
+  Minus,
+  Plus,
+  CalendarDays,
+  Hotel,
+  Home,
+  Tent,
+  Flame,
+  Droplets,
+  UtensilsCrossed,
+  Leaf,
+  BookmarkCheck,
+  Check,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 import { CalculationInput, CalculationOutput } from '../types';
 import { calculateTrip, logTripRecord, getStoredSession } from '../lib/api';
 import { CalculationResults } from './CalculationResults';
@@ -116,15 +140,21 @@ export const TripCalculatorForm: React.FC = () => {
 
   return (
     <div className="w-full">
-      {/* Toast Banner */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1B4332] text-white px-5 py-3 rounded-btn shadow-elevated flex items-center gap-3 animate-slideIn">
-          <svg className="w-5 h-5 text-[#C1ECD4] fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <span className="text-[13.5px] font-medium">{toastMessage}</span>
-        </div>
-      )}
+      {/* Toast Banner with Framer Motion */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 24, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-6 right-6 z-50 bg-[#1B4332] text-white px-5 py-3.5 rounded-2xl shadow-elevated flex items-center gap-3 border border-[#2D6A4F]/60 backdrop-blur-md"
+          >
+            <CheckCircle2 className="w-5 h-5 text-[#C1ECD4] flex-shrink-0" />
+            <span className="text-[13.5px] font-medium leading-snug">{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Grid: Responsive Guard using minmax(0, Xfr) */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-grid items-start">
@@ -133,9 +163,7 @@ export const TripCalculatorForm: React.FC = () => {
           {/* Section 1: Route & Elevation Zone */}
           <div>
             <div className="flex items-center gap-2 text-[12px] font-bold text-[#4B5563] uppercase tracking-wider mb-3">
-              <svg className="w-4 h-4 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
+              <MapPin className="w-4 h-4 text-[#1B4332]" strokeWidth={2} />
               1. Route &amp; Elevation Zone
             </div>
 
@@ -161,7 +189,8 @@ export const TripCalculatorForm: React.FC = () => {
             {/* Terrain Multiplier Radios */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[13px] font-semibold text-[#111827]">
+                <label className="text-[13px] font-semibold text-[#111827] flex items-center gap-1.5">
+                  <MountainSnow className="w-4 h-4 text-[#1B4332]" />
                   Terrain Multiplier <span className="text-[11px] font-normal text-[#4B5563]">(altitude fuel burn)</span>
                 </label>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#C1ECD4] text-[#002114]">
@@ -178,7 +207,7 @@ export const TripCalculatorForm: React.FC = () => {
                     key={item.id}
                     type="button"
                     onClick={() => setTerrain(item.id as any)}
-                    className={`py-2 px-1 text-[12.5px] font-semibold rounded-btn transition-all text-center ${
+                    className={`py-2 px-1 text-[12.5px] font-semibold rounded-btn transition-all text-center relative ${
                       terrain === item.id
                         ? 'bg-white text-[#1B4332] shadow-sm'
                         : 'text-[#4B5563] hover:bg-white/50'
@@ -233,9 +262,7 @@ export const TripCalculatorForm: React.FC = () => {
           <div>
             <div className="flex items-center justify-between text-[12px] font-bold text-[#4B5563] uppercase tracking-wider mb-3">
               <span className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                </svg>
+                <CarFront className="w-4 h-4 text-[#1B4332]" strokeWidth={2} />
                 2. Transport Mode &amp; Occupancy
               </span>
               <span className="text-[11px] font-normal text-[#4B5563]">ARAI Reference Baseline</span>
@@ -244,45 +271,55 @@ export const TripCalculatorForm: React.FC = () => {
             {/* 2x2 Transport Mode Cards */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               {[
-                { id: 'suv', name: 'Private SUV (Diesel)', factor: '180 g CO₂e/vkm', badge: null },
-                { id: 'sedan', name: 'Petrol Sedan', factor: '140 g CO₂e/vkm', badge: null },
-                { id: 'bus', name: 'Shared UTC Bus', factor: '30 g CO₂e/pkm', badge: 'Eco' },
-                { id: 'ev', name: 'Electric Vehicle (EV)', factor: '45 g CO₂e/vkm', badge: 'Low-Grid' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setTransportMode(item.id as any)}
-                  className={`p-3.5 rounded-card border-2 text-left flex flex-col justify-between transition-all ${
-                    transportMode === item.id
-                      ? 'border-[#1B4332] bg-[#EDF6F0] shadow-sm'
-                      : 'border-[#D8E8DF] bg-white hover:border-[#A3CCA9]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[13px] font-bold text-[#111827]">{item.name}</span>
-                    {transportMode === item.id && (
-                      <span className="w-5 h-5 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[11px]">
-                        ✓
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11.5px] text-[#4B5563]">
-                    <span>{item.factor}</span>
-                    {item.badge && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#C1ECD4] text-[#002114]">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                </button>
-              ))}
+                { id: 'suv', name: 'Private SUV (Diesel)', factor: '180 g CO₂e/vkm', badge: null, icon: CarFront },
+                { id: 'sedan', name: 'Petrol Sedan', factor: '140 g CO₂e/vkm', badge: null, icon: Car },
+                { id: 'bus', name: 'Shared UTC Bus', factor: '30 g CO₂e/pkm', badge: 'Eco', icon: BusFront },
+                { id: 'ev', name: 'Electric Vehicle (EV)', factor: '45 g CO₂e/vkm', badge: 'Low-Grid', icon: Zap },
+              ].map((item) => {
+                const IconComponent = item.icon;
+                const isSelected = transportMode === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setTransportMode(item.id as any)}
+                    className={`p-3.5 rounded-2xl border-2 text-left flex flex-col justify-between transition-all relative ${
+                      isSelected
+                        ? 'border-[#1B4332] bg-[#EDF6F0] shadow-sm'
+                        : 'border-[#D8E8DF] bg-white hover:border-[#A3CCA9]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <IconComponent className={`w-4 h-4 ${isSelected ? 'text-[#1B4332]' : 'text-[#4B5563]'}`} />
+                        <span className="text-[13px] font-bold text-[#111827]">{item.name}</span>
+                      </div>
+                      {isSelected && (
+                        <span className="w-5 h-5 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[11px]">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[11.5px] text-[#4B5563]">
+                      <span>{item.factor}</span>
+                      {item.badge && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#C1ECD4] text-[#002114]">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Passenger Stepper */}
-            <div className="bg-[#EDF6F0] border border-[#D8E8DF] rounded-card p-3.5 flex items-center justify-between">
+            <div className="bg-[#EDF6F0] border border-[#D8E8DF] rounded-2xl p-4 flex items-center justify-between">
               <div>
-                <p className="text-[13px] font-semibold text-[#111827]">Passenger Count</p>
+                <p className="text-[13px] font-semibold text-[#111827] flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-[#1B4332]" />
+                  Passenger Count
+                </p>
                 <p className="text-[11.5px] text-[#4B5563]">Vehicle footprint divided across {passengers} travelers</p>
               </div>
               <div className="flex items-center gap-3">
@@ -290,10 +327,10 @@ export const TripCalculatorForm: React.FC = () => {
                   type="button"
                   disabled={passengers <= 1}
                   onClick={() => setPassengers((prev) => Math.max(1, prev - 1))}
-                  className="w-9 h-9 rounded-btn bg-white border border-[#D8E8DF] font-bold text-[18px] text-[#111827] disabled:opacity-40 hover:bg-[#D8E8DF]/50 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-xl bg-white border border-[#D8E8DF] font-bold text-[18px] text-[#111827] disabled:opacity-40 hover:bg-[#D8E8DF]/50 flex items-center justify-center transition-colors"
                   aria-label="Decrease passengers"
                 >
-                  −
+                  <Minus className="w-4 h-4" />
                 </button>
                 <span className="font-bold text-[14px] text-[#111827] min-w-[90px] text-center font-mono">
                   {passengers} {passengers === 1 ? 'Traveler' : 'Travelers'}
@@ -302,10 +339,10 @@ export const TripCalculatorForm: React.FC = () => {
                   type="button"
                   disabled={passengers >= 8}
                   onClick={() => setPassengers((prev) => Math.min(8, prev + 1))}
-                  className="w-9 h-9 rounded-btn bg-white border border-[#D8E8DF] font-bold text-[18px] text-[#111827] disabled:opacity-40 hover:bg-[#D8E8DF]/50 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-xl bg-white border border-[#D8E8DF] font-bold text-[18px] text-[#111827] disabled:opacity-40 hover:bg-[#D8E8DF]/50 flex items-center justify-center transition-colors"
                   aria-label="Increase passengers"
                 >
-                  +
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -317,9 +354,7 @@ export const TripCalculatorForm: React.FC = () => {
           <div>
             <div className="flex items-center justify-between text-[12px] font-bold text-[#4B5563] uppercase tracking-wider mb-3">
               <span className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
+                <CalendarDays className="w-4 h-4 text-[#1B4332]" strokeWidth={2} />
                 3. Accommodation Profile
               </span>
               <span className="text-[11px] font-normal text-[#4B5563]">Per Guest-Night Basis</span>
@@ -358,27 +393,34 @@ export const TripCalculatorForm: React.FC = () => {
               </label>
               <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  { id: 'luxury', name: 'Luxury Resort', intensity: '24.0 kg/night' },
-                  { id: 'hotel', name: 'Standard Hotel', intensity: '9.0 kg/night' },
-                  { id: 'homestay', name: 'Pahadi Homestay', intensity: '6.0 kg/night', eco: true },
-                  { id: 'camp', name: 'Eco-Camp', intensity: '3.5 kg/night', eco: true },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setAccommodation(item.id as any)}
-                    className={`p-3 rounded-card border-2 text-left flex flex-col justify-between transition-all ${
-                      accommodation === item.id
-                        ? 'border-[#1B4332] bg-[#EDF6F0] shadow-sm'
-                        : 'border-[#D8E8DF] bg-white hover:border-[#A3CCA9]'
-                    }`}
-                  >
-                    <span className="text-[13px] font-bold text-[#111827]">{item.name}</span>
-                    <span className={`text-[11.5px] mt-1 ${item.eco ? 'text-[#1B4332] font-semibold' : 'text-[#4B5563]'}`}>
-                      {item.intensity} {item.eco && '✓ Eco'}
-                    </span>
-                  </button>
-                ))}
+                  { id: 'luxury', name: 'Luxury Resort', intensity: '24.0 kg/night', icon: Flame },
+                  { id: 'hotel', name: 'Standard Hotel', intensity: '9.0 kg/night', icon: Hotel },
+                  { id: 'homestay', name: 'Pahadi Homestay', intensity: '6.0 kg/night', eco: true, icon: Home },
+                  { id: 'camp', name: 'Eco-Camp', intensity: '3.5 kg/night', eco: true, icon: Tent },
+                ].map((item) => {
+                  const IconComponent = item.icon;
+                  const isSelected = accommodation === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setAccommodation(item.id as any)}
+                      className={`p-3 rounded-2xl border-2 text-left flex flex-col justify-between transition-all ${
+                        isSelected
+                          ? 'border-[#1B4332] bg-[#EDF6F0] shadow-sm'
+                          : 'border-[#D8E8DF] bg-white hover:border-[#A3CCA9]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <IconComponent className={`w-3.5 h-3.5 ${isSelected ? 'text-[#1B4332]' : 'text-[#4B5563]'}`} />
+                        <span className="text-[13px] font-bold text-[#111827]">{item.name}</span>
+                      </div>
+                      <span className={`text-[11.5px] mt-1 ${item.eco ? 'text-[#1B4332] font-semibold' : 'text-[#4B5563]'}`}>
+                        {item.intensity} {item.eco && '✓ Eco'}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -388,41 +430,45 @@ export const TripCalculatorForm: React.FC = () => {
           {/* Section 4: Eco-Habit Modifier Checkboxes */}
           <div>
             <div className="flex items-center gap-2 text-[12px] font-bold text-[#4B5563] uppercase tracking-wider mb-3">
-              <svg className="w-4 h-4 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Leaf className="w-4 h-4 text-[#1B4332]" strokeWidth={2} />
               4. Optional Eco-Habit Deductions
             </div>
 
             <div className="space-y-2.5">
-              <label className="flex items-center gap-3 p-3 bg-[#EDF6F0] rounded-card border border-[#D8E8DF] cursor-pointer hover:bg-[#E2F0E7] transition-colors">
+              <label className="flex items-center gap-3 p-3.5 bg-[#EDF6F0] rounded-2xl border border-[#D8E8DF] cursor-pointer hover:bg-[#E2F0E7] transition-colors">
                 <input
                   type="checkbox"
                   checked={habitWater}
                   onChange={(e) => setHabitWater(e.target.checked)}
                   className="w-5 h-5 rounded accent-[#1B4332] cursor-pointer"
                 />
+                <div className="p-1.5 rounded-lg bg-white border border-[#D8E8DF] text-[#1B4332]">
+                  <Droplets className="w-4 h-4" />
+                </div>
                 <div className="flex-1">
                   <p className="text-[13px] font-semibold text-[#111827]">Refilled reusable water bottle</p>
                   <p className="text-[11.5px] text-[#4B5563]">Saves mountain plastic supply chain freight</p>
                 </div>
-                <span className="text-[12px] font-bold text-[#1B4332] bg-white px-2 py-0.5 rounded-btn border border-[#D8E8DF]">
+                <span className="text-[12px] font-bold text-[#1B4332] bg-white px-2.5 py-1 rounded-xl border border-[#D8E8DF]">
                   −2.0 kg/p
                 </span>
               </label>
 
-              <label className="flex items-center gap-3 p-3 bg-[#EDF6F0] rounded-card border border-[#D8E8DF] cursor-pointer hover:bg-[#E2F0E7] transition-colors">
+              <label className="flex items-center gap-3 p-3.5 bg-[#EDF6F0] rounded-2xl border border-[#D8E8DF] cursor-pointer hover:bg-[#E2F0E7] transition-colors">
                 <input
                   type="checkbox"
                   checked={habitFood}
                   onChange={(e) => setHabitFood(e.target.checked)}
                   className="w-5 h-5 rounded accent-[#1B4332] cursor-pointer"
                 />
+                <div className="p-1.5 rounded-lg bg-white border border-[#D8E8DF] text-[#1B4332]">
+                  <UtensilsCrossed className="w-4 h-4" />
+                </div>
                 <div className="flex-1">
                   <p className="text-[13px] font-semibold text-[#111827]">Chose local seasonal Pahadi cuisine</p>
                   <p className="text-[11.5px] text-[#4B5563]">Low food-mile millets, bhatt ki churkani &amp; local produce</p>
                 </div>
-                <span className="text-[12px] font-bold text-[#1B4332] bg-white px-2 py-0.5 rounded-btn border border-[#D8E8DF]">
+                <span className="text-[12px] font-bold text-[#1B4332] bg-white px-2.5 py-1 rounded-xl border border-[#D8E8DF]">
                   −3.0 kg/p
                 </span>
               </label>
@@ -434,11 +480,9 @@ export const TripCalculatorForm: React.FC = () => {
             type="button"
             onClick={handleSaveTrip}
             disabled={isSaving}
-            className="w-full py-3.5 px-6 bg-[#1B4332] hover:bg-[#143225] text-white font-semibold text-[14px] rounded-btn shadow-md transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 px-6 bg-[#1B4332] hover:bg-[#143225] text-white font-semibold text-[14px] rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:shadow-elevated active:scale-[0.99]"
           >
-            <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
+            <BookmarkCheck className="w-4 h-4 text-[#C1ECD4]" />
             {isSaving ? 'Logging Trip Record...' : 'Save Trip to Uttarakhand Carbon Registry'}
           </button>
         </div>
