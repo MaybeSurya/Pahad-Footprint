@@ -121,7 +121,7 @@ export function resolveAQICategory(aqi: number): {
 }
 
 // Generate realistic mountain fallback for offline travelers in remote hill valleys
-function getOfflineAlpineFallback(
+export function getOfflineAlpineFallback(
   cityName: string,
   altitudeMeters = 1800,
   lat = 29.5,
@@ -219,7 +219,7 @@ export async function getDestinationWeather(
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4-second timeout for fragile mountain 3G
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2-second timeout for quick offline fallback
 
     // 1. Primary Call: MaybeSurya Weather API
     const weatherUrl = `https://weather.maybesurya.dev/api/weather?city=${encodeURIComponent(

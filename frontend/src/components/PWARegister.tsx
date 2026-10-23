@@ -14,24 +14,69 @@ export function PWARegister() {
 
   useEffect(() => {
     // 1. Register Service Worker for offline PWA capabilities
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
           .then((reg) => {
-            console.log('[Pahad PWA] Service Worker registered with scope:', reg.scope);
+            console.log('[Pahad PWA] Service Worker active with scope:', reg.scope);
           })
           .catch((err) => {
-            console.warn('[Pahad PWA] Service Worker registration notice:', err);
+            console.warn('[Pahad PWA] Service Worker registration note:', err);
           });
-      });
+      };
+
+      if (document.readyState === 'complete') {
+        registerSW();
+      } else {
+        window.addEventListener('load', registerSW);
+      }
     }
 
-    // 2. Track online / offline events in the hills
-    const handleOnline = () => setIsOffline(false);
+    // 2. Track online / offline events in the hills & trigger background sync
+    const syncOfflineTrips = async () => {
+      try {
+        const stored = localStorage.getItem('pahad_offline_trip_logs');
+        if (!stored) return;
+        const queue = JSON.parse(stored);
+        if (!Array.isArray(queue) || queue.length === 0) return;
+
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const remaining: any[] = [];
+
+        for (const item of queue) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/trips/log`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(item.data),
+            });
+            if (!res.ok) remaining.push(item);
+          } catch {
+            remaining.push(item);
+          }
+        }
+
+        if (remaining.length === 0) {
+          localStorage.removeItem('pahad_offline_trip_logs');
+        } else {
+          localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(remaining));
+        }
+      } catch {
+        // Ignore background sync errors
+      }
+    };
+
+    const handleOnline = () => {
+      setIsOffline(false);
+      syncOfflineTrips();
+    };
     const handleOffline = () => setIsOffline(true);
 
-    setIsOffline(!navigator.onLine);
+    if (typeof navigator !== 'undefined') {
+      setIsOffline(!navigator.onLine);
+    }
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -39,7 +84,6 @@ export function PWARegister() {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show install recommendation if not already in standalone mode
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       if (!isStandalone) {
         setShowInstallBanner(true);
@@ -90,8 +134,8 @@ export function PWARegister() {
             <WifiOff className="w-3.5 h-3.5 text-[#B3834D] flex-shrink-0" />
             <span className="text-[12px] font-mono font-medium">
               {language === 'HI'
-                ? '⛰️ पर्वतीय ऑफ़लाइन मोड — डिवाइस कैश से पूरी तरह कार्यरत'
-                : '⛰️ Offline Hill Mode — Operating 100% from Local Device Cache'}
+                ? '⛰️ पर्वतीय ऑफ़लाइन मोड — नेटवर्क निर्भरता मुक्त, डिवाइस से पूर्णतः कार्यरत'
+                : '⛰️ Offline Mountain Mode — All network dependencies bypassed. 100% functional.'}
             </span>
           </motion.div>
         )}

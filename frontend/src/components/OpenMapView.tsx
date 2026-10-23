@@ -106,11 +106,20 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
 
         leafletInstanceRef.current = map;
 
-        // Standard OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Standard OpenStreetMap tiles with offline-graceful tileerror handler
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 18,
           attribution: '&copy; OpenStreetMap contributors',
-        }).addTo(map);
+        });
+
+        // Gracefully suppress broken image errors when operating offline in remote hills
+        tileLayer.on('tileerror', (e: any) => {
+          if (e && e.tile) {
+            e.tile.style.visibility = 'hidden';
+          }
+        });
+
+        tileLayer.addTo(map);
 
         // Origin custom pin (Alpine Forest Green)
         const originIcon = L.divIcon({

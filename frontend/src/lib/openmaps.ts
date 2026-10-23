@@ -679,6 +679,12 @@ export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]
     return filtered;
   }
 
+  // Check if device is offline
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+  if (isOffline) {
+    return UTTARAKHAND_HUBS;
+  }
+
   // 2. OpenStreetMap Nominatim Search fallback if query has 3+ chars
   if (cleanQuery.length >= 3) {
     try {
@@ -687,7 +693,7 @@ export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]
       )}&countrycodes=in&limit=10`;
       const response = await fetch(osmUrl, {
         headers: { 'User-Agent': 'PahadFootprint-OpenMaps/1.0' },
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(2000),
       });
 
       if (response.ok) {
@@ -737,11 +743,17 @@ export async function calculateOpenMapRoute(
       ? 'mid_hills'
       : 'foothills';
 
+  // If offline in hills, bypass OSRM network request immediately and compute with local hill curvature
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+  if (isOffline) {
+    return computeLocalMountainRoute(origin, destination, terrainZone);
+  }
+
   // 1. Try OpenStreetMap public OSRM routing
   try {
     const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&overview=full`;
     const response = await fetch(osrmUrl, {
-      signal: AbortSignal.timeout(3500),
+      signal: AbortSignal.timeout(2500),
     });
 
     if (response.ok) {
@@ -781,9 +793,19 @@ export async function calculateOpenMapRoute(
     // Fallback to high-precision mountain curvature formula
   }
 
-  // 2. Calibrated mountain road curvature calculation:
-  // Direct air distance multiplied by actual mountain hairpin road factor:
-  // Foothills: ~1.28x | Mid-Hills: ~1.44x | High Altitude: ~1.62x
+  return computeLocalMountainRoute(origin, destination, terrainZone);
+}
+
+/**
+ * Calibrated mountain road curvature calculation:
+ * Direct air distance multiplied by actual mountain hairpin road factor:
+ * Foothills: ~1.28x | Mid-Hills: ~1.44x | High Altitude: ~1.62x
+ */
+export function computeLocalMountainRoute(
+  origin: OpenMapPlace,
+  destination: OpenMapPlace,
+  terrainZone: 'foothills' | 'mid_hills' | 'high_altitude'
+): OpenMapRouteResult {
   const airDistance = calculateHaversineKm(
     origin.latitude,
     origin.longitude,

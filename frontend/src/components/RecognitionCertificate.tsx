@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
 import { logActivity } from '../lib/activityLogs';
+import { generateQrCodeDataUrl } from '../lib/qrcode';
 
 interface RecognitionCertificateProps {
   travelerName: string;
@@ -73,10 +74,26 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
     formattedDate
   )}`;
 
-  // QrX API endpoint generates QR code image for this verification URL
-  const qrCodeUrl = `https://qrgen.maybesurya.dev/api/qrgen?data=${encodeURIComponent(
-    qrVerificationText
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+
+  useEffect(() => {
+    // Generate QR code 100% locally with zero network dependencies
+    generateQrCodeDataUrl(qrVerificationText).then((dataUrl) => {
+      setQrCodeDataUrl(dataUrl);
+    });
+  }, [qrVerificationText]);
+
+  // Completely offline data URI - no network call
+  const defaultOfflinePlaceholderQr = `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="#FAF9F5"/><rect x="10" y="10" width="25" height="25" fill="#304B38"/><rect x="65" y="10" width="25" height="25" fill="#304B38"/><rect x="10" y="65" width="25" height="25" fill="#304B38"/></svg>`
   )}`;
+
+  const isBrowserOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+  const qrCodeUrl =
+    qrCodeDataUrl ||
+    (isBrowserOffline
+      ? defaultOfflinePlaceholderQr
+      : `https://qrgen.maybesurya.dev/api/qrgen?data=${encodeURIComponent(qrVerificationText)}`);
 
   const handlePrint = () => {
     if (typeof window === 'undefined' || !certRef.current) return;
