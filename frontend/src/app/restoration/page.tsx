@@ -7,6 +7,7 @@ import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight,
 import gsap from 'gsap';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { RecognitionCertificate } from '../../components/RecognitionCertificate';
+import { logActivity } from '../../lib/activityLogs';
 
 // ─── Animated progress bar ───────────────────────────────────────────────────
 function ProgressBar({ target, isInView }: { target: number; isInView: boolean }) {
@@ -125,6 +126,15 @@ export default function RestorationPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setPledged(true);
+    const traveler = name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
+    logActivity({
+      type: 'pledge',
+      title: 'Native Banj Oak Sapling Pledge',
+      travelerName: traveler,
+      trees: saplings,
+      division: initiative,
+      status: 'pledged',
+    });
   };
 
   return (
@@ -142,9 +152,6 @@ export default function RestorationPage() {
 
       {/* Header */}
       <div className="pb-4 border-b" style={{ borderColor: 'var(--line)' }}>
-        <div className="section-kicker mb-2">
-          <span>{t('restoration.kicker')}</span>
-        </div>
         <h1
           className="text-[30px] sm:text-[40px] font-semibold tracking-[-0.035em] leading-tight mb-3"
           style={{ color: 'var(--ink)' }}
@@ -290,7 +297,20 @@ export default function RestorationPage() {
               href="https://devnexis.in/payment"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setDonated(true)}
+              onClick={() => {
+                setDonated(true);
+                const traveler = name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
+                logActivity({
+                  type: 'donation',
+                  title: 'NGO Tree Support Donation',
+                  travelerName: traveler,
+                  trees: saplings,
+                  amount: donationAmount,
+                  partner: 'DevNexis / Uttarakhand Van Panchayat JFM',
+                  division: initiative,
+                  status: 'confirmed',
+                });
+              }}
               className="button-primary w-full py-3.5 text-center flex items-center justify-center gap-2 font-bold text-[13.5px] rounded shadow-xs"
             >
               <CreditCard className="w-4 h-4" />

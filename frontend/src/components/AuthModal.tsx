@@ -70,7 +70,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           <h2 className="text-[18px] font-bold text-[#111827]">Sign In to Pahad Footprint</h2>
         </div>
         <p className="text-[12.5px] text-[#4B5563] mb-4">
-          Authenticate to log persistent trip telemetry or access the Regional Auditor portal.
+          Sign in to save your mountain journeys, download certificates, or view admin logs.
         </p>
 
         {error && (
@@ -109,14 +109,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             disabled={loading}
             className="w-full py-2.5 bg-[#1B4332] hover:bg-[#143225] text-white font-semibold text-[13px] rounded-btn shadow transition-colors"
           >
-            {loading ? 'Authenticating...' : 'Sign In'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         {/* Quick Demo Credentials */}
         <div className="border-t border-[#D8E8DF] pt-3 text-center">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#4B5563] mb-2">
-            One-Click Demo Credentials
+          <p className="text-[11px] font-semibold text-[#4B5563] mb-2">
+            Instant Demo Sign In
           </p>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -124,14 +124,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               onClick={() => handleQuickLogin(true)}
               className="py-1.5 px-2 bg-[#EDF6F0] hover:bg-[#D8E8DF] text-[#1B4332] border border-[#D8E8DF] rounded-btn text-[11.5px] font-semibold"
             >
-              🛡️ Regional Auditor
+              🛡️ Auditor / Admin
             </button>
             <button
               type="button"
               onClick={() => handleQuickLogin(false)}
               className="py-1.5 px-2 bg-[#F8FAF9] hover:bg-[#D8E8DF] text-[#4B5563] border border-[#D8E8DF] rounded-btn text-[11.5px] font-semibold"
             >
-              🌲 Tourist Account
+              🌲 Traveler
             </button>
           </div>
         </div>

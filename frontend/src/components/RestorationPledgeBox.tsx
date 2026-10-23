@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
 import { RecognitionCertificate } from './RecognitionCertificate';
+import { logActivity } from '../lib/activityLogs';
 
 interface RestorationPledgeBoxProps {
   saplings: {
@@ -43,12 +44,32 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   const handlePledge = () => {
     setPledged(true);
     setShowCertificate(true);
+    const name = travelerName.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
+    logActivity({
+      type: 'pledge',
+      title: 'Native Banj Oak Sapling Pledge',
+      travelerName: name,
+      trees: saplings.total,
+      division: 'Uttarakhand Van Panchayat Community Lands',
+      status: 'pledged',
+    });
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
   const handleConfirmDonation = () => {
     setDonated(true);
     setShowCertificate(true);
+    const name = travelerName.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
+    logActivity({
+      type: 'donation',
+      title: 'NGO Tree Support Donation',
+      travelerName: name,
+      trees: saplings.total,
+      amount: totalDonationAmount,
+      partner: 'DevNexis / Uttarakhand Van Panchayat JFM',
+      division: 'Uttarakhand Van Panchayat Community Lands',
+      status: 'confirmed',
+    });
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
@@ -81,10 +102,7 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
           <Trees className="w-4 h-4" />
         </div>
         <div>
-          <div className="section-kicker">
-            <span>{t('pledge.kicker')}</span>
-          </div>
-          <h4 className="text-[14.5px] font-bold text-[#242722] tracking-tight">
+          <h4 className="text-[15px] font-bold text-[#242722] tracking-tight">
             {t('pledge.title')}
           </h4>
           <p className="text-[12px] text-[#51554D] mt-1 leading-relaxed">

@@ -49,11 +49,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({ result, 
       {/* Header Row */}
       <div className="journal-card p-5 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <div className="section-kicker mb-1">
-            <BarChart3 className="w-3.5 h-3.5 text-[#496951]" />
-            <span>{t('results.eyebrow')}</span>
-          </div>
-          <h3 className="text-[17px] font-bold text-[#242722] tracking-tight">
+          <h3 className="text-[18px] font-bold text-[#242722] tracking-tight">
             {t('results.title')}
           </h3>
         </div>

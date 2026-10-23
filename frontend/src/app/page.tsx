@@ -27,46 +27,46 @@ export default function HomePage() {
     {
       num: '01',
       path: '/calculator/route',
-      titleEn: 'Corridor & Elevation',
-      titleHi: 'मार्ग एवं चढ़ाई कारक',
-      descEn: 'Pick any of Uttarakhand’s 13 districts with real mountain road curvature factors.',
-      descHi: 'उत्तराखंड के सभी १३ जिलों में से प्रस्थान और गंतव्य का चयन करें।',
+      titleEn: 'Route & Distance',
+      titleHi: 'मार्ग एवं दूरी',
+      descEn: 'Pick any of Uttarakhand’s 13 districts for your start and destination.',
+      descHi: 'उत्तराखंड के सभी १३ जिलों में से प्रस्थान और गंतव्य चुनें।',
       icon: MapPin,
     },
     {
       num: '02',
       path: '/calculator/transport',
-      titleEn: 'Two-Wheelers & Vehicles',
-      titleHi: 'दोपहिया एवं वाहन मोड',
-      descEn: 'Bicycle (pedal/EV), Motorcycle (petrol/EV/hybrid), Scooty, 4-wheelers, or UTC bus.',
-      descHi: 'साइकिल (पैडल/ईवी), मोटरसाइकिल, स्कूटी, कार अथवा रोडवेज बस का चयन।',
+      titleEn: 'Vehicle & Two-Wheelers',
+      titleHi: 'वाहन एवं दोपहिया',
+      descEn: 'Choose bicycle, motorcycle, scooty, car, or state bus.',
+      descHi: 'साइकिल, मोटरसाइकिल, स्कूटी, कार अथवा बस में से चुनें।',
       icon: Navigation2,
     },
     {
       num: '03',
       path: '/calculator/stay',
-      titleEn: 'Stay & Homestays',
+      titleEn: 'Where You Stay',
       titleHi: 'पहाड़ी ठहराव व होमस्टे',
-      descEn: 'Compare alpine camps and Pahadi homestays with grid-powered heated luxury hotels.',
-      descHi: 'होमस्टे, ईको-कैंप अथवा होटलों की रातों की संख्या और कार्बन प्रभाव।',
+      descEn: 'Choose homestays, nature camps, or hotels for each night.',
+      descHi: 'होमस्टे, ईको-कैंप अथवा होटलों की रातों की संख्या चुनें।',
       icon: HomeIcon,
     },
     {
       num: '04',
       path: '/calculator/habits',
-      titleEn: 'Eco-Habits & Review',
-      titleHi: 'ईको आदतें एवं समीक्षा',
-      descEn: 'Claim certified water & cuisine credits, review trip parameters before calculation.',
-      descHi: 'प्लास्टिक-मुक्त पानी और स्थानीय भोजन कटौती के साथ यात्रा मानकों की समीक्षा।',
+      titleEn: 'Green Travel Choices',
+      titleHi: 'ईको आदतें एवं बचत',
+      descEn: 'Save fuel and plastic with reusable water bottles and local mountain food.',
+      descHi: 'पुन: प्रयोज्य पानी की बोतल और स्थानीय पहाड़ी भोजन से होने वाली बचत।',
       icon: Leaf,
     },
     {
       num: '05',
       path: '/calculator/results',
-      titleEn: 'Results & Tree Support',
-      titleHi: 'परिणाम व पौधारोपण/दान',
-      descEn: 'View telemetry, compare eco-swaps, plant saplings or donate tree funds to NGOs.',
-      descHi: 'कार्बन टेलीमेट्री देखें, स्वयं पौधे लगाएं अथवा प्रमाणित एनजीओ को समतुल्य राशि दान करें।',
+      titleEn: 'Results & Trees',
+      titleHi: 'परिणाम व पौधारोपण',
+      descEn: 'See your travel footprint and plant trees or support local village councils.',
+      descHi: 'अपना यात्रा परिणाम देखें और पेड़ लगाएं अथवा स्थानीय वन पंचायतों को दान दें।',
       icon: BarChart3,
     },
   ];
@@ -80,24 +80,19 @@ export default function HomePage() {
       <section className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b" style={{ borderColor: 'var(--line)' }}>
           <div>
-            <div className="section-kicker mb-2">
-              <span>// {language === 'HI' ? 'चरणबद्ध ऑनबोर्डिंग सेटअप' : 'STEP-BY-STEP ONBOARDING SETUP'}</span>
-              <span className="text-[#8C9186]">·</span>
-              <span>{t('home.elevationAware')}</span>
-            </div>
             <h2
               className="text-[26px] sm:text-[34px] font-semibold tracking-[-0.035em] leading-tight"
               style={{ color: 'var(--ink)' }}
             >
-              {language === 'HI' ? 'यात्रा पदचिह्न ऑनबोर्डिंग सेटअप' : 'Expedition Carbon Onboarding Setup'}
+              {language === 'HI' ? '५ आसान चरणों में अपनी यात्रा की योजना बनाएं' : 'Plan Your Trip in 5 Simple Steps'}
             </h2>
             <p
               className="text-[14px] sm:text-[15px] mt-1.5 max-w-2xl leading-relaxed"
               style={{ color: 'var(--ink-soft)' }}
             >
               {language === 'HI'
-                ? 'अपनी उत्तराखंड यात्रा का कार्बन पदचिह्न निर्धारित करने के लिए चरण-दर-चरण सेटअप शुरू करें।'
-                : 'Configure your mountain journey page by page with high-altitude terrain incline physics, two-wheeler vehicle options, and certified stewardship credits.'}
+                ? 'जानें कि आपकी पहाड़ी यात्रा में कितना प्रदूषण और ईंधन लगता है, आसान हरित उपाय खोजें और देखें कि कितने पेड़ आपकी यात्रा को संतुलित कर सकते हैं।'
+                : 'Find out how much fuel and energy your mountain journey uses, discover easy green choices, and see how many trees can balance your travel.'}
             </p>
           </div>
 
@@ -105,7 +100,7 @@ export default function HomePage() {
             href="/calculator/route"
             className="button-primary px-5 py-3 rounded text-[13.5px] font-bold inline-flex items-center gap-2 self-start md:self-auto shadow-xs"
           >
-            <span>{language === 'HI' ? 'ऑनबोर्डिंग शुरू करें (चरण ०१) →' : 'Start Onboarding (Step 01) →'}</span>
+            <span>{language === 'HI' ? 'यात्रा शुरू करें (चरण ०१) →' : 'Start Planning (Step 01) →'}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

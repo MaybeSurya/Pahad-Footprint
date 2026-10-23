@@ -161,17 +161,13 @@ function VerifyContent() {
 
       {/* Page Header */}
       <div className="pb-4 border-b space-y-2" style={{ borderColor: 'var(--line)' }}>
-        <div className="section-kicker">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#304B38]" />
-          <span>{language === 'HI' ? 'वन पंचायत रजिस्ट्री' : 'VAN PANCHAYAT REGISTRY'}</span>
-        </div>
         <h1 className="text-[26px] sm:text-[34px] font-bold text-[#242722] tracking-tight">
-          {language === 'HI' ? 'प्रकृति संरक्षण प्रमाण पत्र सत्यापन' : 'Verify Mountain Stewardship Certificate'}
+          {language === 'HI' ? 'वृक्षारोपण प्रमाण पत्र सत्यापन' : 'Verify Tree Planting Certificate'}
         </h1>
         <p className="text-[13.5px] sm:text-[14.5px] text-[#51554D] max-w-2xl leading-relaxed">
           {language === 'HI'
-            ? 'उत्तराखंड की स्थानीय वन पंचायतों द्वारा जारी किए गए वृक्षारोपण एवं प्रकृति संरक्षण प्रमाण पत्रों की आधिकारिक ऑनलाइन पुष्टि।'
-            : 'Official online verification for Van Panchayat tree planting pledges and Himalayan conservation certificates.'}
+            ? 'उत्तराखंड में जारी किए गए पौधारोपण और संरक्षण प्रमाण पत्रों की ऑनलाइन पुष्टि करें।'
+            : 'Check and confirm official tree planting and conservation certificates issued across Uttarakhand.'}
         </p>
       </div>
 

@@ -46,43 +46,28 @@ export const Footer: React.FC = () => {
             background: 'linear-gradient(to bottom, var(--paper-deep) 0%, transparent 20%, transparent 80%, var(--paper-deep) 100%)',
           }}
         />
-
-        {/* Mountain Peak Badges overlay */}
-        <div className="absolute bottom-3 left-4 sm:left-8 flex items-center gap-2 font-mono text-[10px] text-[#51554D]">
-          <span className="px-2 py-0.5 rounded bg-[#FAF9F5]/90 border border-[#2D322B29] backdrop-blur-xs flex items-center gap-1.5 shadow-2xs">
-            <MountainSnow className="w-3 h-3 text-[#304B38]" />
-            <span>GARHWAL & KUMAON HIMALAYAN RIDGELINE</span>
-          </span>
-        </div>
-
-        <div className="absolute bottom-3 right-4 sm:right-8 hidden md:flex items-center gap-2 font-mono text-[10px] text-[#51554D]">
-          <span className="px-2.5 py-0.5 rounded bg-[#FAF9F5]/90 border border-[#2D322B29] backdrop-blur-xs flex items-center gap-1.5 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#496951]" />
-            <span>NANDA DEVI BASIN · 7,816m</span>
-          </span>
-        </div>
       </div>
 
-      {/* ── Elevation Corridor Ribbon ── */}
-      <div className="border-b bg-[#FAF9F5]/70 py-2.5 px-4 sm:px-6 lg:px-8 text-[11px] font-mono" style={{ borderColor: 'var(--line)' }}>
+      {/* ── Route Ribbon ── */}
+      <div className="border-b bg-[#FAF9F5]/70 py-2.5 px-4 sm:px-6 lg:px-8 text-[11.5px]" style={{ borderColor: 'var(--line)' }}>
         <div className="max-w-[1380px] 2xl:max-w-[1560px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[#777C72]">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-bold text-[#304B38] flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              <span>ELEVATION TRANSECT:</span>
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Popular Mountain Destinations:</span>
             </span>
-            <span>Rishikesh (372m)</span>
+            <span>Rishikesh</span>
             <span>→</span>
-            <span>Nainital (2,084m)</span>
+            <span>Nainital</span>
             <span>→</span>
-            <span>Badrinath (3,100m)</span>
+            <span>Badrinath</span>
             <span>→</span>
-            <span>Kedarnath (3,583m)</span>
+            <span>Kedarnath</span>
             <span>→</span>
-            <span className="font-bold text-[#242722]">Nanda Devi (7,816m)</span>
+            <span className="font-bold text-[#242722]">Valley of Flowers</span>
           </div>
-          <div className="text-[10.5px]">
-            <span>30.0668° N, 79.0193° E · Uttarakhand, India</span>
+          <div className="text-[11px]">
+            <span>Uttarakhand, India</span>
           </div>
         </div>
       </div>
@@ -113,7 +98,7 @@ export const Footer: React.FC = () => {
                 <span className="font-bold tracking-tight text-[16px] text-[#242722] block leading-tight">
                   {t('home.title')}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-[#777C72]">
+                <span className="text-[11px] text-[#777C72]">
                   {t('home.subtitle')}
                 </span>
               </div>
@@ -121,21 +106,18 @@ export const Footer: React.FC = () => {
 
             <p className="text-[12.5px] text-[#51554D] leading-relaxed">
               {language === 'HI'
-                ? 'उत्तराखंड की नाजुक हिमालयी वादियों में जिम्मेदारी से यात्रा करने का कार्बन गाइड। तीखे पहाड़ी मोड़ों, खड़ी चढ़ाइयों और स्थानीय वन पंचायतों के संरक्षण प्रयासों का संपूर्ण हिसाब।'
-                : 'A mountain-aware carbon guide for journeys through Uttarakhand. Factoring road curvature, steep climbs, high altitudes, and community tree planting.'}
+                ? 'उत्तराखंड की खूबसूरत वादियों में समझदारी से यात्रा करें। खड़ी चढ़ाइयों में जलने वाले अतिरिक्त ईंधन का हिसाब लगाएं और स्थानीय गांवों में पेड़ लगाएं।'
+                : 'A simple guide for mindful journeys across Uttarakhand. Learn how much fuel steep hills take and help plant native trees with local village councils.'}
             </p>
 
-            {/* Offline PWA & Privacy Badges */}
-            <div className="space-y-2 pt-1">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#E8EDE5] text-[#304B38] text-[11px] font-mono border border-[#496951]/20">
-                <WifiOff className="w-3 h-3" />
-                <span>100% Offline-Ready PWA</span>
+            <div className="text-[12px] text-[#51554D] bg-[#FAF9F5] p-2.5 rounded border border-[#2D322B14] space-y-1">
+              <div className="flex items-center gap-1.5 text-[#304B38]">
+                <WifiOff className="w-3.5 h-3.5" />
+                <span>Works offline in remote mountain areas</span>
               </div>
-              <div className="block">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white text-[#51554D] text-[11px] font-mono border border-[#2D322B1F]">
-                  <ShieldCheck className="w-3 h-3 text-[#496951]" />
-                  <span>Client-Side Private · Zero Tracking</span>
-                </span>
+              <div className="flex items-center gap-1.5 text-[#51554D]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#496951]" />
+                <span>Your trip numbers stay private on your device</span>
               </div>
             </div>
           </div>
@@ -182,7 +164,7 @@ export const Footer: React.FC = () => {
           {/* Column 3: Science & Methodology */}
           <div className="space-y-3">
             <h4 className="font-mono text-[11px] uppercase tracking-wider font-bold text-[#242722] border-b pb-1.5" style={{ borderColor: 'var(--line)' }}>
-              {language === 'HI' ? 'गणना विज्ञान एवं डेटा' : 'Science & Data'}
+              {language === 'HI' ? 'गणना विज्ञान एवं जानकारी' : 'Science & Information'}
             </h4>
             <ul className="space-y-2 text-[12.5px] text-[#51554D]">
               <li>
@@ -191,13 +173,19 @@ export const Footer: React.FC = () => {
                   <span>{t('navigation.methodology')}</span>
                 </Link>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#777C72]" />
-                <span>ARAI Indian Driving Standards</span>
+              <li>
+                <Link href="/faq" className="hover:text-[#242722] hover:underline flex items-center gap-1.5 transition-colors">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#304B38]" />
+                  <span>{language === 'HI' ? 'अक्सर पूछे जाने वाले सवाल (FAQ)' : 'Frequently Asked Questions (FAQ)'}</span>
+                </Link>
               </li>
               <li className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#777C72]" />
-                <span>CRRI Hill Incline Multipliers</span>
+                <span>{language === 'HI' ? 'पहाड़ी चढ़ाई और ईंधन गणना' : 'Mountain Driving Fuel Factors'}</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#777C72]" />
+                <span>{language === 'HI' ? 'सत्यापित वन पंचायत नर्सरी' : 'Community Nursery Standards'}</span>
               </li>
               <li>
                 <a
@@ -223,7 +211,7 @@ export const Footer: React.FC = () => {
           {/* Column 4: Tree Restoration & NGOs */}
           <div className="space-y-3">
             <h4 className="font-mono text-[11px] uppercase tracking-wider font-bold text-[#242722] border-b pb-1.5" style={{ borderColor: 'var(--line)' }}>
-              {language === 'HI' ? 'पौधारोपण एवं वन पंचायत' : 'Tree Restoration'}
+              {language === 'HI' ? 'पौधारोपण एवं सहयोग' : 'Restoration & Support'}
             </h4>
             <ul className="space-y-2 text-[12.5px] text-[#51554D]">
               <li>
@@ -253,6 +241,24 @@ export const Footer: React.FC = () => {
                   <span>{language === 'HI' ? 'प्रमाण पत्र सत्यापन' : 'Verify Certificate'}</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-[#242722] hover:underline inline-flex items-center gap-1.5 text-[#51554D] font-medium transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#496951]" />
+                  <span>{language === 'HI' ? 'संपर्क एवं सहायता डेस्क' : 'Contact & Field Desks'}</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:text-[#242722] hover:underline inline-flex items-center gap-1.5 text-[#777C72] hover:text-[#242722] transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#777C72]" />
+                  <span>{language === 'HI' ? 'गोपनीयता नीति' : 'Privacy Policy'}</span>
+                </Link>
+              </li>
               <li className="pt-1">
                 <div className="p-2.5 rounded border border-[#496951]/20 bg-[#E8EDE5]/50 text-[11px] text-[#304B38]">
                   <span>🌲 1 native Banj Oak tree absorbs ~22 kg CO₂ annually and protects mountain springs.</span>
@@ -271,18 +277,34 @@ export const Footer: React.FC = () => {
             <p className="text-[#51554D]">
               {t('footer.copyright')}
             </p>
-            <p className="text-[10.5px] font-mono text-[#777C72]">
-              Himalayan Weather API by MaybeSurya · OpenStreetMap & Leaflet · ARAI Hill Factors
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] text-[#51554D] pt-0.5">
+              <Link href="/privacy" className="hover:text-[#242722] hover:underline transition-colors">
+                {language === 'HI' ? 'गोपनीयता नीति' : 'Privacy Policy'}
+              </Link>
+              <span className="text-[#B4B7AE]">·</span>
+              <Link href="/contact" className="hover:text-[#242722] hover:underline transition-colors">
+                {language === 'HI' ? 'संपर्क' : 'Contact'}
+              </Link>
+              <span className="text-[#B4B7AE]">·</span>
+              <Link href="/faq" className="hover:text-[#242722] hover:underline transition-colors">
+                {language === 'HI' ? 'प्रश्नोत्तरी (FAQ)' : 'FAQ'}
+              </Link>
+              <span className="text-[#B4B7AE]">·</span>
+              <Link href="/verify" className="hover:text-[#242722] hover:underline transition-colors">
+                {language === 'HI' ? 'सत्यापन' : 'Verify'}
+              </Link>
+              <span className="text-[#B4B7AE]">·</span>
+              <Link href="/admin" className="hover:text-[#242722] hover:underline transition-colors">
+                {language === 'HI' ? 'व्यवस्थापक पैनल' : 'Admin'}
+              </Link>
+            </div>
+            <p className="text-[11px] text-[#777C72] pt-0.5">
+              Live mountain weather, route distances, and village tree planting records.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-[10.5px]">
-            <span className="px-2 py-0.5 rounded bg-white border border-[#2D322B1F] text-[#304B38] font-bold">
-              PWA v1.2 · OFFLINE READY
-            </span>
-            <span className="text-[#777C72]">
-              DEVBHOOMI UTTARAKHAND
-            </span>
+          <div className="flex items-center gap-2 text-[11px] text-[#777C72]">
+            <span>Uttarakhand, India</span>
           </div>
         </div>
       </div>

@@ -63,10 +63,7 @@ export const EcoSwapCard: React.FC<EcoSwapCardProps> = ({ ecoSwap, currentPerPer
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <div className="section-kicker">
-                <span>{t('ecoSwap.badge')}</span>
-              </div>
-              <h4 className="text-[14.5px] font-bold text-[#242722] tracking-tight">
+              <h4 className="text-[15px] font-bold text-[#242722] tracking-tight">
                 {t('ecoSwap.title')}
               </h4>
             </div>

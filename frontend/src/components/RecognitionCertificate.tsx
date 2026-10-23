@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
+import { logActivity } from '../lib/activityLogs';
 
 interface RecognitionCertificateProps {
   travelerName: string;
@@ -38,6 +39,18 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
 }) => {
   const { language } = useTranslation();
   const certRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    logActivity({
+      type: 'certificate',
+      title: 'Mountain Stewardship Certificate Issued',
+      travelerName,
+      trees: treeCount,
+      certificateId,
+      status: 'certified',
+      division: location,
+    });
+  }, [certificateId]);
 
   const formattedDate = new Date().toLocaleDateString(
     language === 'HI' ? 'hi-IN' : 'en-IN',

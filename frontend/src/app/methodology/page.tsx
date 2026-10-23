@@ -23,9 +23,6 @@ export default function MethodologyPage() {
 
       {/* Header */}
       <div className="pb-4 border-b" style={{ borderColor: 'var(--line)' }}>
-        <div className="section-kicker mb-2">
-          <span>{t('methodology.kicker')}</span>
-        </div>
         <h1
           className="text-[30px] sm:text-[40px] font-semibold tracking-[-0.035em] leading-tight mb-3"
           style={{ color: 'var(--ink)' }}

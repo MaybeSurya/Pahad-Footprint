@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, BookOpen, Trees, BarChart3, User } from 'lucide-react';
+import { Home, Compass, BookOpen, Trees, BarChart3, User, ChevronDown, LogOut, ShieldCheck } from 'lucide-react';
 import { UserSession } from '../types';
 import { getStoredSession, clearSession } from '../lib/api';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -18,6 +18,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage, t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
 
@@ -34,17 +36,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const isAdminRoute = pathname?.startsWith('/admin');
 
   const handleLogout = () => {
     clearSession();
     setSession(null);
+    setUserDropdownOpen(false);
     if (isAdminRoute) router.push('/');
   };
 
-  const toggleLanguage = () => setLanguage(language === 'EN' ? 'HI' : 'EN');
-
-  
+  const getUserDisplayName = () => {
+    if (!session) return '';
+    if (session.email) {
+      const prefix = session.email.split('@')[0];
+      if (prefix.toLowerCase() === 'admin') return 'Auditor';
+      if (prefix.toLowerCase() === 'tourist') return 'Traveler';
+      return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    }
+    return session.role === 'admin' ? 'Auditor' : 'Traveler';
+  };
 
   const navLinkClass = (active: boolean) =>
     `px-3.5 py-1.5 rounded text-[13px] font-medium transition-all duration-180 ${
@@ -98,9 +118,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               </span>
             </div>
           </Link>
-          <span className="hidden xl:inline-flex items-center text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/20">
-            {t('home.elevationAware')}
-          </span>
         </div>
 
         {/* Desktop Navigation Links */}
@@ -185,19 +202,88 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             </button>
           </div>
 
-          {/* Auth State */}
+          {/* Auth State with Profile Icon, Name & Dropdown */}
           {session ? (
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="hidden md:inline-block text-[11.5px] font-mono text-[#51554D]">
-                {session.role === 'admin' ? `🛡 ${t('navigation.auditor')}` : `👤 ${t('navigation.traveler')}`}
-              </span>
+            <div className="relative" ref={userDropdownRef}>
               <button
-                onClick={handleLogout}
-                className="text-[11px] sm:text-[11.5px] font-medium text-[#777C72] hover:text-[#242722] underline p-1 transition-colors"
-                title="Log out"
+                type="button"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="bg-[#F0EEE6] hover:bg-[#E8EDE5] text-[#242722] border border-[#2D322B29] rounded-md px-2.5 py-1.5 flex items-center gap-2 transition-all cursor-pointer shadow-2xs text-[12.5px] font-semibold"
+                aria-expanded={userDropdownOpen}
+                aria-label="User profile menu"
               >
-                {t('navigation.logout')}
+                <div className="w-6 h-6 rounded-full bg-[#E8EDE5] text-[#304B38] flex items-center justify-center border border-[#496951]/20">
+                  <User className="w-3.5 h-3.5" />
+                </div>
+                <span className="max-w-[120px] truncate">{getUserDisplayName()}</span>
+                <ChevronDown className={`w-3 h-3 text-[#777C72] transition-transform duration-150 ${userDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
+
+              {/* Dropdown Menu */}
+              {userDropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-56 rounded-lg border shadow-elevated p-1.5 z-50 animate-fadeIn text-[12.5px]"
+                  style={{
+                    backgroundColor: 'var(--paper-card)',
+                    borderColor: 'var(--line)',
+                  }}
+                >
+                  <div className="px-3 py-2 border-b border-[#2D322B14] mb-1">
+                    <div className="font-bold text-[#242722] text-[13px] truncate">
+                      {getUserDisplayName()}
+                    </div>
+                    <div className="text-[11px] font-mono text-[#777C72] truncate mt-0.5">
+                      {session.email}
+                    </div>
+                    <div className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/20">
+                      {session.role === 'admin' ? '🛡 Auditor / Admin' : '👤 Traveler'}
+                    </div>
+                  </div>
+
+                  <div className="py-1 space-y-0.5">
+                    {session.role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded text-[#51554D] hover:text-[#242722] hover:bg-[#F0EEE6] transition-colors"
+                      >
+                        <BarChart3 className="w-3.5 h-3.5 text-[#304B38]" />
+                        <span>{language === 'HI' ? 'व्यवस्थापक पैनल' : 'Admin Dashboard'}</span>
+                      </Link>
+                    )}
+                    <Link
+                      href="/verify"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded text-[#51554D] hover:text-[#242722] hover:bg-[#F0EEE6] transition-colors"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#496951]" />
+                      <span>{language === 'HI' ? 'सत्यापन पोर्टल' : 'Verify Certificate'}</span>
+                    </Link>
+                    <Link
+                      href="/restoration"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded text-[#51554D] hover:text-[#242722] hover:bg-[#F0EEE6] transition-colors"
+                    >
+                      <Trees className="w-3.5 h-3.5 text-[#304B38]" />
+                      <span>{language === 'HI' ? 'पेड़ लगाएं' : 'Plant Trees'}</span>
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-[#2D322B14] my-1" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserDropdownOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full text-left px-3 py-2 rounded text-[#A33B3B] hover:bg-[#FBEAEA] flex items-center gap-2 font-semibold transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>{language === 'HI' ? 'लॉग आउट' : 'Log out'}</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button
@@ -284,7 +370,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             </Link>
           ))}
 
-          {!session && (
+          {session ? (
+            <div className="pt-2 border-t border-[#2D322B14] mt-2 space-y-2">
+              <div className="px-3 py-1.5 flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-full bg-[#E8EDE5] text-[#304B38] flex items-center justify-center">
+                  <User className="w-4 h-4" />
+                </div>
+                <div className="truncate">
+                  <div className="font-bold text-[13px] text-[#242722] truncate">{getUserDisplayName()}</div>
+                  <div className="text-[11px] font-mono text-[#777C72] truncate">{session.email}</div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full py-2.5 px-3 rounded text-[13px] font-bold text-[#A33B3B] hover:bg-[#FBEAEA] flex items-center justify-center gap-2 transition-colors border border-[#A33B3B]/20"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{language === 'HI' ? 'लॉग आउट' : 'Log out'}</span>
+              </button>
+            </div>
+          ) : (
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

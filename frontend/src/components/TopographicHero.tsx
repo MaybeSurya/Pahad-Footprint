@@ -56,15 +56,9 @@ export const TopographicHero: React.FC = () => {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10"
         >
-          {/* Eyebrow Pill */}
-          <div className="eyebrow-pill mb-4 sm:mb-5">
-            <span className="text-[#304B38]">★</span>
-            <span>{t('hero.eyebrow')}</span>
-          </div>
-
           {/* Editorial Headline */}
           <h1
-            className="text-[30px] xs:text-[36px] sm:text-[46px] lg:text-[54px] xl:text-[58px] 2xl:text-[64px] 3xl:text-[72px] font-semibold leading-[1.08] tracking-[-0.035em] mb-4 sm:mb-5"
+            className="text-[32px] xs:text-[38px] sm:text-[46px] lg:text-[54px] xl:text-[58px] 2xl:text-[64px] font-semibold leading-[1.08] tracking-[-0.035em] mb-4 sm:mb-5"
             style={{ color: 'var(--ink)' }}
           >
             {t('hero.headline')}{' '}
@@ -80,7 +74,7 @@ export const TopographicHero: React.FC = () => {
           </p>
 
           {/* CTA Actions */}
-          <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 mb-7 sm:mb-9">
+          <div className="flex flex-wrap items-center gap-3.5 sm:gap-5">
             <Link
               href="/calculator/route"
               className="btn-primary"
@@ -95,22 +89,9 @@ export const TopographicHero: React.FC = () => {
               {t('hero.ctaMethodology')}
             </Link>
           </div>
-
-          {/* Field Note Index Line */}
-          <div
-            className="flex items-center gap-3 text-[11px] font-mono tracking-wider pt-2"
-            style={{ color: 'var(--ink-faint)' }}
-          >
-            <span>{t('hero.fig01')}</span>
-            <span
-              className="flex-1 max-w-[120px] h-[1px]"
-              style={{ backgroundColor: 'var(--line)' }}
-            />
-            <span className="hidden sm:inline">30.0869° N, 78.2676° E</span>
-          </div>
         </motion.div>
 
-        {/* RIGHT COLUMN: Monochromatic Etched Himalayan Mountain Plate */}
+        {/* RIGHT COLUMN: Himalayan Mountain Plate */}
         <div
           ref={mountainVisualRef}
           className="relative flex items-center justify-center min-h-[320px] sm:min-h-[380px] select-none"
@@ -119,7 +100,7 @@ export const TopographicHero: React.FC = () => {
           <div className="hero-contour hero-contour-one" />
           <div className="hero-contour hero-contour-two" />
 
-          {/* Archival Field-Guide Etched Plate */}
+          {/* Clean Mountain Plate */}
           <div className="relative z-10 w-full max-w-[500px] 2xl:max-w-[580px] 3xl:max-w-[640px]">
             <div
               className="relative rounded-lg overflow-hidden border shadow-sm"
@@ -128,25 +109,19 @@ export const TopographicHero: React.FC = () => {
                 backgroundColor: 'var(--paper-card)',
               }}
             >
-              {/* Corner crosshairs */}
-              <span className="absolute top-2 left-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
-              <span className="absolute top-2 right-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
-              <span className="absolute bottom-2 left-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
-              <span className="absolute bottom-2 right-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
-
-              {/* Elevation Altitude Callout Tag */}
+              {/* Mountain Name Tag */}
               <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#F7F6F0]/95 backdrop-blur-xs border border-[#2D322B29] shadow-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#496951]" />
-                <span className="font-mono text-[10.5px] font-semibold text-[#304B38]">
-                  {t('hero.nandaDeviAltitude')}
+                <span className="text-[11px] font-medium text-[#304B38]">
+                  Garhwal &amp; Kumaon Himalayas
                 </span>
               </div>
 
-              {/* Monochromatic Etched Mountain WebP Image */}
+              {/* Mountain Image */}
               <div className="relative w-full aspect-[4/3] sm:aspect-[16/11]">
                 <Image
                   src="/images/hero_mountain.webp"
-                  alt="Monochromatic woodblock etching of Himalayan peak sanctuary in Uttarakhand"
+                  alt="Mountain ridge in Uttarakhand"
                   fill
                   priority
                   className="object-cover mix-blend-multiply opacity-90 transition-transform duration-700 hover:scale-[1.02]"
@@ -158,28 +133,6 @@ export const TopographicHero: React.FC = () => {
                   style={{ backgroundColor: 'rgba(247, 246, 240, 0.12)' }}
                 />
               </div>
-
-              {/* Archival Field Caption Bar */}
-              <div
-                className="px-3.5 py-2 border-t flex items-center justify-between text-[10.5px] font-mono tracking-wider"
-                style={{
-                  backgroundColor: 'var(--paper-subtle)',
-                  borderColor: 'var(--line)',
-                  color: 'var(--ink-faint)',
-                }}
-              >
-                <span>{t('hero.fig01Survey')}</span>
-                <span className="text-[#496951] font-semibold">{t('hero.plate04')}</span>
-              </div>
-            </div>
-
-            {/* Coordinates Sub-caption */}
-            <div
-              className="flex items-center justify-between mt-2 px-1 text-[10px] font-mono tracking-wider"
-              style={{ color: 'var(--ink-faint)' }}
-            >
-              <span>{t('hero.alpineCrest')}</span>
-              <span>{t('hero.copperplate')}</span>
             </div>
           </div>
         </div>
