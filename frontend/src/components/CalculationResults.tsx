@@ -129,7 +129,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({ result, 
           <div className="breakdown-row">
             <div className="breakdown-label-line">
               <span className="font-medium text-[12.5px] text-[#242722]">
-                {t('results.transit')} ({input.distanceKm} km · {input.transportMode.toUpperCase()})
+                {t('results.transit')} ({input.distanceKm} km · {input.transportMode.toUpperCase()}{breakdown.vehicleAgeMultiplier && breakdown.vehicleAgeMultiplier > 1 ? ` · ${input.registrationYear || breakdown.registrationYear || ''} [+${Math.round((breakdown.vehicleAgeMultiplier - 1) * 100)}% vehicle age factor]` : ''})
               </span>
               <span className="font-mono text-[12px] font-semibold text-[#242722]">
                 {breakdown.transportPerPerson.toFixed(1)} kg
@@ -144,6 +144,20 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({ result, 
               />
             </div>
           </div>
+
+          {/* Older Vehicle Notice if applicable */}
+          {breakdown.vehicleAgeMultiplier && breakdown.vehicleAgeMultiplier > 1 && (
+            <div className="p-2.5 rounded bg-[#FFF9F0] border border-[#B3834D]/30 flex items-center justify-between text-[11.5px]">
+              <span className="text-[#8A5D2E]">
+                {language === 'HI'
+                  ? `पुराने वाहन की वजह से: ${input.registrationYear || breakdown.registrationYear} मॉडल पर +${Math.round((breakdown.vehicleAgeMultiplier - 1) * 100)}% अतिरिक्त CO₂ जुड़ा है`
+                  : `Older vehicle factor: Year ${input.registrationYear || breakdown.registrationYear} adds +${Math.round((breakdown.vehicleAgeMultiplier - 1) * 100)}% CO₂ release due to engine age`}
+              </span>
+              <span className="font-mono text-[#8A5D2E] font-bold">
+                {breakdown.vehicleAgeMultiplier.toFixed(2)}×
+              </span>
+            </div>
+          )}
 
           {/* Elevation incline penalty bar */}
           <div className="breakdown-row">

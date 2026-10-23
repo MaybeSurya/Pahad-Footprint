@@ -24,6 +24,7 @@ export const calculateTripSchema = z.object({
     vehicleType: z.enum(['suv', 'sedan', 'hatchback', 'coupe', 'motorcycle', 'scooty', 'bicycle']).optional(),
     fuelType: z.enum(['petrol', 'diesel', 'cng', 'lpg', 'hybrid', 'ev', 'pedal']).optional(),
     transitMode: z.enum(['bus', 'train', 'helicopter', 'flight']).optional(),
+    registrationYear: z.number().int().min(1980).max(2030).optional(),
     transportMode: z.string(),
     passengers: z.number().int().min(1, 'Passengers must be at least 1').max(50),
     nights: z.number().int().min(1, 'Nights must be at least 1').max(60),

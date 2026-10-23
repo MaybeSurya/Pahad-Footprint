@@ -34,6 +34,7 @@ export interface CalculationInput {
   vehicleType?: PrivateVehicleType;
   fuelType?: FuelType;
   transitMode?: TransitMode;
+  registrationYear?: number;
   transportMode: TransportMode | string;
   passengers: number;
   nights: number;
@@ -52,6 +53,8 @@ export interface CalculationOutput {
     transportPercent: number;
     accommodationPercent: number;
     transportRateLabel?: string;
+    vehicleAgeMultiplier?: number;
+    registrationYear?: number;
   };
   terrainAdjustment: {
     multiplier: number;

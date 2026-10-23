@@ -34,6 +34,7 @@ export interface CalculationInput {
   vehicleType?: PrivateVehicleType;
   fuelType?: FuelType;
   transitMode?: TransitMode;
+  registrationYear?: number;
   transportMode: TransportMode | string;
   passengers: number;
   nights: number;
@@ -52,6 +53,8 @@ export interface CalculationOutput {
     transportPercent: number;
     accommodationPercent: number;
     transportRateLabel: string;
+    vehicleAgeMultiplier?: number;
+    registrationYear?: number;
   };
   terrainAdjustment: {
     multiplier: number;
@@ -179,6 +182,33 @@ export const ECO_HABIT_CREDITS = {
   food: 3.0,
 };
 
+// Calculate CO2 increase multiplier based on vehicle registration year
+// Older vehicles have higher wear and tear and older emission standards, releasing more CO2 per km
+export function getVehicleAgeMultiplier(
+  year?: number,
+  fuelType?: string,
+  isTransit?: boolean,
+  vehicleType?: string
+): number {
+  if (isTransit || vehicleType === 'bicycle' || fuelType === 'pedal' || !year) {
+    return 1.0;
+  }
+  const currentYear = 2026;
+  const age = Math.max(0, currentYear - year);
+
+  // EVs degrade mildly over years due to battery cell aging
+  if (fuelType === 'ev') {
+    return Number((1 + Math.min(0.12, age * 0.012)).toFixed(3));
+  }
+
+  // Brand new (< 2 years old): 1.00x baseline
+  // Older vehicles release more CO2: each additional year adds ~2.5% emission factor (capped at +50% for 20+ years old)
+  if (age <= 2) return 1.0;
+  const basePenalty = (age - 2) * 0.025;
+  const multiplier = Math.min(1.50, 1.0 + basePenalty);
+  return Number(multiplier.toFixed(3));
+}
+
 export function calculateCarbonFootprint(input: CalculationInput): CalculationOutput {
   const distance = Math.max(1, Number(input.distanceKm) || 1);
   const passengers = Math.max(1, Number(input.passengers) || 1);
@@ -192,6 +222,8 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
   const isTransit =
     input.transportCategory === 'transit' ||
     ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
+
+  let vehicleAgeMultiplier = 1.0;
 
   if (isTransit) {
     const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase() as TransitMode;
@@ -207,14 +239,23 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
     const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase() as PrivateVehicleType;
     const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase() as FuelType;
 
-    const vkmFactor =
+    const baseVkmFactor =
       PRIVATE_VEHICLE_MATRIX[vType]?.[fType] ??
       (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
 
-    rateLabel = `${vkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+    vehicleAgeMultiplier = getVehicleAgeMultiplier(input.registrationYear, fType, false, vType);
+    const adjustedVkmFactor = baseVkmFactor * vehicleAgeMultiplier;
 
-    transportKgPP = (distance * vkmFactor * terrainMultiplier) / (1000 * passengers);
-    baselineTransportKgPP = (distance * vkmFactor) / (1000 * passengers);
+    const agePct = Math.round((vehicleAgeMultiplier - 1) * 100);
+    rateLabel =
+      vType === 'bicycle' && fType === 'pedal'
+        ? '0 g CO₂e/km (PEDAL BICYCLE)'
+        : agePct > 0
+        ? `${adjustedVkmFactor.toFixed(1)} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()} · ${input.registrationYear} [+${agePct}% older vehicle])`
+        : `${baseVkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+
+    transportKgPP = (distance * adjustedVkmFactor * terrainMultiplier) / (1000 * passengers);
+    baselineTransportKgPP = (distance * adjustedVkmFactor) / (1000 * passengers);
   }
 
   const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
@@ -272,6 +313,8 @@ export function calculateCarbonFootprint(input: CalculationInput): CalculationOu
       transportPercent: transportPct,
       accommodationPercent: stayPct,
       transportRateLabel: rateLabel,
+      vehicleAgeMultiplier,
+      registrationYear: input.registrationYear,
     },
     terrainAdjustment: {
       multiplier: terrainMultiplier,

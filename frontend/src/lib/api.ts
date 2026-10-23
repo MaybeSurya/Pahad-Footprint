@@ -2,6 +2,30 @@ import { CalculationInput, CalculationOutput, AdminMetrics, AuditTripLog, UserSe
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+// Calculate CO2 increase multiplier based on vehicle registration year
+// Older vehicles release progressively more CO2 due to engine wear and older emission norms
+export function getVehicleAgeMultiplier(
+  year?: number,
+  fuelType?: string,
+  isTransit?: boolean,
+  vehicleType?: string
+): number {
+  if (isTransit || vehicleType === 'bicycle' || fuelType === 'pedal' || !year) {
+    return 1.0;
+  }
+  const currentYear = 2026;
+  const age = Math.max(0, currentYear - year);
+
+  if (fuelType === 'ev') {
+    return Number((1 + Math.min(0.12, age * 0.012)).toFixed(3));
+  }
+
+  if (age <= 2) return 1.0;
+  const basePenalty = (age - 2) * 0.025;
+  const multiplier = Math.min(1.50, 1.0 + basePenalty);
+  return Number(multiplier.toFixed(3));
+}
+
 // Local deterministic calculator fallback in case backend server is paused or during edge-static render
 export function calculateLocalDeterministic(input: CalculationInput): CalculationOutput {
   const distance = Math.max(1, Number(input.distanceKm) || 1);
@@ -35,6 +59,8 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
   let transportKgPP = 0;
   let baselineTransportKgPP = 0;
   let rateLabel = '';
+  let vehicleAgeMultiplier = 1.0;
+
   if (isTransit) {
     const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
     const factor = transitFactors[modeKey] || 30;
@@ -45,17 +71,23 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
   } else {
     const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
     const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
-    const factor =
+    const baseFactor =
       privateMatrix[vType]?.[fType] ??
       (vType === 'bicycle' && fType === 'pedal' ? 0 : input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
 
+    vehicleAgeMultiplier = getVehicleAgeMultiplier(input.registrationYear, fType, false, vType);
+    const adjustedFactor = baseFactor * vehicleAgeMultiplier;
+
+    const agePct = Math.round((vehicleAgeMultiplier - 1) * 100);
     rateLabel =
       vType === 'bicycle' && fType === 'pedal'
         ? '0 g CO₂e/km (PEDAL BICYCLE - ZERO EMISSION)'
-        : `${factor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+        : agePct > 0
+        ? `${adjustedFactor.toFixed(1)} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()} · ${input.registrationYear} [+${agePct}% older vehicle])`
+        : `${baseFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
 
-    transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
-    baselineTransportKgPP = (distance * factor) / (1000 * passengers);
+    transportKgPP = (distance * adjustedFactor * terrainMultiplier) / (1000 * passengers);
+    baselineTransportKgPP = (distance * adjustedFactor) / (1000 * passengers);
   }
 
     const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
@@ -101,6 +133,8 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
         transportPercent: transportPct,
         accommodationPercent: stayPct,
         transportRateLabel: rateLabel,
+        vehicleAgeMultiplier,
+        registrationYear: input.registrationYear,
       },
     terrainAdjustment: {
       multiplier: terrainMultiplier,

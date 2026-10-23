@@ -93,6 +93,8 @@ interface TripContextType {
   setFuelType: (f: FuelType) => void;
   transitMode: TransitMode;
   setTransitMode: (m: TransitMode) => void;
+  registrationYear: number;
+  setRegistrationYear: (y: number) => void;
   transportMode: string;
   passengers: number;
   setPassengers: React.Dispatch<React.SetStateAction<number>>;
@@ -132,6 +134,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [vehicleType, setVehicleType] = useState<PrivateVehicleType>('motorcycle');
   const [fuelType, setFuelType] = useState<FuelType>('petrol');
   const [transitMode, setTransitMode] = useState<TransitMode>('bus');
+  const [registrationYear, setRegistrationYear] = useState<number>(2022);
   const [passengers, setPassengers] = useState<number>(2);
 
   const [nights, setNights] = useState<number>(4);
@@ -160,6 +163,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (parsed.accommodation) setAccommodation(parsed.accommodation);
         if (parsed.habitWater !== undefined) setHabitWater(parsed.habitWater);
         if (parsed.habitFood !== undefined) setHabitFood(parsed.habitFood);
+        if (parsed.registrationYear) setRegistrationYear(parsed.registrationYear);
         if (parsed.selectedRoute) setSelectedRoute(parsed.selectedRoute);
       }
     } catch {
@@ -179,6 +183,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           vehicleType,
           fuelType,
           transitMode,
+          registrationYear,
           passengers,
           nights,
           accommodation,
@@ -197,6 +202,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     vehicleType,
     fuelType,
     transitMode,
+    registrationYear,
     passengers,
     nights,
     accommodation,
@@ -251,6 +257,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     vehicleType,
     fuelType,
     transitMode,
+    registrationYear,
     transportMode,
     passengers,
     nights,
@@ -277,6 +284,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     vehicleType,
     fuelType,
     transitMode,
+    registrationYear,
     transportMode,
     passengers,
     nights,
@@ -291,6 +299,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setTransportCategory('two_wheeler');
     setVehicleType('motorcycle');
     setFuelType('petrol');
+    setRegistrationYear(2022);
     setPassengers(2);
     setNights(4);
     setAccommodation('homestay');
@@ -321,6 +330,8 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setFuelType,
         transitMode,
         setTransitMode,
+        registrationYear,
+        setRegistrationYear,
         transportMode,
         passengers,
         setPassengers,
@@ -332,8 +343,8 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         accommodation,
         setAccommodation,
         habitWater,
-        setHabitWater,
         habitFood,
+        setHabitWater,
         setHabitFood,
         calcResult,
         isCalculating,

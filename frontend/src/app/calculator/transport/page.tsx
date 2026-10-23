@@ -12,6 +12,7 @@ import {
   Flame,
   Leaf,
   Zap,
+  Calendar,
 } from 'lucide-react';
 import {
   SuvIcon,
@@ -48,10 +49,16 @@ export default function TransportStepPage() {
     setFuelType,
     transitMode,
     setTransitMode,
+    registrationYear,
+    setRegistrationYear,
     passengers,
     setPassengers,
     currentLimit,
   } = useTrip();
+
+  const isPrivateVehicle = transportCategory !== 'transit' && vehicleType !== 'bicycle';
+  const vehicleAge = Math.max(0, 2026 - registrationYear);
+  const extraEmissionPct = vehicleAge <= 2 ? 0 : Math.min(50, Math.round((vehicleAge - 2) * 2.5));
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -349,6 +356,106 @@ export default function TransportStepPage() {
                   </button>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Year of Registration - Only for Private Vehicles (Cars & Two-Wheelers, not public transit or bicycles) */}
+        {isPrivateVehicle && (
+          <div className="bg-[#FAF9F5] border border-[#2D322B29] rounded p-4 space-y-3.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-[#496951]" />
+                <label className="text-[13px] font-bold text-[#242722]">
+                  {language === 'HI' ? 'वाहन पंजीकरण वर्ष (Registration Year)' : 'Vehicle Year of Registration'}
+                </label>
+              </div>
+              <span className={`font-mono text-[11px] font-bold px-2.5 py-1 rounded border ${
+                extraEmissionPct === 0
+                  ? 'bg-[#E8EDE5] text-[#304B38] border-[#496951]/25'
+                  : 'bg-[#FFF6E5] text-[#8A5D2E] border-[#B3834D]/30'
+              }`}>
+                {extraEmissionPct === 0
+                  ? (language === 'HI' ? `${registrationYear} · आधुनिक इंजन (सामान्य उत्सर्जन)` : `${registrationYear} · Modern Engine (Baseline)`)
+                  : (language === 'HI' ? `${registrationYear} · ${vehicleAge} वर्ष पुराना (+${extraEmissionPct}% अधिक CO₂)` : `${registrationYear} · ${vehicleAge} yrs old (+${extraEmissionPct}% CO₂ release)`)}
+              </span>
+            </div>
+
+            <p className="text-[11.5px] text-[#51554D] leading-relaxed">
+              {language === 'HI'
+                ? 'पुराने वाहन कम कुशलता से ईंधन जलाते हैं और खड़ी पहाड़ी चढ़ाई पर अधिक CO₂ छोड़ते हैं। गाड़ी जितनी पुरानी होगी, उतना अधिक उत्सर्जन होगा।'
+                : 'Older vehicles burn fuel less efficiently and release more CO₂ on mountain climbs. The older the vehicle is, the more emissions it produces.'}
+            </p>
+
+            {/* Quick Preset Buttons */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <span className="text-[11px] font-semibold text-[#777C72] font-mono mr-1">
+                {language === 'HI' ? 'त्वरित चयन:' : 'Quick Select:'}
+              </span>
+              {[
+                { year: 2026, label: language === 'HI' ? '2026 (नवीनतम)' : '2026 (New)' },
+                { year: 2024, label: '2024' },
+                { year: 2021, label: '2021' },
+                { year: 2017, label: '2017' },
+                { year: 2013, label: '2013' },
+                { year: 2008, label: '2008' },
+                { year: 2000, label: language === 'HI' ? '2000 या पुराना' : '2000 / Older' },
+              ].map((preset) => {
+                const isSelected = registrationYear === preset.year;
+                return (
+                  <button
+                    key={preset.year}
+                    type="button"
+                    onClick={() => setRegistrationYear(preset.year)}
+                    className={`py-1 px-2.5 rounded text-[11.5px] font-mono font-semibold transition-all border ${
+                      isSelected
+                        ? 'bg-[#242722] text-white border-[#242722] shadow-xs'
+                        : 'bg-white text-[#51554D] border-[#2D322B29] hover:bg-[#F0EEE6]'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Range Slider & Dropdown Selector */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center pt-2 border-t border-[#2D322B14]">
+              <div className="sm:col-span-2 space-y-1">
+                <div className="flex justify-between items-center text-[11px] font-mono text-[#777C72]">
+                  <span>2000 ({language === 'HI' ? 'पुराना' : 'Older'})</span>
+                  <span className="font-bold text-[#242722]">
+                    {language === 'HI' ? `चुना गया: ${registrationYear}` : `Selected: ${registrationYear}`}
+                  </span>
+                  <span>2026 ({language === 'HI' ? 'नया' : 'Newest'})</span>
+                </div>
+                <input
+                  type="range"
+                  min={2000}
+                  max={2026}
+                  step={1}
+                  value={registrationYear}
+                  onChange={(e) => setRegistrationYear(Number(e.target.value))}
+                  className="w-full accent-[#496951] cursor-pointer h-2 bg-[#E8EDE5] rounded-lg"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2">
+                <label className="text-[11.5px] text-[#777C72] font-semibold whitespace-nowrap">
+                  {language === 'HI' ? 'वर्ष चुनें:' : 'Exact Year:'}
+                </label>
+                <select
+                  value={registrationYear}
+                  onChange={(e) => setRegistrationYear(Number(e.target.value))}
+                  className="font-mono text-[12px] font-bold py-1.5 px-2.5 rounded border border-[#2D322B29] bg-white text-[#242722] cursor-pointer"
+                >
+                  {Array.from({ length: 27 }, (_, i) => 2026 - i).map((yr) => (
+                    <option key={yr} value={yr}>
+                      {yr === 2000 ? (language === 'HI' ? '2000 या पुराना' : '2000 or older') : yr}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         )}

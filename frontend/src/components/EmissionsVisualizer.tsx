@@ -433,6 +433,13 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
               <p className="font-mono text-[11px] text-[#51554D] bg-white p-2 rounded border break-words overflow-x-auto" style={{ borderColor: 'var(--line)' }}>
                 {input.distanceKm} km × {breakdown.transportRateLabel || '180 g/vkm'} × {terrainAdjustment.multiplier.toFixed(2)}x Incline {input.transportCategory === 'transit' ? '' : `÷ ${input.passengers} pax `}= {breakdown.transportPerPerson.toFixed(1)} kg CO₂e
               </p>
+              {breakdown.vehicleAgeMultiplier && breakdown.vehicleAgeMultiplier > 1 && (
+                <p className="text-[10.5px] text-[#8A5D2E] font-medium">
+                  {language === 'HI'
+                    ? `⚠️ पुराने वाहन का प्रभाव: ${input.registrationYear || breakdown.registrationYear} मॉडल की वजह से ${breakdown.vehicleAgeMultiplier.toFixed(2)}× (+${Math.round((breakdown.vehicleAgeMultiplier - 1) * 100)}%) अधिक उत्सर्जन`
+                    : `⚠️ Older vehicle adjustment: ${input.registrationYear || breakdown.registrationYear} registration adds ${breakdown.vehicleAgeMultiplier.toFixed(2)}× (+${Math.round((breakdown.vehicleAgeMultiplier - 1) * 100)}%) higher CO₂ emissions`}
+                </p>
+              )}
             </div>
 
             <div className="bg-[#FAF9F5] border rounded p-3 space-y-1.5" style={{ borderColor: 'var(--line)' }}>

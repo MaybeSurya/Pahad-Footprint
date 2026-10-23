@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ECO_HABIT_CREDITS = exports.ACCOMMODATION_FACTORS = exports.TERRAIN_MULTIPLIERS = exports.VEHICLE_FACTORS = exports.TRANSIT_MODE_FACTORS = exports.PRIVATE_VEHICLE_MATRIX = void 0;
+exports.getVehicleAgeMultiplier = getVehicleAgeMultiplier;
 exports.calculateCarbonFootprint = calculateCarbonFootprint;
 // Vehicle emission factors matrix (g CO2e per vehicle-km / vkm) based on ARAI/CEA baseline
 exports.PRIVATE_VEHICLE_MATRIX = {
@@ -11,6 +12,7 @@ exports.PRIVATE_VEHICLE_MATRIX = {
         lpg: 145,
         hybrid: 110,
         ev: 50,
+        pedal: 0,
     },
     sedan: {
         diesel: 155,
@@ -19,6 +21,7 @@ exports.PRIVATE_VEHICLE_MATRIX = {
         lpg: 120,
         hybrid: 90,
         ev: 42,
+        pedal: 0,
     },
     hatchback: {
         diesel: 130,
@@ -27,6 +30,7 @@ exports.PRIVATE_VEHICLE_MATRIX = {
         lpg: 105,
         hybrid: 78,
         ev: 36,
+        pedal: 0,
     },
     coupe: {
         diesel: 165,
@@ -35,6 +39,34 @@ exports.PRIVATE_VEHICLE_MATRIX = {
         lpg: 135,
         hybrid: 100,
         ev: 48,
+        pedal: 0,
+    },
+    motorcycle: {
+        petrol: 55,
+        hybrid: 38,
+        ev: 18,
+        diesel: 55,
+        cng: 55,
+        lpg: 55,
+        pedal: 0,
+    },
+    scooty: {
+        petrol: 50,
+        hybrid: 35,
+        ev: 16,
+        diesel: 50,
+        cng: 50,
+        lpg: 50,
+        pedal: 0,
+    },
+    bicycle: {
+        pedal: 0,
+        ev: 8,
+        petrol: 0,
+        hybrid: 0,
+        diesel: 0,
+        cng: 0,
+        lpg: 0,
     },
 };
 // Public transit & aviation emission factors (g CO2e per passenger-km / pkm)
@@ -68,6 +100,26 @@ exports.ECO_HABIT_CREDITS = {
     water: 2.0,
     food: 3.0,
 };
+// Calculate CO2 increase multiplier based on vehicle registration year
+// Older vehicles have higher wear and tear and older emission standards, releasing more CO2 per km
+function getVehicleAgeMultiplier(year, fuelType, isTransit, vehicleType) {
+    if (isTransit || vehicleType === 'bicycle' || fuelType === 'pedal' || !year) {
+        return 1.0;
+    }
+    const currentYear = 2026;
+    const age = Math.max(0, currentYear - year);
+    // EVs degrade mildly over years due to battery cell aging
+    if (fuelType === 'ev') {
+        return Number((1 + Math.min(0.12, age * 0.012)).toFixed(3));
+    }
+    // Brand new (< 2 years old): 1.00x baseline
+    // Older vehicles release more CO2: each additional year adds ~2.5% emission factor (capped at +50% for 20+ years old)
+    if (age <= 2)
+        return 1.0;
+    const basePenalty = (age - 2) * 0.025;
+    const multiplier = Math.min(1.50, 1.0 + basePenalty);
+    return Number(multiplier.toFixed(3));
+}
 function calculateCarbonFootprint(input) {
     const distance = Math.max(1, Number(input.distanceKm) || 1);
     const passengers = Math.max(1, Number(input.passengers) || 1);
@@ -78,6 +130,7 @@ function calculateCarbonFootprint(input) {
     let rateLabel = '';
     const isTransit = input.transportCategory === 'transit' ||
         ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
+    let vehicleAgeMultiplier = 1.0;
     if (isTransit) {
         const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
         const factor = exports.TRANSIT_MODE_FACTORS[modeKey] ?? exports.TRANSIT_MODE_FACTORS.bus;
@@ -91,11 +144,19 @@ function calculateCarbonFootprint(input) {
         // Private vehicle mode
         const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
         const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
-        const vkmFactor = exports.PRIVATE_VEHICLE_MATRIX[vType]?.[fType] ??
+        const baseVkmFactor = exports.PRIVATE_VEHICLE_MATRIX[vType]?.[fType] ??
             (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
-        rateLabel = `${vkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
-        transportKgPP = (distance * vkmFactor * terrainMultiplier) / (1000 * passengers);
-        baselineTransportKgPP = (distance * vkmFactor) / (1000 * passengers);
+        vehicleAgeMultiplier = getVehicleAgeMultiplier(input.registrationYear, fType, false, vType);
+        const adjustedVkmFactor = baseVkmFactor * vehicleAgeMultiplier;
+        const agePct = Math.round((vehicleAgeMultiplier - 1) * 100);
+        rateLabel =
+            vType === 'bicycle' && fType === 'pedal'
+                ? '0 g CO₂e/km (PEDAL BICYCLE)'
+                : agePct > 0
+                    ? `${adjustedVkmFactor.toFixed(1)} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()} · ${input.registrationYear} [+${agePct}% older vehicle])`
+                    : `${baseVkmFactor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+        transportKgPP = (distance * adjustedVkmFactor * terrainMultiplier) / (1000 * passengers);
+        baselineTransportKgPP = (distance * adjustedVkmFactor) / (1000 * passengers);
     }
     const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
     const uphillDeltaTotal = uphillDeltaPP * passengers;
@@ -147,6 +208,8 @@ function calculateCarbonFootprint(input) {
             transportPercent: transportPct,
             accommodationPercent: stayPct,
             transportRateLabel: rateLabel,
+            vehicleAgeMultiplier,
+            registrationYear: input.registrationYear,
         },
         terrainAdjustment: {
             multiplier: terrainMultiplier,
