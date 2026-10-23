@@ -1,0 +1,59 @@
+{
+  "exportedAt": "2026-10-23T16:50:44.183Z",
+  "source": "pahad_footprint_dev.sqlite",
+  "database": "pahad_footprint",
+  "tables": {
+    "users": [
+      {
+        "id": "60d2f3b9-e1ca-4257-917c-6d4fcbe14611",
+        "email": "admin@pahadfootprint.gov.in",
+        "passwordHash": "$2a$10$95LNqsvxC5GM/T6yY2QXROhoZeDKJxoSDQ3XFPsLDrBowkvBKrztO",
+        "role": "admin",
+        "createdAt": "2026-10-22 09:13:25.699 +00:00",
+        "updatedAt": "2026-10-22 09:13:25.699 +00:00"
+      },
+      {
+        "id": "37ed8458-5c50-4217-b3c4-7ed2fd00beb1",
+        "email": "tourist@pahadfootprint.org",
+        "passwordHash": "$2a$10$iBVvcUw6HpPFG6gWyvvM8.DyVY7ir07mSaXGl3Vzl5GaTb5f904SO",
+        "role": "tourist",
+        "createdAt": "2026-10-22 09:13:25.772 +00:00",
+        "updatedAt": "2026-10-22 09:13:25.772 +00:00"
+      }
+    ],
+    "trips": [
+      {
+        "id": "f30dc73f-f00d-48aa-b0e5-8d7ce27e0ec7",
+        "userId": "60d2f3b9-e1ca-4257-917c-6d4fcbe14611",
+        "routeName": "Kumaon Hill Circuit: Kathgodam – Nainital – Mukteshwar – Almora (320 km)",
+        "distanceKm": 320,
+        "terrainZone": "mid_hills",
+        "transportMode": "suv",
+        "passengers": 3,
+        "nights": 4,
+        "accommodationType": "hotel",
+        "perPersonCo2e": 55,
+        "totalCo2e": 165,
+        "restorationPledged": 0,
+        "createdAt": "2026-10-22 09:55:33.005 +00:00",
+        "updatedAt": "2026-10-22 09:55:33.005 +00:00"
+      },
+      {
+        "id": "a38fbe1f-b992-4fe6-968a-9c7430b1e67a",
+        "userId": "60d2f3b9-e1ca-4257-917c-6d4fcbe14611",
+        "routeName": "Dehradun → Harsil Apple Valley (428 km)",
+        "distanceKm": 428,
+        "terrainZone": "high_altitude",
+        "transportMode": "bus",
+        "passengers": 45,
+        "nights": 14,
+        "accommodationType": "luxury",
+        "perPersonCo2e": 349,
+        "totalCo2e": 15703.9,
+        "restorationPledged": 0,
+        "createdAt": "2026-10-23 13:28:47.406 +00:00",
+        "updatedAt": "2026-10-23 13:28:47.406 +00:00"
+      }
+    ]
+  }
+}
