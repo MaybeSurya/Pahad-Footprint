@@ -47,7 +47,7 @@ export const TopographicHero: React.FC = () => {
       }}
       aria-label="Himalayan Eco-Carbon Accounting Overview"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] items-center gap-10 lg:gap-14">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] 2xl:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)] items-center gap-8 sm:gap-10 lg:gap-14">
         {/* LEFT COLUMN: Editorial Field-Guide Copy */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -56,14 +56,14 @@ export const TopographicHero: React.FC = () => {
           className="relative z-10"
         >
           {/* Eyebrow Pill */}
-          <div className="eyebrow-pill mb-5">
+          <div className="eyebrow-pill mb-4 sm:mb-5">
             <span className="text-[#304B38]">★</span>
             <span>{t('hero.eyebrow')}</span>
           </div>
 
           {/* Editorial Headline */}
           <h1
-            className="text-[34px] sm:text-[46px] lg:text-[56px] font-semibold leading-[1.08] tracking-[-0.035em] mb-5"
+            className="text-[30px] xs:text-[36px] sm:text-[46px] lg:text-[54px] xl:text-[58px] 2xl:text-[64px] 3xl:text-[72px] font-semibold leading-[1.08] tracking-[-0.035em] mb-4 sm:mb-5"
             style={{ color: 'var(--ink)' }}
           >
             {t('hero.headline')}{' '}
@@ -72,14 +72,14 @@ export const TopographicHero: React.FC = () => {
 
           {/* Description */}
           <p
-            className="text-[15px] sm:text-[16.5px] leading-relaxed max-w-[580px] mb-7"
+            className="text-[14px] xs:text-[15px] sm:text-[16.5px] 3xl:text-[18px] leading-relaxed max-w-[580px] 3xl:max-w-[700px] mb-6 sm:mb-7"
             style={{ color: 'var(--ink-soft)' }}
           >
             {t('hero.description')}
           </p>
 
           {/* CTA Actions */}
-          <div className="flex flex-wrap items-center gap-5 mb-9">
+          <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 mb-7 sm:mb-9">
             <a
               href="#calculator"
               className="btn-primary"
@@ -89,7 +89,7 @@ export const TopographicHero: React.FC = () => {
             </a>
             <a
               href="/methodology"
-              className="text-link"
+              className="text-link text-[13px] sm:text-[14px]"
             >
               {t('hero.ctaMethodology')}
             </a>
@@ -119,7 +119,7 @@ export const TopographicHero: React.FC = () => {
           <div className="hero-contour hero-contour-two" />
 
           {/* Archival Field-Guide Etched Plate */}
-          <div className="relative z-10 w-full max-w-[500px]">
+          <div className="relative z-10 w-full max-w-[500px] 2xl:max-w-[580px] 3xl:max-w-[640px]">
             <div
               className="relative rounded-lg overflow-hidden border shadow-sm"
               style={{

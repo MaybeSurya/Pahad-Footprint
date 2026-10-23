@@ -261,9 +261,9 @@ export const RouteSearch: React.FC<RouteSearchProps> = ({
       {routeResult && (
         <div className="p-3 rounded border space-y-2" style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}>
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-1.5 font-bold text-[12.5px] text-[#242722]">
-              <Compass className="w-3.5 h-3.5 text-[#496951]" />
-              <span>
+            <div className="flex items-center gap-1.5 font-bold text-[12.5px] text-[#242722] min-w-0">
+              <Compass className="w-3.5 h-3.5 text-[#496951] flex-shrink-0" />
+              <span className="break-words">
                 {origin.placeName.split('(')[0].trim()} → {destination.placeName.split('(')[0].trim()}
               </span>
             </div>

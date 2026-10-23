@@ -61,17 +61,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
       style={{ borderColor: 'var(--line)' }}
       role="banner"
     >
-      <div className="max-w-[1380px] mx-auto h-[68px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div className="max-w-[1380px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] mx-auto h-[68px] px-4 sm:px-6 lg:px-8 2xl:px-12 flex items-center justify-between gap-3 sm:gap-4">
         {/* Brand Lockup */}
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-[#496951] rounded p-1"
+            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#496951] rounded p-1"
             aria-label="Pahad Footprint - Home"
           >
             {/* Pen-and-ink etched mountain mark */}
             <div
-              className="w-9 h-9 rounded border flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
               style={{
                 backgroundColor: 'var(--paper-card)',
                 borderColor: 'var(--line)',
@@ -79,17 +79,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               }}
               aria-hidden="true"
             >
-              <svg className="w-5 h-5" viewBox="0 0 42 42" fill="none">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 42 42" fill="none">
                 <path d="M4 31 15.2 14l6.1 8.5 4.1-6.1L38 31H4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                 <path d="m15.2 14 3.1 4.4-3.9-1.2M25.4 16.4l2.3 3.3-3.4-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 <path d="M8 35h26" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
               </svg>
             </div>
             <div>
-              <span className="text-[16px] font-bold tracking-tight text-[#242722] block leading-tight">
+              <span className="text-[15px] sm:text-[16px] font-bold tracking-tight text-[#242722] block leading-tight">
                 {t('home.title')}
               </span>
-              <span className="font-mono text-[9.5px] uppercase tracking-wider text-[#777C72] hidden sm:block">
+              <span className="font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-[#777C72] hidden sm:block">
                 {t('home.subtitle')}
               </span>
             </div>
@@ -113,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
         </nav>
 
         {/* Right Actions & Utilities */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Language Switcher (EN | हिन्दी) */}
           <div
             className="flex items-center bg-[#F0EEE6] border border-[#2D322B29] rounded-md p-0.5"
@@ -144,15 +144,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             </button>
           </div>
 
-          {/* Prototype View Switcher: User App vs Admin View */}
+          {/* View Switcher: User App vs Admin View (visible on sm+) */}
           <div
-            className="flex items-center bg-[#F0EEE6] border border-[#2D322B29] rounded-md p-0.5"
+            className="hidden sm:flex items-center bg-[#F0EEE6] border border-[#2D322B29] rounded-md p-0.5"
             role="group"
             aria-label="Application View Switcher"
           >
             <button
               onClick={() => router.push('/')}
-              className={`px-2.5 py-1 text-[11.5px] font-medium rounded transition-all ${
+              className={`px-2 sm:px-2.5 py-1 text-[11px] sm:text-[11.5px] font-medium rounded transition-all ${
                 !isAdminRoute
                   ? 'bg-white text-[#242722] shadow-xs font-semibold'
                   : 'text-[#777C72] hover:text-[#242722]'
@@ -163,7 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             </button>
             <button
               onClick={() => router.push('/admin')}
-              className={`px-2.5 py-1 text-[11.5px] font-medium rounded transition-all ${
+              className={`px-2 sm:px-2.5 py-1 text-[11px] sm:text-[11.5px] font-medium rounded transition-all ${
                 isAdminRoute
                   ? 'bg-[#242722] text-white shadow-xs font-semibold'
                   : 'text-[#777C72] hover:text-[#242722]'
@@ -176,13 +176,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
 
           {/* Auth State */}
           {session ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="hidden md:inline-block text-[11.5px] font-mono text-[#51554D]">
                 {session.role === 'admin' ? `🛡 ${t('navigation.auditor')}` : `👤 ${t('navigation.traveler')}`}
               </span>
               <button
                 onClick={handleLogout}
-                className="text-[11.5px] font-medium text-[#777C72] hover:text-[#242722] underline p-1 transition-colors"
+                className="text-[11px] sm:text-[11.5px] font-medium text-[#777C72] hover:text-[#242722] underline p-1 transition-colors"
                 title="Log out"
               >
                 {t('navigation.logout')}
@@ -191,7 +191,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           ) : (
             <button
               onClick={onOpenAuth}
-              className="button-primary text-[11.5px] py-1.5 px-3 rounded"
+              className="button-primary text-[11px] sm:text-[11.5px] py-1 sm:py-1.5 px-2.5 sm:px-3 rounded"
             >
               {t('navigation.signIn')}
             </button>
@@ -218,9 +218,39 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden px-6 py-4 border-t flex flex-col gap-1.5 shadow-md"
+          className="lg:hidden px-4 sm:px-6 py-4 border-t flex flex-col gap-2 shadow-md animate-fadeIn"
           style={{ backgroundColor: 'var(--paper)', borderColor: 'var(--line)' }}
         >
+          {/* Mobile View Switcher */}
+          <div className="flex sm:hidden items-center bg-[#F0EEE6] border border-[#2D322B29] rounded-md p-1 mb-2">
+            <button
+              onClick={() => {
+                router.push('/');
+                setMobileMenuOpen(false);
+              }}
+              className={`flex-1 py-1.5 text-[12px] font-medium rounded transition-all text-center ${
+                !isAdminRoute
+                  ? 'bg-white text-[#242722] shadow-xs font-semibold'
+                  : 'text-[#777C72]'
+              }`}
+            >
+              {t('navigation.userApp')}
+            </button>
+            <button
+              onClick={() => {
+                router.push('/admin');
+                setMobileMenuOpen(false);
+              }}
+              className={`flex-1 py-1.5 text-[12px] font-medium rounded transition-all text-center ${
+                isAdminRoute
+                  ? 'bg-[#242722] text-white shadow-xs font-semibold'
+                  : 'text-[#777C72]'
+              }`}
+            >
+              {t('navigation.adminView')}
+            </button>
+          </div>
+
           {[
             { href: '/', label: t('navigation.calculator') },
             { href: '/methodology', label: t('navigation.methodology') },
@@ -231,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               key={href}
               href={href}
               onClick={() => setMobileMenuOpen(false)}
-              className={`py-2 px-3 rounded text-[13.5px] font-medium transition-colors ${
+              className={`py-2.5 px-3 rounded text-[14px] font-medium transition-colors ${
                 pathname === href
                   ? 'bg-[#E8EDE5] text-[#304B38] font-semibold'
                   : 'text-[#51554D] hover:bg-[#F0EEE6]'

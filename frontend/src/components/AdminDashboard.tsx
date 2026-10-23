@@ -239,20 +239,20 @@ export const AdminDashboard: React.FC = () => {
       </AnimatePresence>
 
       {/* Admin Context Banner */}
-      <div className="bg-white border-y border-slate-200 py-3 px-6 -mx-6 shadow-xs">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between flex-wrap gap-3 text-[12.5px]">
+      <div className="bg-white border border-[#2D322B29] rounded-xl p-3.5 sm:px-5 sm:py-3.5 shadow-xs">
+        <div className="flex items-center justify-between flex-wrap gap-3 text-[12.5px]">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-bold text-slate-800">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#496951] animate-pulse" />
+            <span className="font-bold text-[#242722]">
               Dataset: Sample Demonstration Records (v1.2-2026 Reconciled Baseline)
             </span>
-            <span className="text-slate-500 hidden sm:inline">| Last Reconciled: 22 Oct 2026, 12:00 IST</span>
+            <span className="text-[#777C72] hidden sm:inline">| Last Reconciled: 22 Oct 2026, 12:00 IST</span>
           </div>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#FAF9F5] hover:bg-[#F0EEE6] border border-[#2D322B29] rounded-lg font-semibold text-[#242722] transition-colors shadow-xs"
           >
-            <Download className="w-4 h-4 text-emerald-600" />
+            <Download className="w-4 h-4 text-[#304B38]" />
             Export Audit Log CSV
           </button>
         </div>
@@ -543,8 +543,8 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Responsive Table Container */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[13px]">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[620px] text-left border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <th className="py-3 px-3">Trip ID</th>

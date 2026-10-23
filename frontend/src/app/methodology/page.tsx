@@ -9,7 +9,7 @@ export default function MethodologyPage() {
   const { t, language } = useTranslation();
 
   return (
-    <div className="max-w-[980px] mx-auto space-y-8 py-4">
+    <div className="max-w-[980px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto space-y-8 py-4">
       {/* Back Link */}
       <div>
         <Link

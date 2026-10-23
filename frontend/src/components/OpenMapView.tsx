@@ -169,7 +169,7 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
             <div
               ref={mapContainerRef}
               id="mountain-map"
-              className="h-60 sm:h-68 w-full rounded border overflow-hidden relative z-10"
+              className="h-60 sm:h-68 lg:h-72 xl:h-80 2xl:h-96 w-full rounded border overflow-hidden relative z-10"
               style={{ borderColor: 'var(--line)' }}
             />
             <div className="mt-2 flex items-center justify-between text-[10.5px] font-mono text-[#777C72]">
@@ -189,7 +189,7 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
           <div className="space-y-3">
             {/* SVG Elevation Cross-Section Diagram */}
             <div
-              className="relative h-32 w-full rounded p-3 overflow-hidden flex flex-col justify-between border"
+              className="relative h-32 sm:h-36 2xl:h-44 w-full rounded p-3 overflow-hidden flex flex-col justify-between border"
               style={{
                 backgroundColor: 'var(--paper-deep)',
                 borderColor: 'var(--line)',
@@ -245,7 +245,7 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
             </div>
 
             {/* Geographical Meta Summary */}
-            <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
+            <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 text-[11px] font-mono">
               <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
                 <span className="text-[#777C72] text-[9.5px] block">
                   {language === 'HI' ? 'प्रस्थान' : 'START POINT'}

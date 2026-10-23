@@ -273,9 +273,9 @@ export const TripCalculatorForm: React.FC = () => {
       </AnimatePresence>
 
       {/* Main Grid: Responsive 2-Column Editorial Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.18fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1.22fr)_minmax(0,1fr)] gap-6 lg:gap-8 2xl:gap-10 items-start">
         {/* LEFT COLUMN: Field Journal Input Configuration */}
-        <div className="journal-card space-y-7">
+        <div className="journal-card space-y-6 sm:space-y-7">
           {/* Section 1: Route Corridor & Elevation Gradient */}
           <div>
             <div className="flex items-center justify-between mb-4 pb-2.5 border-b" style={{ borderColor: 'var(--line)' }}>
@@ -334,7 +334,7 @@ export const TripCalculatorForm: React.FC = () => {
                   {terrain === 'foothills' ? '1.00×' : terrain === 'mid_hills' ? '1.25×' : '1.40×'}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2 bg-[#F0EEE6] p-1.5 rounded border border-[#2D322B29]">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-[#F0EEE6] p-1 sm:p-1.5 rounded border border-[#2D322B29]">
                 {[
                   { id: 'foothills', label: t('calculator.terrainFoothills'), mult: '1.00×' },
                   { id: 'mid_hills', label: t('calculator.terrainMidHills'), mult: '1.25×' },
@@ -344,14 +344,14 @@ export const TripCalculatorForm: React.FC = () => {
                     key={item.id}
                     type="button"
                     onClick={() => setTerrain(item.id as any)}
-                    className={`py-2 px-1 text-[12px] font-semibold rounded transition-all text-center ${
+                    className={`py-1.5 sm:py-2 px-1 text-[11px] sm:text-[12px] font-semibold rounded transition-all text-center leading-tight ${
                       terrain === item.id
                         ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/40 font-bold'
                         : 'text-[#51554D] hover:text-[#242722]'
                     }`}
                   >
-                    <span className="block text-[11px] font-bold">{item.label}</span>
-                    <span className="text-[10px] font-mono opacity-75">{item.mult}</span>
+                    <span className="block text-[10.5px] sm:text-[11px] font-bold">{item.label}</span>
+                    <span className="text-[9.5px] sm:text-[10px] font-mono opacity-75">{item.mult}</span>
                   </button>
                 ))}
               </div>
@@ -415,7 +415,7 @@ export const TripCalculatorForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setTransportCategory('private')}
-                className={`flex-1 py-1.5 px-3 rounded text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`flex-1 py-1.5 px-2 sm:px-3 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                   transportCategory === 'private'
                     ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
                     : 'text-[#51554D] hover:text-[#242722]'
@@ -427,7 +427,7 @@ export const TripCalculatorForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setTransportCategory('transit')}
-                className={`flex-1 py-1.5 px-3 rounded text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`flex-1 py-1.5 px-2 sm:px-3 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                   transportCategory === 'transit'
                     ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
                     : 'text-[#51554D] hover:text-[#242722]'
@@ -524,7 +524,7 @@ export const TripCalculatorForm: React.FC = () => {
                 <label className="block text-[11.5px] font-semibold text-[#242722] mb-1.5">
                   {t('calculator.transitMode')}
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-2">
                   {[
                     { id: 'bus', name: language === 'HI' ? 'साझा यूटीसी बस' : 'Shared UTC Bus', factor: '30 g CO₂/km', badge: 'Eco', icon: BusIcon, desc: language === 'HI' ? 'रोडवेज बस / पर्वतीय हाईवे' : 'State bus / mountain highway' },
                     { id: 'train', name: language === 'HI' ? 'भारतीय रेल (ट्रेन)' : 'Indian Railways (Train)', factor: '18 g CO₂/km', badge: language === 'HI' ? 'सबसे कम' : 'Lowest', icon: TrainIcon, desc: language === 'HI' ? 'काठगोदाम / ऋषिकेश स्टेशन' : 'Foothill train corridor' },
@@ -569,8 +569,8 @@ export const TripCalculatorForm: React.FC = () => {
               </div>
             )}
 
-            {/* Passenger Stepper */}
-            <div className="bg-[#FAF9F5] border border-[#2D322B29] rounded p-3 flex items-center justify-between">
+            {/* Passenger Stepper: Responsive on Mobile */}
+            <div className="bg-[#FAF9F5] border border-[#2D322B29] rounded p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-[12.5px] font-semibold text-[#242722] flex items-center gap-1.5">
@@ -585,27 +585,27 @@ export const TripCalculatorForm: React.FC = () => {
                   {t('calculator.passengersHelper')}
                 </p>
               </div>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#2D322B14]">
                 <button
                   type="button"
                   disabled={passengers <= currentLimit.min}
                   onClick={() => setPassengers((prev) => Math.max(currentLimit.min, prev - 1))}
-                  className="w-8 h-8 rounded bg-white border border-[#2D322B29] font-bold text-[16px] text-[#242722] disabled:opacity-30 hover:bg-[#F0EEE6] flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded bg-white border border-[#2D322B29] font-bold text-[16px] text-[#242722] disabled:opacity-30 hover:bg-[#F0EEE6] active:scale-95 flex items-center justify-center transition-all"
                   aria-label="Decrease passengers"
                 >
-                  <Minus className="w-3.5 h-3.5" />
+                  <Minus className="w-4 h-4" />
                 </button>
-                <span className="font-mono font-bold text-[13px] text-[#242722] min-w-[76px] text-center">
+                <span className="font-mono font-bold text-[13.5px] text-[#242722] min-w-[80px] text-center">
                   {passengers} {language === 'HI' ? 'यात्री' : (passengers === 1 ? 'Traveler' : 'Travelers')}
                 </span>
                 <button
                   type="button"
                   disabled={passengers >= currentLimit.max}
                   onClick={() => setPassengers((prev) => Math.min(currentLimit.max, prev + 1))}
-                  className="w-8 h-8 rounded bg-white border border-[#2D322B29] font-bold text-[16px] text-[#242722] disabled:opacity-30 hover:bg-[#F0EEE6] flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded bg-white border border-[#2D322B29] font-bold text-[16px] text-[#242722] disabled:opacity-30 hover:bg-[#F0EEE6] active:scale-95 flex items-center justify-center transition-all"
                   aria-label="Increase passengers"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -659,7 +659,7 @@ export const TripCalculatorForm: React.FC = () => {
               <label className="block text-[12.5px] font-semibold text-[#242722] mb-1.5">
                 {t('calculator.stayType')}
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 xs:grid-cols-2 2xl:grid-cols-4 gap-2">
                 {[
                   { id: 'luxury', name: t('calculator.stayLuxuryResort'), intensity: '24.0 kg/night', icon: Flame },
                   { id: 'hotel', name: t('calculator.stayStandardHotel'), intensity: '9.0 kg/night', icon: Hotel },
@@ -762,15 +762,15 @@ export const TripCalculatorForm: React.FC = () => {
             type="button"
             onClick={handleSaveTrip}
             disabled={isSaving}
-            className="w-full py-3.5 px-5 button-primary font-semibold text-[13.5px] rounded transition-all flex items-center justify-center gap-2"
+            className="w-full py-3.5 sm:py-4 px-5 button-primary font-semibold text-[13.5px] sm:text-[14px] rounded transition-all flex items-center justify-center gap-2"
           >
             <BookmarkCheck className="w-4 h-4" />
             <span>{isSaving ? (language === 'HI' ? 'सहेज रहे हैं...' : 'Saving...') : t('calculator.saveTrip')}</span>
           </button>
         </div>
 
-        {/* RIGHT COLUMN: Real-Time Results & Action Panels */}
-        <div className="space-y-6">
+        {/* RIGHT COLUMN: Real-Time Results & Action Panels (Sticky on Desktop & TV) */}
+        <div className="space-y-6 lg:sticky lg:top-24">
           {selectedRoute && <OpenMapView route={selectedRoute} />}
           {calcResult && (
             <>

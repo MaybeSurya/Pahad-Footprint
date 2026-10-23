@@ -102,7 +102,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
             role="tab"
             aria-selected={viewMode === 'bars'}
             onClick={() => setViewMode('bars')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[11.5px] font-semibold transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded text-[10.5px] sm:text-[11.5px] font-semibold transition-all ${
               viewMode === 'bars'
                 ? 'bg-white text-[#242722] shadow-xs font-bold'
                 : 'text-[#51554D] hover:text-[#242722]'
@@ -117,7 +117,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
             role="tab"
             aria-selected={viewMode === 'pie'}
             onClick={() => setViewMode('pie')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[11.5px] font-semibold transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded text-[10.5px] sm:text-[11.5px] font-semibold transition-all ${
               viewMode === 'pie'
                 ? 'bg-white text-[#242722] shadow-xs font-bold'
                 : 'text-[#51554D] hover:text-[#242722]'
@@ -132,7 +132,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
             role="tab"
             aria-selected={viewMode === 'table'}
             onClick={() => setViewMode('table')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[11.5px] font-semibold transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded text-[10.5px] sm:text-[11.5px] font-semibold transition-all ${
               viewMode === 'table'
                 ? 'bg-white text-[#242722] shadow-xs font-bold'
                 : 'text-[#51554D] hover:text-[#242722]'
@@ -146,15 +146,15 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
 
       {/* Scope Selector: Per Person vs Whole Convoy */}
       <div
-        className="flex items-center justify-between text-[11.5px] px-3 py-1.5 rounded border"
+        className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 text-[11.5px] px-3 py-2 rounded border"
         style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}
       >
-        <span className="font-mono text-[11px] text-[#51554D]">{t('visualizer.scopeLabel')}</span>
+        <span className="font-mono text-[10.5px] sm:text-[11px] text-[#51554D]">{t('visualizer.scopeLabel')}</span>
         <div className="flex items-center gap-1 bg-white p-0.5 rounded border" style={{ borderColor: 'var(--line)' }}>
           <button
             type="button"
             onClick={() => setMetricScope('perPerson')}
-            className={`px-2.5 py-0.5 rounded text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+            className={`px-2 sm:px-2.5 py-0.5 rounded text-[10.5px] sm:text-[11px] font-semibold transition-colors flex items-center gap-1 ${
               isPerPerson
                 ? 'bg-[#E8EDE5] text-[#304B38] font-bold'
                 : 'text-[#777C72] hover:text-[#242722]'
@@ -166,7 +166,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
           <button
             type="button"
             onClick={() => setMetricScope('wholeTrip')}
-            className={`px-2.5 py-0.5 rounded text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+            className={`px-2 sm:px-2.5 py-0.5 rounded text-[10.5px] sm:text-[11px] font-semibold transition-colors flex items-center gap-1 ${
               !isPerPerson
                 ? 'bg-[#F1EADD] text-[#8A5D2E] font-bold'
                 : 'text-[#777C72] hover:text-[#242722]'
@@ -430,7 +430,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
                   {breakdown.transportPerPerson.toFixed(1)} kg/p
                 </span>
               </div>
-              <p className="font-mono text-[11px] text-[#51554D] bg-white p-2 rounded border" style={{ borderColor: 'var(--line)' }}>
+              <p className="font-mono text-[11px] text-[#51554D] bg-white p-2 rounded border break-words overflow-x-auto" style={{ borderColor: 'var(--line)' }}>
                 {input.distanceKm} km × {breakdown.transportRateLabel || '180 g/vkm'} × {terrainAdjustment.multiplier.toFixed(2)}x Incline {input.transportCategory === 'transit' ? '' : `÷ ${input.passengers} pax `}= {breakdown.transportPerPerson.toFixed(1)} kg CO₂e
               </p>
             </div>
@@ -445,7 +445,7 @@ export const EmissionsVisualizer: React.FC<EmissionsVisualizerProps> = ({ result
                   {breakdown.accommodationPerPerson.toFixed(1)} kg/p
                 </span>
               </div>
-              <p className="font-mono text-[11px] text-[#51554D] bg-white p-2 rounded border" style={{ borderColor: 'var(--line)' }}>
+              <p className="font-mono text-[11px] text-[#51554D] bg-white p-2 rounded border break-words overflow-x-auto" style={{ borderColor: 'var(--line)' }}>
                 {input.nights} nights × {input.accommodationType === 'luxury' ? '24.0 kg' : input.accommodationType === 'hotel' ? '9.0 kg' : input.accommodationType === 'homestay' ? '6.0 kg' : '3.5 kg'} = {breakdown.accommodationPerPerson.toFixed(1)} kg CO₂e
               </p>
             </div>
