@@ -3,9 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
-import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight, ExternalLink, CreditCard, HeartHandshake, Sprout } from 'lucide-react';
+import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight, ExternalLink, CreditCard, HeartHandshake, Sprout, Award } from 'lucide-react';
 import gsap from 'gsap';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { RecognitionCertificate } from '../../components/RecognitionCertificate';
 
 // ─── Animated progress bar ───────────────────────────────────────────────────
 function ProgressBar({ target, isInView }: { target: number; isInView: boolean }) {
@@ -112,6 +113,7 @@ function InitiativeCard({
 export default function RestorationPage() {
   const { t, language } = useTranslation();
   const [pledged, setPledged] = useState(false);
+  const [donated, setDonated] = useState(false);
   const [actionType, setActionType] = useState<'donate' | 'plant'>('donate');
   const [name, setName] = useState('');
   const [saplings, setSaplings] = useState(9);
@@ -238,27 +240,41 @@ export default function RestorationPage() {
         {actionType === 'donate' && (
           <div className="space-y-4 pt-2">
             <div className="p-4 rounded border border-[#2D322B1F] bg-[#FAF9F5] space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[12px] font-semibold text-[#242722] mb-1">
-                    {language === 'HI' ? 'पेड़ों की संख्या चुनें' : 'Number of Trees to Support'}
+                    {language === 'HI' ? 'प्रमाण पत्र हेतु आपका नाम' : 'Your Name for Recognition Certificate'}
                   </label>
                   <input
-                    type="number"
-                    min={1}
-                    max={500}
-                    value={saplings}
-                    onChange={(e) => setSaplings(Math.max(1, Number(e.target.value) || 1))}
-                    className="w-32 h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono font-bold text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                    type="text"
+                    placeholder={language === 'HI' ? 'उदा. अमित जोशी / पहाड़ी यात्री' : 'e.g. Maya Bhatt / Himalayan Traveler'}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
                   />
                 </div>
 
-                <div className="sm:text-right">
-                  <span className="text-[11px] font-mono text-[#777C72] uppercase block">
-                    {language === 'HI' ? 'समतुल्य दान राशि (₹120/पेड़)' : 'Equivalent Cost (₹120/Tree)'}
-                  </span>
-                  <div className="font-mono text-[22px] font-bold text-[#304B38]">
-                    ₹{donationAmount}
+                <div className="flex items-center justify-between sm:justify-end gap-4">
+                  <div>
+                    <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                      {language === 'HI' ? 'पेड़ों की संख्या' : 'Number of Trees'}
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={500}
+                      value={saplings}
+                      onChange={(e) => setSaplings(Math.max(1, Number(e.target.value) || 1))}
+                      className="w-28 h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono font-bold text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                    />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[11px] font-mono text-[#777C72] uppercase block">
+                      {language === 'HI' ? 'कुल दान (₹120/पेड़)' : 'Total Cost'}
+                    </span>
+                    <div className="font-mono text-[22px] font-bold text-[#304B38]">
+                      ₹{donationAmount}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,6 +290,7 @@ export default function RestorationPage() {
               href="https://devnexis.in/payment"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => setDonated(true)}
               className="button-primary w-full py-3.5 text-center flex items-center justify-center gap-2 font-bold text-[13.5px] rounded shadow-xs"
             >
               <CreditCard className="w-4 h-4" />
@@ -284,6 +301,18 @@ export default function RestorationPage() {
               </span>
               <ExternalLink className="w-4 h-4" />
             </a>
+
+            {donated && (
+              <div className="pt-2">
+                <RecognitionCertificate
+                  travelerName={name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler')}
+                  treeCount={saplings}
+                  species="Himalayan Banj Oak (Quercus leucotrichophora)"
+                  isDonation={true}
+                  donationAmount={donationAmount}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -291,29 +320,38 @@ export default function RestorationPage() {
         {actionType === 'plant' && (
           <div className="pt-2">
             {pledged ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="p-5 rounded border text-center space-y-1.5"
-                style={{
-                  backgroundColor: 'var(--green-pale)',
-                  borderColor: 'rgba(73, 105, 81, 0.3)',
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 font-bold text-[15px] text-[#304B38]">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-4 rounded border text-center space-y-1"
+                  style={{
+                    backgroundColor: 'var(--green-pale)',
+                    borderColor: 'rgba(73, 105, 81, 0.3)',
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2 font-bold text-[14.5px] text-[#304B38]">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>
+                      {language === 'HI'
+                        ? `संकल्प दर्ज हुआ: ${saplings} बांज ओक के पौधे`
+                        : `Pledge Intention Recorded: ${saplings} Banj Oak Saplings`}
+                    </span>
+                  </div>
+                  <p className="text-[12px] text-[#51554D]">
                     {language === 'HI'
-                      ? `संकल्प दर्ज हुआ: ${saplings} बांज ओक के पौधे`
-                      : `Pledge Intention Recorded: ${saplings} Banj Oak Saplings`}
-                  </span>
-                </div>
-                <p className="text-[12px] text-[#51554D]">
-                  {language === 'HI'
-                    ? `धन्यवाद, ${name || 'पहाड़ी यात्री'}! आपका संकल्प स्थानीय वन पंचायत रिकॉर्ड में सुरक्षित हो गया है।`
-                    : `Thank you, ${name || 'Mountain Traveler'}! Your pledge is logged to the local Van Panchayat ledger.`}
-                </p>
-              </motion.div>
+                      ? `धन्यवाद, ${name || 'पहाड़ी यात्री'}! आपका सम्मान प्रमाण पत्र नीचे प्रस्तुत है:`
+                      : `Thank you, ${name || 'Mountain Traveler'}! Your official recognition certificate is ready below:`}
+                  </p>
+                </motion.div>
+
+                <RecognitionCertificate
+                  travelerName={name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler')}
+                  treeCount={saplings}
+                  species="Himalayan Banj Oak (Quercus leucotrichophora)"
+                  isDonation={false}
+                />
+              </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -366,8 +404,8 @@ export default function RestorationPage() {
                   </select>
                 </div>
 
-                <button type="submit" className="button-primary w-full py-3">
-                  {language === 'HI' ? 'पौधारोपण संकल्प दर्ज करें' : 'Confirm Personal Tree Planting Pledge'}
+                <button type="submit" className="button-primary w-full py-3 font-bold text-[13.5px]">
+                  {language === 'HI' ? 'पौधारोपण संकल्प दर्ज करें एवं प्रमाण पत्र पाएं' : 'Confirm Personal Tree Pledge & Get Certificate'}
                 </button>
               </form>
             )}

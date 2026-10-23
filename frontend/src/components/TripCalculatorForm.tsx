@@ -50,9 +50,21 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { CalculationResults } from './CalculationResults';
 import { EcoSwapCard } from './EcoSwapCard';
 import { RestorationPledgeBox } from './RestorationPledgeBox';
+import dynamic from 'next/dynamic';
 import { RouteSearch } from './RouteSearch';
-import { OpenMapView } from './OpenMapView';
 import { OpenMapRouteResult } from '../lib/openmaps';
+
+const OpenMapView = dynamic(
+  () => import('./OpenMapView').then((mod) => mod.OpenMapView),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 flex items-center justify-center bg-[#FAF9F5] text-[12px] text-[#777C72] font-mono rounded border border-[#2D322B14]">
+        Loading mountain map...
+      </div>
+    ),
+  }
+);
 
 const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Partial<Record<FuelType, number>>> = {
   suv: { diesel: 195, petrol: 185, cng: 135, lpg: 145, hybrid: 110, ev: 50 },
@@ -324,73 +336,50 @@ export const TripCalculatorForm: React.FC = () => {
 
 
 
-            {/* Terrain Multiplier Radios */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[12.5px] font-semibold text-[#242722] flex items-center gap-1.5">
+            {/* Automatic Route Distance & Mountain Climb Information */}
+            <div className="p-3.5 rounded border space-y-2.5 bg-[#FAF9F5] border-[#2D322B1F] mb-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#2D322B14]">
+                <div className="flex items-center gap-1.5">
                   <MountainSnow className="w-3.5 h-3.5 text-[#496951]" />
-                  {t('calculator.terrainZone')} <span className="text-[11px] font-normal text-[#777C72]">({t('calculator.terrainMultiplier')})</span>
-                </label>
-                <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/25">
-                  {terrain === 'foothills' ? '1.00×' : terrain === 'mid_hills' ? '1.25×' : '1.40×'}
+                  <span className="text-[12px] font-bold text-[#242722]">
+                    {language === 'HI' ? 'स्वचालित मार्ग एवं ऊंचाई विश्लेषण' : 'Automatic Route & Elevation Summary'}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-[#304B38] bg-[#E8EDE5] px-2 py-0.5 rounded border border-[#496951]/20">
+                  ✓ {language === 'HI' ? 'मार्ग से स्वतः गणना' : 'Auto-Calculated'}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-[#F0EEE6] p-1 sm:p-1.5 rounded border border-[#2D322B29]">
-                {[
-                  { id: 'foothills', label: t('calculator.terrainFoothills'), mult: '1.00×' },
-                  { id: 'mid_hills', label: t('calculator.terrainMidHills'), mult: '1.25×' },
-                  { id: 'high_altitude', label: t('calculator.terrainHighAltitude'), mult: '1.40×' },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setTerrain(item.id as any)}
-                    className={`py-1.5 sm:py-2 px-1 text-[11px] sm:text-[12px] font-semibold rounded transition-all text-center leading-tight ${
-                      terrain === item.id
-                        ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/40 font-bold'
-                        : 'text-[#51554D] hover:text-[#242722]'
-                    }`}
-                  >
-                    <span className="block text-[10.5px] sm:text-[11px] font-bold">{item.label}</span>
-                    <span className="text-[9.5px] sm:text-[10px] font-mono opacity-75">{item.mult}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* Round-Trip Circuit Distance */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="distance-slider" className="text-[12.5px] font-semibold text-[#242722]">
-                  {t('calculator.distanceSlider')}
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    min={50}
-                    max={1000}
-                    value={distance}
-                    onChange={(e) => setDistance(Math.max(50, Math.min(1000, Number(e.target.value) || 50)))}
-                    className="w-20 h-7 text-right font-mono font-bold text-[13px] px-2 bg-[#FAF9F5] border border-[#2D322B29] rounded text-[#242722] focus:bg-white focus:border-[#496951]"
-                  />
-                  <span className="font-mono text-[12px] text-[#777C72]">km</span>
+              <div className="grid grid-cols-2 gap-2 text-[11.5px]">
+                <div className="p-2.5 rounded bg-white border border-[#2D322B14]">
+                  <span className="text-[10px] font-mono text-[#777C72] uppercase block">
+                    {language === 'HI' ? 'आना-जाना कुल दूरी' : 'Round-Trip Distance'}
+                  </span>
+                  <span className="font-mono text-[16px] font-bold text-[#304B38]">
+                    {distance} km
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded bg-white border border-[#2D322B14]">
+                  <span className="text-[10px] font-mono text-[#777C72] uppercase block">
+                    {language === 'HI' ? 'पहाड़ी चढ़ाई कारक' : 'Mountain Climb Factor'}
+                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-mono text-[16px] font-bold text-[#B3834D]">
+                      {terrain === 'high_altitude' ? '1.40×' : terrain === 'mid_hills' ? '1.25×' : '1.00×'}
+                    </span>
+                    <span className="text-[11px] text-[#51554D]">
+                      {terrain === 'high_altitude' ? 'High Altitude' : terrain === 'mid_hills' ? 'Mid-Hills' : 'Foothills'}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <input
-                id="distance-slider"
-                type="range"
-                min={50}
-                max={1000}
-                step={5}
-                value={distance}
-                onChange={(e) => setDistance(Number(e.target.value))}
-                className="w-full h-1.5 rounded-full cursor-pointer bg-[#E4E1D8] accent-[#496951]"
-              />
-              <div className="flex justify-between text-[10.5px] text-[#777C72] mt-1 font-mono">
-                <span>50 km</span>
-                <span>500 km</span>
-                <span>1,000 km</span>
-              </div>
+
+              <p className="text-[10.5px] text-[#777C72] leading-snug">
+                {language === 'HI'
+                  ? 'सटीक कार्बन गणना के लिए दूरी और पहाड़ी चढ़ाई दोनों का मान चुने गए मार्ग से स्वतः निकाला जाता है।'
+                  : 'Distance and mountain slope are calculated automatically from your chosen route to ensure accuracy.'}
+              </p>
             </div>
           </div>
 

@@ -12,11 +12,24 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTrip } from '../../../contexts/TripContext';
+import dynamic from 'next/dynamic';
 import { CalculationResults } from '../../../components/CalculationResults';
 import { EcoSwapCard } from '../../../components/EcoSwapCard';
 import { RestorationPledgeBox } from '../../../components/RestorationPledgeBox';
-import { OpenMapView } from '../../../components/OpenMapView';
+import { DestinationWeatherCard } from '../../../components/DestinationWeatherCard';
 import { logTripRecord, getStoredSession } from '../../../lib/api';
+
+const OpenMapView = dynamic(
+  () => import('../../../components/OpenMapView').then((mod) => mod.OpenMapView),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 flex items-center justify-center bg-[#FAF9F5] text-[12px] text-[#777C72] font-mono rounded border border-[#2D322B14]">
+        Loading mountain map...
+      </div>
+    ),
+  }
+);
 
 export default function ResultsStepPage() {
   const router = useRouter();
@@ -79,6 +92,11 @@ export default function ResultsStepPage() {
     router.push('/calculator/route');
   };
 
+  const destName = selectedRoute?.destination.placeName || 'Nainital (Kumaon Division)';
+  const destAltitude = selectedRoute?.destination.altitudeMeters || (terrain === 'high_altitude' ? 2600 : terrain === 'mid_hills' ? 1938 : 640);
+  const destLat = selectedRoute?.destination.latitude || 29.39;
+  const destLng = selectedRoute?.destination.longitude || 79.45;
+
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Toast Notification */}
@@ -109,18 +127,18 @@ export default function ResultsStepPage() {
             {language === 'HI' ? 'चरण ०५' : 'STEP 05'}
           </span>
           <span className="text-[12px] font-mono uppercase tracking-wider text-[#777C72]">
-            {language === 'HI' ? 'अंतिम टेलीमेट्री एवं कार्बन पदचिह्न' : 'Reconciled Mountain Footprint'}
+            {language === 'HI' ? 'अंतिम कार्बन पदचिह्न' : 'Your Trip Carbon Footprint'}
           </span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-[22px] sm:text-[28px] font-bold text-[#242722] tracking-tight">
-              {language === 'HI' ? 'आपकी यात्रा का पर्यावरणीय लेखा' : 'Expedition Environmental Accounting'}
+              {language === 'HI' ? 'आपकी यात्रा का कार्बन ब्यौरा' : "Your Trip's Carbon Footprint"}
             </h2>
             <p className="text-[13.5px] text-[#51554D] max-w-2xl mt-1 leading-relaxed">
               {language === 'HI'
-                ? 'ऊंचाई चढ़ाई गुणक, चयनित वाहन और आवास के आधार पर पूर्ण कार्बन विश्लेषण नीचे प्रस्तुत है।'
-                : 'Complete carbon telemetry factoring mountain road curvature, altitude elevation gradients, vehicle emissions, and certified eco-habits.'}
+                ? 'आपके मार्ग की दूरी, पहाड़ी चढ़ाई, वाहन, होटल और आदतों के आधार पर कुल अनुमानित कार्बन नीचे प्रस्तुत है।'
+                : 'Here is your estimated carbon footprint based on your mountain route distance, climb, vehicle, hotel stay, and travel habits.'}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -159,6 +177,14 @@ export default function ResultsStepPage() {
             {/* Primary Calculations & Charts */}
             <div className="space-y-6">
               <CalculationResults result={calcResult} input={currentInput} />
+
+              {/* Destination Weather, Air Quality (AQI) & Forecast Observatory */}
+              <DestinationWeatherCard
+                destinationName={destName}
+                altitudeMeters={destAltitude}
+                latitude={destLat}
+                longitude={destLng}
+              />
             </div>
 
             {/* Eco-Swap Alternative & Tree Pledge Box */}
@@ -189,7 +215,7 @@ export default function ResultsStepPage() {
         </div>
       ) : (
         <div className="p-12 text-center text-[#777C72] font-mono text-[13px]">
-          Calculating carbon telemetry...
+          Calculating carbon footprint...
         </div>
       )}
 
@@ -209,7 +235,7 @@ export default function ResultsStepPage() {
           className="px-4 py-2.5 rounded border border-[#2D322B29] text-[12.5px] font-semibold text-[#304B38] bg-[#E8EDE5] hover:bg-[#E8EDE5]/80 transition-all flex items-center gap-1.5 font-mono"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>{language === 'HI' ? 'मार्ग संपादित करें (चरण ०१)' : 'Edit Route Corridor (Step 01)'}</span>
+          <span>{language === 'HI' ? 'मार्ग बदलें (कदम ०१)' : 'Edit Route & Distance (Step 01)'}</span>
         </button>
       </div>
     </div>

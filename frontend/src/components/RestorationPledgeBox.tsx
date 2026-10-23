@@ -12,8 +12,10 @@ import {
   CreditCard,
   HeartHandshake,
   Sprout,
+  Award,
 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
+import { RecognitionCertificate } from './RecognitionCertificate';
 
 interface RestorationPledgeBoxProps {
   saplings: {
@@ -31,6 +33,8 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   const [activeTab, setActiveTab] = useState<'donate' | 'plant'>('donate');
   const [pledged, setPledged] = useState(false);
   const [donated, setDonated] = useState(false);
+  const [travelerName, setTravelerName] = useState('');
+  const [showCertificate, setShowCertificate] = useState(false);
 
   // Standard nursery raising & 2-year maintenance cost per high-altitude sapling
   const COST_PER_SAPLING = 120;
@@ -38,11 +42,13 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
 
   const handlePledge = () => {
     setPledged(true);
+    setShowCertificate(true);
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
   const handleConfirmDonation = () => {
     setDonated(true);
+    setShowCertificate(true);
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
@@ -115,6 +121,20 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
             {t('pledge.speciesDesc')}
           </p>
         </div>
+      </div>
+
+      {/* Traveler Name Input for Certificate */}
+      <div className="pt-1">
+        <label className="block text-[11.5px] font-semibold text-[#242722] mb-1">
+          {language === 'HI' ? 'प्रमाण पत्र हेतु आपका नाम' : 'Your Name for Recognition Certificate'}
+        </label>
+        <input
+          type="text"
+          placeholder={language === 'HI' ? 'उदा. अमित जोशी / पहाड़ी यात्री' : 'e.g. Maya Bhatt / Himalayan Traveler'}
+          value={travelerName}
+          onChange={(e) => setTravelerName(e.target.value)}
+          className="w-full h-9 px-3 bg-white border border-[#2D322B29] rounded text-[12.5px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+        />
       </div>
 
       {/* Tab Switcher: Donate Equivalent vs Plant Myself */}
@@ -261,6 +281,44 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
             </AnimatePresence>
           </div>
         </div>
+      )}
+
+      {/* Recognition Certificate Display */}
+      {showCertificate && (
+        <div className="pt-3 border-t border-[#496951]/20">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11.5px] font-bold text-[#304B38] flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#B3834D]" />
+              <span>{language === 'HI' ? 'आपका सम्मान प्रमाण पत्र' : 'Your Recognition Certificate'}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowCertificate(false)}
+              className="text-[11px] text-[#777C72] hover:text-[#242722] underline"
+            >
+              {language === 'HI' ? 'छुपाएं' : 'Hide'}
+            </button>
+          </div>
+          <RecognitionCertificate
+            travelerName={travelerName.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler')}
+            treeCount={saplings.total}
+            isDonation={activeTab === 'donate'}
+            donationAmount={totalDonationAmount}
+            onClose={() => setShowCertificate(false)}
+          />
+        </div>
+      )}
+
+      {/* Button to reopen certificate if closed */}
+      {!showCertificate && (pledged || donated) && (
+        <button
+          type="button"
+          onClick={() => setShowCertificate(true)}
+          className="w-full py-2.5 px-3 rounded text-[12px] font-semibold bg-[#E8EDE5] text-[#304B38] border border-[#496951]/30 hover:bg-[#E8EDE5]/80 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+        >
+          <Award className="w-4 h-4 text-[#B3834D]" />
+          <span>{language === 'HI' ? 'अपना सम्मान प्रमाण पत्र देखें (QR कोड सहित)' : 'View Recognition Certificate (with QR Code)'}</span>
+        </button>
       )}
 
       <div className="text-center pt-1">

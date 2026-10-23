@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Pahad Footprint — Himalayan Carbon Accounting & Field Guide",
+  "short_name": "Pahad Footprint",
+  "description": "Completely offline mountain expedition carbon calculator, altitude curvature analyzer, and Uttarakhand travel field guide.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F6F0",
+  "theme_color": "#304B38",
+  "orientation": "any",
+  "categories": ["travel", "utilities", "sustainability"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

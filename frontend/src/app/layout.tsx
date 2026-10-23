@@ -6,11 +6,24 @@ import { Footer } from '../components/Footer';
 import { SmoothScrollProvider } from '../components/SmoothScrollProvider';
 import { TranslationProvider } from '../contexts/TranslationContext';
 import { TripProvider } from '../contexts/TripContext';
+import { PWARegister } from '../components/PWARegister';
 
 export const metadata: Metadata = {
-  title: 'Pahad Footprint — Greener Uttarakhand Trips & Carbon Accounting',
+  title: 'Pahad Footprint — Greener Uttarakhand Trips & Offline Field Guide',
   description:
-    'Estimate the travel and stay footprint of journeys through Uttarakhand, compare lower-impact options, and examine high-altitude elevation adjustments.',
+    'Estimate the travel and stay footprint of journeys through Uttarakhand, compare lower-impact options, examine high-altitude elevation adjustments, and view destination weather offline.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Pahad Footprint',
+  },
+};
+
+export const viewport = {
+  themeColor: '#304B38',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -21,6 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+        <meta name="theme-color" content="#304B38" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -36,6 +55,7 @@ export default function RootLayout({
         <SmoothScrollProvider>
           <TranslationProvider>
             <TripProvider>
+              <PWARegister />
               {/* Accessible Skip Link */}
               <a
                 href="#main-content"

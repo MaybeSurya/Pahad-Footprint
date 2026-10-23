@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { Home, Compass, BookOpen, Trees, BarChart3 } from 'lucide-react';
 import { UserSession } from '../types';
 import { getStoredSession, clearSession } from '../lib/api';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -99,19 +100,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           </span>
         </div>
 
-        {/* Desktop Navigation Links */}
+// Desktop Navigation Links
         <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
-          <Link href="/" className={navLinkClass(pathname === '/')}>
-            {language === 'HI' ? 'होम' : 'Home'}
+          <Link href="/" className={`${navLinkClass(pathname === '/')} flex items-center gap-1.5`}>
+            <Home className="w-3.5 h-3.5" />
+            <span>{language === 'HI' ? 'होम' : 'Home'}</span>
           </Link>
-          <Link href="/calculator/route" className={navLinkClass(pathname?.startsWith('/calculator'))}>
-            {t('navigation.calculator')}
+          <Link href="/calculator/route" className={`${navLinkClass(pathname?.startsWith('/calculator'))} flex items-center gap-1.5`}>
+            <Compass className="w-3.5 h-3.5" />
+            <span>{t('navigation.calculator')}</span>
           </Link>
-          <Link href="/methodology" className={navLinkClass(pathname === '/methodology')}>
-            {t('navigation.methodology')}
+          <Link href="/methodology" className={`${navLinkClass(pathname === '/methodology')} flex items-center gap-1.5`}>
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>{t('navigation.methodology')}</span>
           </Link>
-          <Link href="/restoration" className={navLinkClass(pathname === '/restoration')}>
-            {t('navigation.restoration')}
+          <Link href="/restoration" className={`${navLinkClass(pathname === '/restoration')} flex items-center gap-1.5`}>
+            <Trees className="w-3.5 h-3.5" />
+            <span>{t('navigation.restoration')}</span>
           </Link>
         </nav>
 
@@ -255,23 +260,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           </div>
 
           {[
-            { href: '/', label: language === 'HI' ? 'होम' : 'Home', active: pathname === '/' },
-            { href: '/calculator/route', label: t('navigation.calculator'), active: pathname?.startsWith('/calculator') },
-            { href: '/methodology', label: t('navigation.methodology'), active: pathname === '/methodology' },
-            { href: '/restoration', label: t('navigation.restoration'), active: pathname === '/restoration' },
-            { href: '/admin', label: t('navigation.adminAnalytics'), active: pathname === '/admin' },
-          ].map(({ href, label, active }) => (
+            { href: '/', label: language === 'HI' ? 'होम' : 'Home', icon: Home, active: pathname === '/' },
+            { href: '/calculator/route', label: t('navigation.calculator'), icon: Compass, active: pathname?.startsWith('/calculator') },
+            { href: '/methodology', label: t('navigation.methodology'), icon: BookOpen, active: pathname === '/methodology' },
+            { href: '/restoration', label: t('navigation.restoration'), icon: Trees, active: pathname === '/restoration' },
+            { href: '/admin', label: t('navigation.adminAnalytics'), icon: BarChart3, active: pathname === '/admin' },
+          ].map(({ href, label, icon: Icon, active }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setMobileMenuOpen(false)}
-              className={`py-2.5 px-3 rounded text-[14px] font-medium transition-colors ${
+              className={`py-2.5 px-3 rounded text-[14px] font-medium transition-colors flex items-center gap-2.5 ${
                 active
                   ? 'bg-[#E8EDE5] text-[#304B38] font-semibold'
                   : 'text-[#51554D] hover:bg-[#F0EEE6]'
               }`}
             >
-              {label}
+              <Icon className="w-4 h-4 text-[#496951]" />
+              <span>{label}</span>
             </Link>
           ))}
         </div>

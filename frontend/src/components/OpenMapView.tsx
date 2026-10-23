@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import { MountainSnow, Navigation, Layers } from 'lucide-react';
 import { OpenMapRouteResult } from '../lib/openmaps';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -14,22 +14,84 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const leafletInstanceRef = useRef<any>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'profile'>('map');
+  const [mounted, setMounted] = useState(false);
+  const uniqueMapId = useId();
+
+  // Guard against SSR hydration mismatches
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // When tab switches to map, refresh leaflet layout dimensions
+  useEffect(() => {
+    if (activeTab === 'map' && leafletInstanceRef.current) {
+      const timer = setTimeout(() => {
+        try {
+          leafletInstanceRef.current?.invalidateSize();
+        } catch {
+          // Ignore
+        }
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
-    if (!route || !mapContainerRef.current) return;
+    if (!mounted || !route || !mapContainerRef.current) return;
     let isCancelled = false;
 
     async function initOpenMap() {
       try {
-        const L = (await import('leaflet')).default;
+        const leafletModule = await import('leaflet');
+        const L = leafletModule.default || leafletModule;
 
         if (isCancelled || !mapContainerRef.current) return;
 
-        // Clean up previous instance
+        // Defensive Patch for Leaflet DomUtil to eliminate 'reading _leaflet_pos of undefined'
+        if (L && L.DomUtil && !(L.DomUtil as any)._posPatched) {
+          (L.DomUtil as any)._posPatched = true;
+
+          const origGetPosition = L.DomUtil.getPosition;
+          L.DomUtil.getPosition = function (el: any) {
+            if (!el || typeof el !== 'object') {
+              return new L.Point(0, 0);
+            }
+            try {
+              return el._leaflet_pos || new L.Point(0, 0);
+            } catch {
+              return new L.Point(0, 0);
+            }
+          };
+
+          const origSetPosition = L.DomUtil.setPosition;
+          L.DomUtil.setPosition = function (el: any, point: any) {
+            if (!el || typeof el !== 'object') return;
+            try {
+              origSetPosition.call(L.DomUtil, el, point);
+            } catch {
+              // Ignore position write on detached nodes
+            }
+          };
+        }
+
+        // Clean up previous instance cleanly
         if (leafletInstanceRef.current) {
-          leafletInstanceRef.current.remove();
+          try {
+            leafletInstanceRef.current.stop();
+            leafletInstanceRef.current.off();
+            leafletInstanceRef.current.remove();
+          } catch {
+            // Ignore teardown error
+          }
           leafletInstanceRef.current = null;
         }
+
+        if (mapContainerRef.current) {
+          delete (mapContainerRef.current as any)._leaflet_id;
+          mapContainerRef.current.innerHTML = '';
+        }
+
+        if (isCancelled || !mapContainerRef.current) return;
 
         const centerLat = (route!.origin.latitude + route!.destination.latitude) / 2;
         const centerLng = (route!.origin.longitude + route!.destination.longitude) / 2;
@@ -38,7 +100,10 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
           center: [centerLat, centerLng],
           zoom: 9,
           scrollWheelZoom: false,
+          fadeAnimation: false,
+          markerZoomAnimation: false,
         });
+
         leafletInstanceRef.current = map;
 
         // Standard OpenStreetMap tiles
@@ -99,28 +164,67 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
           </div>`
         );
 
-        // Fit map bounds with padding
+        // Fit map bounds safely without animation race conditions
         const group = L.featureGroup([originMarker, destMarker, polyline]);
-        map.fitBounds(group.getBounds(), { padding: [32, 32] });
+        const bounds = group.getBounds();
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [32, 32], animate: false });
+        }
+
+        // Trigger a size recalculation once the DOM has settled
+        setTimeout(() => {
+          if (!isCancelled && leafletInstanceRef.current) {
+            leafletInstanceRef.current.invalidateSize();
+          }
+        }, 100);
       } catch (err) {
-        console.error('OpenStreetMap render error:', err);
+        console.error('OpenStreetMap render notice:', err);
       }
     }
 
-    if (activeTab === 'map') {
-      initOpenMap();
-    }
+    initOpenMap();
 
     return () => {
       isCancelled = true;
       if (leafletInstanceRef.current) {
-        leafletInstanceRef.current.remove();
+        try {
+          leafletInstanceRef.current.stop();
+          leafletInstanceRef.current.off();
+          leafletInstanceRef.current.remove();
+        } catch {
+          // Ignore
+        }
         leafletInstanceRef.current = null;
       }
+      if (mapContainerRef.current) {
+        delete (mapContainerRef.current as any)._leaflet_id;
+        mapContainerRef.current.innerHTML = '';
+      }
     };
-  }, [route, activeTab]);
+  }, [mounted, route]);
 
   if (!route) return null;
+
+  if (!mounted) {
+    return (
+      <div className="journal-card p-0 overflow-hidden">
+        <div
+          className="px-4 py-2.5 border-b flex items-center justify-between"
+          style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}
+        >
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-[#496951]" />
+            <span className="text-[12.5px] font-bold text-[#242722]">
+              {language === 'HI' ? 'यात्रा मार्ग दृश्य' : 'Route Overview'}
+            </span>
+          </div>
+        </div>
+        <div className="h-60 sm:h-68 lg:h-72 w-full flex items-center justify-center bg-[#FAF9F5] text-[12px] font-mono text-[#777C72]">
+          Initializing mountain corridor map...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="journal-card p-0 overflow-hidden">
@@ -164,29 +268,30 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
 
       {/* Main Viewport Content */}
       <div className="p-4 space-y-3">
-        {activeTab === 'map' ? (
-          <div>
-            <div
-              ref={mapContainerRef}
-              id="mountain-map"
-              className="h-60 sm:h-68 lg:h-72 xl:h-80 2xl:h-96 w-full rounded border overflow-hidden relative z-10"
-              style={{ borderColor: 'var(--line)' }}
-            />
-            <div className="mt-2 flex items-center justify-between text-[10.5px] font-mono text-[#777C72]">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#304B38]" />
-                <strong>A:</strong> {route.origin.placeName.split('(')[0]} ({route.origin.altitudeMeters}m)
-                <span className="mx-1">→</span>
-                <span className="w-2 h-2 rounded-full bg-[#B3834D]" />
-                <strong>B:</strong> {route.destination.placeName.split('(')[0]} ({route.destination.altitudeMeters}m)
-              </span>
-              <span className="hidden sm:inline">
-                {language === 'HI' ? 'ज़ूम और ड्रैग करें' : 'Scroll to zoom · Drag to pan'}
-              </span>
-            </div>
+        {/* Map View Pane (Kept in DOM to prevent Leaflet teardown pos errors) */}
+        <div style={{ display: activeTab === 'map' ? 'block' : 'none' }}>
+          <div
+            ref={mapContainerRef}
+            id={`mountain-map-${uniqueMapId}`}
+            className="h-60 sm:h-68 lg:h-72 xl:h-80 2xl:h-96 w-full rounded border overflow-hidden relative z-10"
+            style={{ borderColor: 'var(--line)' }}
+          />
+          <div className="mt-2 flex items-center justify-between text-[10.5px] font-mono text-[#777C72]">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#304B38]" />
+              <strong>A:</strong> {route.origin.placeName.split('(')[0]} ({route.origin.altitudeMeters}m)
+              <span className="mx-1">→</span>
+              <span className="w-2 h-2 rounded-full bg-[#B3834D]" />
+              <strong>B:</strong> {route.destination.placeName.split('(')[0]} ({route.destination.altitudeMeters}m)
+            </span>
+            <span className="hidden sm:inline">
+              {language === 'HI' ? 'ज़ूम और ड्रैग करें' : 'Scroll to zoom · Drag to pan'}
+            </span>
           </div>
-        ) : (
-          <div className="space-y-3">
+        </div>
+
+        {/* Elevation Profile Pane */}
+        <div style={{ display: activeTab === 'profile' ? 'block' : 'none' }} className="space-y-3">
             {/* SVG Elevation Cross-Section Diagram */}
             <div
               className="relative h-32 sm:h-36 2xl:h-44 w-full rounded p-3 overflow-hidden flex flex-col justify-between border"
@@ -272,8 +377,7 @@ export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
   );
 };
