@@ -334,7 +334,9 @@ export function getOfflineAdminMetrics(): AdminMetrics {
     ],
     auditorInsights: [
       'Operating in Offline Himalayan Mode: Serving metrics from local cache.',
-      'Active Joint Forest Management (JFM) verified for 38 village councils across 186 hectares.',
+      'Statewide Van Panchayat network verified: 12,089 official councils across all 13 districts (Forest Dept Report 2023–24).',
+      'Seasonal tourism carbon baseline: 144,000 tonnes of CO₂ across 4 million visitors (IIT BHU EKC Study benchmark).',
+      'Forest carbon density verified: Mean 82.37 ± 14.26 t C/ha with highest stocks in mid-altitude Banj Oak (Kumaun Univ 2024, DOI: 10.12944).',
     ],
   };
 }

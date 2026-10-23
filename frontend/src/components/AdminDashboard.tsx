@@ -22,6 +22,11 @@ import {
   MapPin,
   TrendingUp,
   FileSpreadsheet,
+  Flame,
+  Calculator,
+  AlertTriangle,
+  Info,
+  BookOpen,
 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
 import {
@@ -30,6 +35,13 @@ import {
   ActivityLog,
   ActivityType,
 } from '../lib/activityLogs';
+import {
+  UTTARAKHAND_DISTRICTS,
+  DISTRICTS_META,
+  VAN_PANCHAYAT_RESEARCH,
+  TOURISM_CARBON_DATA,
+  CLIMATE_DISASTER_DATA,
+} from '../lib/uttarakhandData';
 
 export const AdminDashboard: React.FC = () => {
   const { language } = useTranslation();
@@ -246,7 +258,7 @@ export const AdminDashboard: React.FC = () => {
               {stats.activeVanPanchayats}
             </div>
             <span className="text-[11px] text-[#51554D] block mt-1">
-              {stats.hectaresCovered} Hectares Covered
+              {stats.hectaresCovered} Ha · 12,089 State Cited
             </span>
           </div>
         </div>
@@ -488,6 +500,220 @@ export const AdminDashboard: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* ── 3. Environmental Baselines, 13 Districts & Scientific Research ── */}
+      <div className="journal-card p-5 sm:p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4" style={{ borderColor: 'var(--line)' }}>
+          <div>
+            <h3 className="text-[18px] font-bold text-[#242722] tracking-tight flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#496951]" />
+              <span>
+                {language === 'HI'
+                  ? 'उत्तराखंड के 13 जिले, वन पंचायतें एवं अनुसंधान आधार'
+                  : 'Uttarakhand 13 Districts, Van Panchayats & Research Baselines'}
+              </span>
+            </h3>
+            <p className="text-[12.5px] text-[#777C72] mt-0.5">
+              Verified datasets from Uttarakhand Forest Dept (2023–24), Census 2011, Kumaun Univ (2024), IIT BHU EKC Study & IMD Dehradun
+            </p>
+          </div>
+
+          <Link
+            href="/methodology"
+            className="text-[11.5px] font-mono text-[#304B38] font-bold hover:underline flex items-center gap-1"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>View Full Citations →</span>
+          </Link>
+        </div>
+
+        {/* 3 Core Analytical Blocks */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Block 1: Seasonal Tourism Carbon Benchmark (IIT BHU EKC) */}
+          <div className="p-4 rounded border border-[#2D322B1F] bg-[#FAF9F5] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10.5px] font-mono uppercase font-bold text-[#8A5D2E]">
+                Tourism Carbon Benchmark
+              </span>
+              <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-[#2D322B1F]">
+                IIT BHU EKC
+              </span>
+            </div>
+
+            <div className="space-y-1 font-mono">
+              <div className="text-[20px] font-bold text-[#242722]">
+                144,000 Tonnes CO₂
+              </div>
+              <span className="text-[11px] text-[#51554D] block font-sans">
+                Estimated total emissions per tourist season across Uttarakhand
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded bg-white border border-[#2D322B14] text-[11px] font-mono space-y-1 text-[#51554D]">
+              <div className="flex justify-between">
+                <span>Visitors:</span>
+                <span className="font-bold text-[#242722]">4,000,000 (40 Lakh)</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Avg Distance:</span>
+                <span className="font-bold text-[#242722]">300 km round-trip</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Jeep Emission:</span>
+                <span className="font-bold text-[#8A5D2E]">0.12 kg CO₂/pkm</span>
+              </div>
+            </div>
+
+            <div className="p-2 rounded bg-[#FAF9F5] border border-[#B3834D]/25 text-[10.5px] text-[#777C72] leading-snug">
+              <strong>Note on Original Citing:</strong> Original document notes 12,000 t, but calculation using 4M × 300km × 0.12kg yields 144,000 t CO₂.
+            </div>
+          </div>
+
+          {/* Block 2: Van Panchayat Forest Science (Kumaun Univ & ABCF/RCF) */}
+          <div className="p-4 rounded border border-[#496951]/25 bg-[#FAF9F5] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10.5px] font-mono uppercase font-bold text-[#304B38]">
+                Forest Carbon Potential
+              </span>
+              <a
+                href={VAN_PANCHAYAT_RESEARCH.kumaunStudy2024.doiUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-mono text-[#304B38] hover:underline flex items-center gap-0.5 bg-white px-2 py-0.5 rounded border border-[#496951]/25"
+              >
+                <span>DOI: 10.12944</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+
+            <div className="space-y-1 font-mono">
+              <div className="text-[20px] font-bold text-[#304B38]">
+                82.37 ± 14.26 t C/ha
+              </div>
+              <span className="text-[11px] text-[#51554D] block font-sans">
+                Mean carbon stock in Van Panchayat forests (Kumaun University 2024)
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded bg-white border border-[#2D322B14] text-[11px] font-mono space-y-1 text-[#51554D]">
+              <div className="flex justify-between">
+                <span>Biomass Range:</span>
+                <span className="font-bold text-[#242722]">120.45 – 239.68 t/ha</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Carbon Range:</span>
+                <span className="font-bold text-[#242722]">56.91 – 113.14 t C/ha</span>
+              </div>
+              <div className="flex justify-between">
+                <span>ABCF Broadleaf:</span>
+                <span className="font-bold text-[#304B38]">175.77 Mg C/ha</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-[#51554D] leading-snug">
+              <strong>Dominant Species: </strong>
+              Highest carbon stock observed in forests dominated by Banj Oak (<em>Quercus leucotrichophora</em>) at mid-altitudes.
+            </p>
+          </div>
+
+          {/* Block 3: Climate Change & Mountain Vulnerability */}
+          <div className="p-4 rounded border border-[#8A5D2E]/25 bg-[#FAF9F5] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10.5px] font-mono uppercase font-bold text-[#8A5D2E]">
+                Mountain Vulnerability Records
+              </span>
+              <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-[#2D322B1F]">
+                IMD / USDMA
+              </span>
+            </div>
+
+            <div className="space-y-1 font-mono">
+              <div className="text-[20px] font-bold text-[#8A5D2E]">
+                +1.5°C Anomaly
+              </div>
+              <span className="text-[11px] text-[#51554D] block font-sans">
+                Regional warming recorded across Uttarakhand meteorological stations
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded bg-white border border-[#2D322B14] text-[11px] font-mono space-y-1 text-[#51554D]">
+              <div className="flex justify-between">
+                <span>Kedarnath (2013):</span>
+                <span className="font-bold text-[#8A5D2E]">6,000+ Deaths (GLOF)</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Joshimath (2023):</span>
+                <span className="font-bold text-[#8A5D2E]">700+ Houses Cracked</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Forest Fires (2024):</span>
+                <span className="font-bold text-[#8A5D2E]">1,000+ Incidents (2k ha)</span>
+              </div>
+            </div>
+
+            <div className="p-2 rounded bg-white border border-[#2D322B14] text-[10.5px] text-[#51554D] flex items-start gap-1.5 leading-snug">
+              <AlertTriangle className="w-3 h-3 text-[#8A5D2E] flex-shrink-0 mt-0.5" />
+              <span>
+                <strong>Attribution Note: </strong>
+                Occurrence of disasters does not establish direct causal link to tourist emissions. Multi-factor geomorphology governs Central Himalayas.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 13 Districts Table */}
+        <div className="border border-[#2D322B1F] rounded overflow-hidden">
+          <div className="bg-[#FAF9F5] p-3 border-b border-[#2D322B1F] flex items-center justify-between text-[12px]">
+            <span className="font-bold text-[#242722]">
+              The 13 Districts of Uttarakhand & Official Van Panchayat Distribution
+            </span>
+            <span className="font-mono text-[11px] text-[#777C72]">
+              Source: Forest Dept Annual Report 2023–24 · Total Cited: 12,089 VPs
+            </span>
+          </div>
+
+          <div className="max-h-[280px] overflow-y-auto">
+            <table className="w-full text-left text-[11.5px]">
+              <thead className="bg-[#FAF9F5] border-b border-[#2D322B1F] font-mono text-[10.5px] text-[#777C72] sticky top-0">
+                <tr>
+                  <th className="py-2 px-3">No.</th>
+                  <th className="py-2 px-3">District</th>
+                  <th className="py-2 px-3">Division</th>
+                  <th className="py-2 px-3 text-right">Approx. Van Panchayats</th>
+                  <th className="py-2 px-3 text-right">Area (km²)</th>
+                  <th className="py-2 px-3">Terrain & Ecological Belt</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2D322B0F]">
+                {UTTARAKHAND_DISTRICTS.map((d) => (
+                  <tr key={d.district} className="hover:bg-[#FAF9F5]/70">
+                    <td className="py-1.5 px-3 font-mono text-[#777C72]">{d.no}</td>
+                    <td className="py-1.5 px-3 font-bold text-[#242722]">{d.district}</td>
+                    <td className="py-1.5 px-3">
+                      <span
+                        className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-mono ${
+                          d.division === 'Garhwal'
+                            ? 'bg-[#E8EDE5] text-[#304B38]'
+                            : 'bg-[#F4ECE1] text-[#8A5D2E]'
+                        }`}
+                      >
+                        {d.division}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-3 text-right font-mono font-bold text-[#304B38]">
+                      {d.approxVanPanchayats.toLocaleString()}
+                    </td>
+                    <td className="py-1.5 px-3 text-right font-mono text-[#242722]">
+                      {d.areaKm2.toLocaleString()}
+                    </td>
+                    <td className="py-1.5 px-3 text-[11px] text-[#51554D]">{d.notableHimalayanTerrain}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

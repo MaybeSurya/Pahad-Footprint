@@ -365,14 +365,19 @@ function VerifyContent() {
 
             {/* Official Van Panchayat Conservation Guarantee */}
             <div className="p-4 rounded-lg bg-[#FAF9F5] border border-[#2D322B1F] space-y-2 text-[12px] leading-relaxed text-[#51554D]">
-              <div className="flex items-center gap-1.5 font-bold text-[#242722]">
-                <Leaf className="w-3.5 h-3.5 text-[#304B38]" />
-                <span>Conservation Ledger Attestation:</span>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 font-bold text-[#242722]">
+                  <Leaf className="w-3.5 h-3.5 text-[#304B38]" />
+                  <span>Conservation Ledger Attestation:</span>
+                </div>
+                <span className="font-mono text-[10.5px] text-[#304B38] font-bold bg-[#E8EDE5] px-2 py-0.5 rounded">
+                  12,089 Van Panchayats Network
+                </span>
               </div>
               <p>
                 {language === 'HI'
-                  ? 'यह संकल्प स्थानीय ग्राम वन पंचायत अभिलेख में पंजीकृत है। देशी बांज ओक (Quercus leucotrichophora) के पौधों की २ वर्षों तक नर्सरी देखभाल, मानसूनी रोपण एवं जीवित रहने की सुरक्षा सुनिश्चित की गई है।'
-                  : 'This tree pledge is officially registered in the local village Van Panchayat conservation records. Indigenous Banj Oak saplings are nurtured across village nurseries, planted during monsoon seasons, and monitored for 2-year survival.'}
+                  ? 'यह संकल्प स्थानीय ग्राम वन पंचायत अभिलेख में पंजीकृत है। कुमाऊं विश्वविद्यालय शोध (2024, DOI: 10.12944) के अनुसार मध्य-ऊंचाई के बांज ओक जंगल सर्वाधिक कार्बन (औसत 82.37 टन/हेक्टेयर) अवशोषित करते हैं। 13 जिलों की वन पंचायतों एवं स्पार्क इंडिया द्वारा पौधों की २ वर्षों तक नर्सरी देखभाल एवं जीवित रहने की सुरक्षा सुनिश्चित की जाती है।'
+                  : 'This tree pledge is officially registered in the local village Van Panchayat conservation records across Uttarakhand’s 13 districts (12,089 official councils). Grounded in Kumaun University research (2024, DOI: 10.12944/CARJ.12.2.08), native Banj Oak achieves superior carbon density (mean 82.37 t C/ha) while recharging freshwater springs and stabilizing hill slopes.'}
               </p>
             </div>
           </div>

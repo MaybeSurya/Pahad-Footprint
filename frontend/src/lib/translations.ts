@@ -203,7 +203,16 @@ export const translations = {
       accommodationTitle: "3. Hotels & Lodgings",
       accommodationDesc: "Heating, hot water, and electricity vary greatly between luxury resorts and local village homestays.",
       versionTitle: "4. Updates & Care",
-      versionDesc: "Model v1.2 updated for 2026 mountain travel in Uttarakhand."
+      versionDesc: "Model v1.2 updated for 2026 mountain travel in Uttarakhand.",
+      districtsTitle: "4. The 13 Districts of Uttarakhand & Van Panchayats",
+      districtsDesc: "Official inventory of village forest councils across Garhwal and Kumaon divisions.",
+      districtsSource: "Source: Uttarakhand Forest Department Annual Report 2023–24, Census 2011 & Uttarakhand State Portal.",
+      scienceTitle: "5. Verified Van Panchayat Forest Science",
+      scienceDesc: "Peer-reviewed research on tree biomass and carbon absorption in community forests.",
+      tourismTitle: "6. Tourism Carbon Footprint & Seasonal Benchmark",
+      tourismDesc: "Baseline calculations for 4 million seasonal visitors using mountain transit.",
+      disastersTitle: "7. Environmental Change & Mountain Vulnerability",
+      disastersDesc: "Historical mountain events, local weather observations, and scientific context."
     },
     restoration: {
       backLink: "← Return to Trip Calculator",
@@ -430,7 +439,16 @@ export const translations = {
       accommodationTitle: "3. होटल और ठहराव",
       accommodationDesc: "बड़े रिसॉर्ट और स्थानीय गांव के होमस्टे में बिजली और हीटिंग का खर्च बहुत अलग होता है।",
       versionTitle: "4. अपडेट और देखरेख",
-      versionDesc: "उत्तराखंड की यात्राओं के लिए मॉडल v1.2 अपडेटेड।"
+      versionDesc: "उत्तराखंड की यात्राओं के लिए मॉडल v1.2 अपडेटेड।",
+      districtsTitle: "4. उत्तराखंड के 13 जिले और वन पंचायतें",
+      districtsDesc: "गढ़वाल और कुमाऊं मंडल में ग्राम वन पंचायतों का आधिकारिक विवरण।",
+      districtsSource: "स्रोत: उत्तराखंड वन विभाग वार्षिक रिपोर्ट 2023–24, जनगणना 2011 एवं उत्तराखंड राज्य पोर्टल।",
+      scienceTitle: "5. वन विज्ञान एवं कार्बन भंडारण अनुसंधान",
+      scienceDesc: "सामुदायिक वनों में बायोमास और कार्बन अवशोषण पर सत्यापित वैज्ञानिक शोध।",
+      tourismTitle: "6. मौसमी पर्यटन कार्बन उत्सर्जन विश्लेषण",
+      tourismDesc: "पहाड़ी मार्गों पर 40 लाख मौसमी पर्यटकों के लिए मानक कार्बन गणना।",
+      disastersTitle: "7. पर्यावरणीय परिवर्तन एवं हिमालयी संवेदनशीलता",
+      disastersDesc: "हिमालयी प्राकृतिक घटनाएं, स्थानीय मौसम अवलोकन एवं वैज्ञानिक संदर्भ।"
     },
     restoration: {
       backLink: "← यात्रा कैलकुलेटर पर वापस जाएं",

@@ -3,11 +3,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
-import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight, ExternalLink, CreditCard, HeartHandshake, Sprout, Award } from 'lucide-react';
+import {
+  ArrowLeft,
+  Trees,
+  ShieldCheck,
+  Leaf,
+  CheckCircle2,
+  Compass,
+  ArrowRight,
+  ExternalLink,
+  CreditCard,
+  HeartHandshake,
+  Sprout,
+  Award,
+  MapPin,
+  Info,
+  BookOpen,
+} from 'lucide-react';
 import gsap from 'gsap';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { RecognitionCertificate } from '../../components/RecognitionCertificate';
 import { logActivity } from '../../lib/activityLogs';
+import { DISTRICTS_META, VAN_PANCHAYAT_RESEARCH } from '../../lib/uttarakhandData';
 
 // ─── Animated progress bar ───────────────────────────────────────────────────
 function ProgressBar({ target, isInView }: { target: number; isInView: boolean }) {
@@ -200,6 +217,98 @@ export default function RestorationPage() {
           progressLabel={language === 'HI' ? '85% सक्रिय' : '85% Operational'}
           delay={0.2}
         />
+      </div>
+
+      {/* Verified Van Panchayat Network & Forest Carbon Science */}
+      <div className="journal-card p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3" style={{ borderColor: 'var(--line)' }}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded bg-[#304B38] text-white flex items-center justify-center font-bold">
+              <Trees className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-[15px] sm:text-[16px] font-bold text-[#242722]">
+                {language === 'HI'
+                  ? 'उत्तराखंड वन पंचायत नेटवर्क एवं वैज्ञानिक प्रमाण'
+                  : 'Statewide Van Panchayat Network & Forest Carbon Science'}
+              </h2>
+              <span className="text-[11.5px] text-[#51554D]">
+                {language === 'HI'
+                  ? 'कुमाऊं विश्वविद्यालय शोध (2024) एवं वन विभाग वार्षिक रिपोर्ट 2023–24 पर आधारित'
+                  : 'Grounded in Kumaun University (2024) research & Forest Dept. Annual Report 2023–24'}
+              </span>
+            </div>
+          </div>
+
+          <Link
+            href="/methodology"
+            className="text-[11.5px] font-mono text-[#304B38] font-bold hover:underline flex items-center gap-1"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>{language === 'HI' ? 'पूर्ण शोध डेटा देखें →' : 'View Full Scientific Data →'}</span>
+          </Link>
+        </div>
+
+        {/* 4 Stats Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+          <div className="p-3 rounded border border-[#2D322B1F] bg-[#FAF9F5]">
+            <span className="text-[10px] text-[#777C72] uppercase block">Official Councils</span>
+            <span className="text-[18px] sm:text-[20px] font-bold text-[#304B38] block mt-0.5">
+              12,089+
+            </span>
+            <span className="text-[10px] text-[#51554D] font-sans block">Across all 13 Districts</span>
+          </div>
+
+          <div className="p-3 rounded border border-[#2D322B1F] bg-[#FAF9F5]">
+            <span className="text-[10px] text-[#777C72] uppercase block">Mean Carbon Stock</span>
+            <span className="text-[18px] sm:text-[20px] font-bold text-[#242722] block mt-0.5">
+              82.37
+            </span>
+            <span className="text-[10px] text-[#51554D] font-sans block">t C/ha (Kumaun Univ 2024)</span>
+          </div>
+
+          <div className="p-3 rounded border border-[#2D322B1F] bg-[#FAF9F5]">
+            <span className="text-[10px] text-[#777C72] uppercase block">Broadleaf ABCF</span>
+            <span className="text-[18px] sm:text-[20px] font-bold text-[#304B38] block mt-0.5">
+              175.77
+            </span>
+            <span className="text-[10px] text-[#51554D] font-sans block">Mg C/ha (760 trees/ha)</span>
+          </div>
+
+          <div className="p-3 rounded border border-[#2D322B1F] bg-[#FAF9F5]">
+            <span className="text-[10px] text-[#777C72] uppercase block">SPARC Initiatives</span>
+            <span className="text-[18px] sm:text-[20px] font-bold text-[#8A5D2E] block mt-0.5">
+              750
+            </span>
+            <span className="text-[10px] text-[#51554D] font-sans block">Active Van Panchayats</span>
+          </div>
+        </div>
+
+        {/* Explanatory Note with DOI badge */}
+        <div className="p-3.5 rounded bg-[#FAF9F5] border border-[#496951]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[12px] text-[#51554D]">
+          <div>
+            <span className="font-bold text-[#242722]">
+              {language === 'HI'
+                ? 'बांज ओक ही क्यों? — '
+                : 'Why Native Banj Oak? — '}
+            </span>
+            <span>
+              {language === 'HI'
+                ? 'वैज्ञानिक अध्ययनों से सिद्ध है कि मध्य-ऊंचाई पर बांज ओक के जंगल चीड़ की तुलना में सर्वाधिक कार्बन अवशोषित करते हैं और जलधाराओं को वर्षभर जीवित रखते हैं।'
+                : 'Peer-reviewed studies confirm mid-altitude Banj Oak forests hold the highest carbon density in the Himalayas while stabilizing slopes and recharging underground springs.'}
+            </span>
+          </div>
+
+          <a
+            href={VAN_PANCHAYAT_RESEARCH.kumaunStudy2024.doiUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 inline-flex items-center gap-1 text-[11px] font-mono text-[#304B38] font-bold bg-white px-2.5 py-1 rounded border border-[#496951]/30 hover:underline"
+          >
+            <span>DOI: {VAN_PANCHAYAT_RESEARCH.kumaunStudy2024.doi}</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
       </div>
 
       {/* Pledge & Donation Form */}
