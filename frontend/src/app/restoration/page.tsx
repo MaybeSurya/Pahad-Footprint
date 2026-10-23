@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
-import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight, ExternalLink, CreditCard, HeartHandshake, Sprout } from 'lucide-react';
 import gsap from 'gsap';
 import { useTranslation } from '../../contexts/TranslationContext';
 
@@ -112,9 +112,13 @@ function InitiativeCard({
 export default function RestorationPage() {
   const { t, language } = useTranslation();
   const [pledged, setPledged] = useState(false);
+  const [actionType, setActionType] = useState<'donate' | 'plant'>('donate');
   const [name, setName] = useState('');
   const [saplings, setSaplings] = useState(9);
   const [initiative, setInitiative] = useState('Banj Oak Mid-Hill Reforestation');
+
+  const COST_PER_TREE = 120;
+  const donationAmount = saplings * COST_PER_TREE;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,97 +193,185 @@ export default function RestorationPage() {
         />
       </div>
 
-      {/* Pledge Form */}
-      <div className="journal-card p-6 space-y-4">
+      {/* Pledge & Donation Form */}
+      <div className="journal-card p-6 space-y-5">
         <div>
           <h2 className="text-[17px] font-bold text-[#242722]">
             {t('restoration.pledgeHeading')}
           </h2>
           <p className="text-[12.5px] text-[#51554D] mt-1">
-            {t('restoration.pledgeSub')}
+            {language === 'HI'
+              ? 'यात्री या तो सीधे पौधे लगा सकते हैं अथवा किसी प्रमाणित वन संरक्षण एनजीओ को समतुल्य राशि दान कर सकते हैं।'
+              : 'Travelers can choose either to plant saplings directly or donate the equivalent amount for trees to a certified conservation NGO.'}
           </p>
         </div>
 
-        {pledged ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-5 rounded border text-center space-y-1.5"
-            style={{
-              backgroundColor: 'var(--green-pale)',
-              borderColor: 'rgba(73, 105, 81, 0.3)',
-            }}
+        {/* Choice Switcher: Donate vs Plant */}
+        <div className="flex rounded bg-[#F0EEE6] p-1 border border-[#2D322B29] gap-1">
+          <button
+            type="button"
+            onClick={() => setActionType('donate')}
+            className={`flex-1 py-2 px-3 rounded text-[12px] sm:text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              actionType === 'donate'
+                ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
+                : 'text-[#51554D] hover:text-[#242722]'
+            }`}
           >
-            <div className="flex items-center justify-center gap-2 font-bold text-[15px] text-[#304B38]">
-              <CheckCircle2 className="w-4 h-4" />
+            <HeartHandshake className="w-4 h-4 text-[#304B38]" />
+            <span>{language === 'HI' ? 'एनजीओ को समतुल्य राशि दान करें (अनुशंसित)' : 'Donate Equivalent Amount to NGO (Recommended)'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActionType('plant')}
+            className={`flex-1 py-2 px-3 rounded text-[12px] sm:text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              actionType === 'plant'
+                ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
+                : 'text-[#51554D] hover:text-[#242722]'
+            }`}
+          >
+            <Sprout className="w-4 h-4 text-[#496951]" />
+            <span>{language === 'HI' ? 'स्वयं पौधे लगाएं' : 'Plant Saplings Myself'}</span>
+          </button>
+        </div>
+
+        {/* Mode A: Donate Equivalent to NGO */}
+        {actionType === 'donate' && (
+          <div className="space-y-4 pt-2">
+            <div className="p-4 rounded border border-[#2D322B1F] bg-[#FAF9F5] space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                    {language === 'HI' ? 'पेड़ों की संख्या चुनें' : 'Number of Trees to Support'}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={500}
+                    value={saplings}
+                    onChange={(e) => setSaplings(Math.max(1, Number(e.target.value) || 1))}
+                    className="w-32 h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono font-bold text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                  />
+                </div>
+
+                <div className="sm:text-right">
+                  <span className="text-[11px] font-mono text-[#777C72] uppercase block">
+                    {language === 'HI' ? 'समतुल्य दान राशि (₹120/पेड़)' : 'Equivalent Cost (₹120/Tree)'}
+                  </span>
+                  <div className="font-mono text-[22px] font-bold text-[#304B38]">
+                    ₹{donationAmount}
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[12px] text-[#51554D] leading-relaxed pt-2 border-t border-[#2D322B14]">
+                {language === 'HI'
+                  ? 'यदि आप स्वयं पौधे नहीं लगाना चाहते, तो हिमालयी वन पंचायतों व गैर-सरकारी संगठनों (NGO) को समतुल्य राशि दान करें। वे आपके नाम से पौधे रोपकर उनकी दो वर्षों तक सुरक्षा करेंगे।'
+                  : 'If you prefer not to plant trees yourself, you can donate the equivalent amount to certified Himalayan community NGOs & Van Panchayats who will plant, care for, and nurture the saplings on your behalf.'}
+              </p>
+            </div>
+
+            <a
+              href="https://devnexis.in/payment"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button-primary w-full py-3.5 text-center flex items-center justify-center gap-2 font-bold text-[13.5px] rounded shadow-xs"
+            >
+              <CreditCard className="w-4 h-4" />
               <span>
                 {language === 'HI'
-                  ? `संकल्प दर्ज हुआ: ${saplings} बांज ओक के पौधे`
-                  : `Pledge Intention Recorded: ${saplings} Banj Oak Saplings`}
+                  ? `₹${donationAmount} दान करें (${saplings} पेड़) →`
+                  : `Donate ₹${donationAmount} for ${saplings} Trees to NGO →`}
               </span>
-            </div>
-            <p className="text-[12px] text-[#51554D]">
-              {language === 'HI'
-                ? `धन्यवाद, ${name || 'पहाड़ी यात्री'}! आपका संकल्प स्थानीय वन पंचायत रिकॉर्ड में सुरक्षित हो गया है।`
-                : `Thank you, ${name || 'Mountain Traveler'}! Your pledge is logged to the local Van Panchayat ledger.`}
-            </p>
-          </motion.div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[12px] font-semibold text-[#242722] mb-1">
-                  {language === 'HI' ? 'यात्री का नाम' : 'Traveler Name'}
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder={language === 'HI' ? 'उदा. माया भट्ट' : 'e.g. Maya Bhatt'}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
-                />
-              </div>
-              <div>
-                <label className="block text-[12px] font-semibold text-[#242722] mb-1">
-                  {language === 'HI' ? 'पौधों की संख्या' : 'Number of Oak Saplings'}
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={500}
-                  value={saplings}
-                  onChange={(e) => setSaplings(Number(e.target.value))}
-                  className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
-                />
-              </div>
-            </div>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        )}
 
-            <div>
-              <label className="block text-[12px] font-semibold text-[#242722] mb-1">
-                {language === 'HI' ? 'पौधारोपण क्षेत्र' : 'Restoration Area'}
-              </label>
-              <select
-                value={initiative}
-                onChange={(e) => setInitiative(e.target.value)}
-                className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+        {/* Mode B: Plant Saplings Myself */}
+        {actionType === 'plant' && (
+          <div className="pt-2">
+            {pledged ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-5 rounded border text-center space-y-1.5"
+                style={{
+                  backgroundColor: 'var(--green-pale)',
+                  borderColor: 'rgba(73, 105, 81, 0.3)',
+                }}
               >
-                <option>
-                  {language === 'HI' ? 'बांज ओक पौधारोपण (कुमाऊं मंडल)' : 'Banj Oak Mid-Hill Reforestation (Kumaon Division)'}
-                </option>
-                <option>
-                  {language === 'HI' ? 'पहाड़ी जलधारा संरक्षण (गढ़वाल मंडल)' : 'Glacial Catchment Spring Protection (Garhwal Division)'}
-                </option>
-                <option>
-                  {language === 'HI' ? 'ग्राम वन पंचायत सामुदायिक नर्सरी फंड' : 'Van Panchayat Village Nursery Support Fund'}
-                </option>
-              </select>
-            </div>
+                <div className="flex items-center justify-center gap-2 font-bold text-[15px] text-[#304B38]">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>
+                    {language === 'HI'
+                      ? `संकल्प दर्ज हुआ: ${saplings} बांज ओक के पौधे`
+                      : `Pledge Intention Recorded: ${saplings} Banj Oak Saplings`}
+                  </span>
+                </div>
+                <p className="text-[12px] text-[#51554D]">
+                  {language === 'HI'
+                    ? `धन्यवाद, ${name || 'पहाड़ी यात्री'}! आपका संकल्प स्थानीय वन पंचायत रिकॉर्ड में सुरक्षित हो गया है।`
+                    : `Thank you, ${name || 'Mountain Traveler'}! Your pledge is logged to the local Van Panchayat ledger.`}
+                </p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                      {language === 'HI' ? 'यात्री का नाम' : 'Traveler Name'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={language === 'HI' ? 'उदा. माया भट्ट' : 'e.g. Maya Bhatt'}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                      {language === 'HI' ? 'पौधों की संख्या' : 'Number of Oak Saplings'}
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={500}
+                      value={saplings}
+                      onChange={(e) => setSaplings(Number(e.target.value))}
+                      className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                    />
+                  </div>
+                </div>
 
-            <button type="submit" className="button-primary w-full py-3">
-              {language === 'HI' ? 'पौधारोपण संकल्प दर्ज करें' : 'Confirm Tree Planting Pledge'}
-            </button>
-          </form>
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                    {language === 'HI' ? 'पौधारोपण क्षेत्र' : 'Restoration Area'}
+                  </label>
+                  <select
+                    value={initiative}
+                    onChange={(e) => setInitiative(e.target.value)}
+                    className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
+                  >
+                    <option>
+                      {language === 'HI' ? 'बांज ओक पौधारोपण (कुमाऊं मंडल)' : 'Banj Oak Mid-Hill Reforestation (Kumaon Division)'}
+                    </option>
+                    <option>
+                      {language === 'HI' ? 'पहाड़ी जलधारा संरक्षण (गढ़वाल मंडल)' : 'Glacial Catchment Spring Protection (Garhwal Division)'}
+                    </option>
+                    <option>
+                      {language === 'HI' ? 'ग्राम वन पंचायत सामुदायिक नर्सरी फंड' : 'Van Panchayat Village Nursery Support Fund'}
+                    </option>
+                  </select>
+                </div>
+
+                <button type="submit" className="button-primary w-full py-3">
+                  {language === 'HI' ? 'पौधारोपण संकल्प दर्ज करें' : 'Confirm Personal Tree Planting Pledge'}
+                </button>
+              </form>
+            )}
+          </div>
         )}
       </div>
     </div>

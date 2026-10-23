@@ -54,11 +54,20 @@ export default function HomePage() {
     {
       num: '04',
       path: '/calculator/habits',
-      titleEn: 'Eco-Habits & Results',
-      titleHi: 'ईको आदतें एवं टेलीमेट्री',
-      descEn: 'Claim certified water & cuisine credits, explore eco-swaps, and pledge tree saplings.',
-      descHi: 'प्लास्टिक-मुक्त पानी और स्थानीय भोजन कटौती के साथ अंतिम कार्बन परिणाम।',
+      titleEn: 'Eco-Habits & Review',
+      titleHi: 'ईको आदतें एवं समीक्षा',
+      descEn: 'Claim certified water & cuisine credits, review trip parameters before calculation.',
+      descHi: 'प्लास्टिक-मुक्त पानी और स्थानीय भोजन कटौती के साथ यात्रा मानकों की समीक्षा।',
       icon: Leaf,
+    },
+    {
+      num: '05',
+      path: '/calculator/results',
+      titleEn: 'Results & Tree Support',
+      titleHi: 'परिणाम व पौधारोपण/दान',
+      descEn: 'View telemetry, compare eco-swaps, plant saplings or donate tree funds to NGOs.',
+      descHi: 'कार्बन टेलीमेट्री देखें, स्वयं पौधे लगाएं अथवा प्रमाणित एनजीओ को समतुल्य राशि दान करें।',
+      icon: BarChart3,
     },
   ];
 
@@ -101,8 +110,8 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* 4-Step Bento Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 5-Step Bento Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
           {onboardingSteps.map((step) => {
             const IconComp = step.icon;
             return (

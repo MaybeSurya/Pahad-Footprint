@@ -165,9 +165,15 @@ export const translations = {
       speciesLatin: "Quercus leucotrichophora",
       speciesDesc: "Deep roots hold mountain slopes against landslides and protect natural drinking water springs.",
       fieldNoteTitle: "Village Note:",
-      fieldNoteBody: "Voluntary tree planting supports local village Van Panchayat nurseries to protect mountain forests.",
+      fieldNoteBody: "Plant native saplings during the monsoon season (July–September) in local Van Panchayat community land.",
       pledgeButton: "Pledge to plant {total} Banj Oak Saplings",
       pledgeThankYou: "Pledge saved on this device · Van Panchayat notified",
+      donateOption: "Donate Equivalent to NGO",
+      plantOption: "Plant Saplings Myself",
+      donateNotice: "Don't want to plant trees yourself? Donate the equivalent amount (₹120 per sapling) to verified Himalayan conservation NGOs and community nurseries who will plant, geo-tag, and protect them on your behalf.",
+      donateButton: "Donate ₹{amount} for {total} Trees →",
+      donatePerTree: "₹120 per native Banj Oak sapling (includes 2 years of sapling protection)",
+      donateSuccess: "Thank you! Contribution logged · Redirecting to payment portal...",
       methodologyLink: "How calculations work →"
     },
     methodology: {
@@ -382,9 +388,15 @@ export const translations = {
       speciesLatin: "क्वेर्कस ल्यूकोट्राइकोफोरा",
       speciesDesc: "गहरी जड़ें पहाड़ों को भूस्खलन से बचाती हैं और प्राकृतिक जलस्रोतों को जीवित रखती हैं।",
       fieldNoteTitle: "ग्रामीण सूचना:",
-      fieldNoteBody: "पौधारोपण स्थानीय ग्राम वन पंचायतों की नर्सरियों को मजबूत करता है और पहाड़ों की सुरक्षा करता है।",
+      fieldNoteBody: "स्थानीय वन पंचायत सामुदायिक भूमि पर मानसूनी मौसम (जुलाई-सितंबर) में देशी पौधे रोपें।",
       pledgeButton: "{total} बांज ओक के पौधे लगाने का संकल्प लें",
       pledgeThankYou: "संकल्प सुरक्षित हुआ · वन पंचायत को सूचित किया गया",
+      donateOption: "एनजीओ को समतुल्य राशि दान करें",
+      plantOption: "स्वयं पौधे लगाएं",
+      donateNotice: "स्वयं पौधे नहीं लगाना चाहते? प्रमाणित हिमालयी वन संरक्षण एनजीओ व सामुदायिक नर्सरी को समतुल्य राशि (₹120 प्रति पौधा) दान करें जो आपकी ओर से पौधे रोपेंगे और २ वर्ष तक उनकी देखभाल करेंगे।",
+      donateButton: "{total} पौधों हेतु ₹{amount} दान करें →",
+      donatePerTree: "₹120 प्रति बांज ओक पौधा (२ वर्ष संरक्षण एवं जियो-टैगिंग सहित)",
+      donateSuccess: "धन्यवाद! योगदान सुरक्षित हुआ · एनजीओ पेमेंट पोर्टल पर ले जा रहे हैं...",
       methodologyLink: "गणना कैसे होती है →"
     },
     methodology: {

@@ -3,7 +3,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trees, ShieldCheck, CheckCircle2, Leaf, ArrowRight } from 'lucide-react';
+import {
+  Trees,
+  ShieldCheck,
+  CheckCircle2,
+  Leaf,
+  ExternalLink,
+  CreditCard,
+  HeartHandshake,
+  Sprout,
+} from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
 
 interface RestorationPledgeBoxProps {
@@ -18,11 +27,22 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   saplings,
   onPledgeSuccess,
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const [activeTab, setActiveTab] = useState<'donate' | 'plant'>('donate');
   const [pledged, setPledged] = useState(false);
+  const [donated, setDonated] = useState(false);
+
+  // Standard nursery raising & 2-year maintenance cost per high-altitude sapling
+  const COST_PER_SAPLING = 120;
+  const totalDonationAmount = saplings.total * COST_PER_SAPLING;
 
   const handlePledge = () => {
     setPledged(true);
+    if (onPledgeSuccess) onPledgeSuccess();
+  };
+
+  const handleConfirmDonation = () => {
+    setDonated(true);
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
@@ -97,59 +117,159 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
         </div>
       </div>
 
-      {/* Community Caveat Notice */}
-      <div
-        className="rounded p-3 text-[11px] leading-relaxed border"
-        style={{
-          backgroundColor: 'var(--paper-deep)',
-          borderColor: 'var(--line)',
-          color: 'var(--ink-soft)',
-        }}
-      >
-        <strong className="text-[#242722]">{t('pledge.fieldNoteTitle')}</strong>{' '}
-        {t('pledge.fieldNoteBody')}
+      {/* Tab Switcher: Donate Equivalent vs Plant Myself */}
+      <div className="flex rounded bg-[#F0EEE6] p-1 border border-[#2D322B29] gap-1">
+        <button
+          type="button"
+          onClick={() => setActiveTab('donate')}
+          className={`flex-1 py-1.5 px-2 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+            activeTab === 'donate'
+              ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
+              : 'text-[#51554D] hover:text-[#242722]'
+          }`}
+        >
+          <HeartHandshake className="w-3.5 h-3.5 text-[#304B38]" />
+          <span>{t('pledge.donateOption')}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('plant')}
+          className={`flex-1 py-1.5 px-2 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+            activeTab === 'plant'
+              ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
+              : 'text-[#51554D] hover:text-[#242722]'
+          }`}
+        >
+          <Sprout className="w-3.5 h-3.5 text-[#496951]" />
+          <span>{t('pledge.plantOption')}</span>
+        </button>
       </div>
 
-      {/* Action Button & Confirmation */}
-      <div className="pt-1 space-y-2">
-        <AnimatePresence mode="wait">
-          {pledged ? (
-            <motion.div
-              key="pledged"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-3 rounded text-center font-semibold flex items-center justify-center gap-2 border text-[12.5px]"
-              style={{
-                backgroundColor: 'var(--green-pale)',
-                borderColor: 'rgba(73, 105, 81, 0.3)',
-                color: 'var(--green-deep)',
-              }}
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>{t('pledge.pledgeThankYou')}</span>
-            </motion.div>
-          ) : (
-            <motion.button
-              key="unpledged"
-              type="button"
-              whileTap={{ scale: 0.99 }}
-              onClick={handlePledge}
-              className="btn-accent w-full justify-center py-3 text-[13px]"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>{buttonText}</span>
-            </motion.button>
-          )}
-        </AnimatePresence>
-
-        <div className="text-center">
-          <Link
-            href="/methodology"
-            className="text-link text-[11.5px]"
+      {/* Option 1: Donate Equivalent Amount to NGO */}
+      {activeTab === 'donate' && (
+        <div className="space-y-3.5">
+          <div
+            className="rounded p-3 text-[11.5px] leading-relaxed border space-y-1.5"
+            style={{
+              backgroundColor: 'var(--paper-deep)',
+              borderColor: 'var(--line)',
+              color: 'var(--ink-soft)',
+            }}
           >
-            {t('pledge.methodologyLink')}
-          </Link>
+            <p className="text-[#242722] leading-relaxed">
+              {t('pledge.donateNotice')}
+            </p>
+            <div className="flex items-center justify-between font-mono text-[11px] pt-1 border-t border-[#2D322B14]">
+              <span className="text-[#777C72]">{t('pledge.donatePerTree')}</span>
+              <span className="font-bold text-[#304B38]">₹{COST_PER_SAPLING} / tree</span>
+            </div>
+          </div>
+
+          {/* Amount Calculation Banner */}
+          <div className="p-3 rounded border border-[#496951]/25 bg-[#E8EDE5]/50 flex items-center justify-between">
+            <div>
+              <span className="text-[10.5px] font-mono text-[#777C72] uppercase block">
+                {language === 'HI' ? 'समतुल्य दान राशि' : 'Equivalent Tree Support Cost'}
+              </span>
+              <span className="text-[12px] font-medium text-[#242722]">
+                {saplings.total} trees × ₹{COST_PER_SAPLING}
+              </span>
+            </div>
+            <div className="font-mono text-[20px] font-bold text-[#304B38]">
+              ₹{totalDonationAmount}
+            </div>
+          </div>
+
+          {/* Direct Payment Link Button */}
+          <div className="space-y-2">
+            <a
+              href="https://devnexis.in/payment"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleConfirmDonation}
+              className="button-primary w-full py-3.5 px-4 text-center rounded text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-all"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>
+                {language === 'HI'
+                  ? `₹${totalDonationAmount} दान करें (${saplings.total} पेड़) →`
+                  : `Donate ₹${totalDonationAmount} for ${saplings.total} Trees →`}
+              </span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+
+            {donated && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-2.5 rounded text-center text-[11.5px] text-[#304B38] font-bold bg-[#E8EDE5] border border-[#496951]/30 flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{t('pledge.donateSuccess')}</span>
+              </motion.div>
+            )}
+          </div>
         </div>
+      )}
+
+      {/* Option 2: Plant Saplings Myself */}
+      {activeTab === 'plant' && (
+        <div className="space-y-3.5">
+          {/* Community Caveat Notice */}
+          <div
+            className="rounded p-3 text-[11px] leading-relaxed border"
+            style={{
+              backgroundColor: 'var(--paper-deep)',
+              borderColor: 'var(--line)',
+              color: 'var(--ink-soft)',
+            }}
+          >
+            <strong className="text-[#242722]">{t('pledge.fieldNoteTitle')}</strong>{' '}
+            {t('pledge.fieldNoteBody')}
+          </div>
+
+          {/* Action Button & Confirmation */}
+          <div className="pt-1 space-y-2">
+            <AnimatePresence mode="wait">
+              {pledged ? (
+                <motion.div
+                  key="pledged"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-3 rounded text-center font-semibold flex items-center justify-center gap-2 border text-[12.5px]"
+                  style={{
+                    backgroundColor: 'var(--green-pale)',
+                    borderColor: 'rgba(73, 105, 81, 0.3)',
+                    color: 'var(--green-deep)',
+                  }}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{t('pledge.pledgeThankYou')}</span>
+                </motion.div>
+              ) : (
+                <motion.button
+                  key="unpledged"
+                  type="button"
+                  whileTap={{ scale: 0.99 }}
+                  onClick={handlePledge}
+                  className="btn-accent w-full justify-center py-3 text-[13px]"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>{buttonText}</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
+
+      <div className="text-center pt-1">
+        <Link
+          href="/methodology"
+          className="text-link text-[11.5px]"
+        >
+          {t('pledge.methodologyLink')}
+        </Link>
       </div>
     </motion.div>
   );
