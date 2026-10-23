@@ -1,67 +1,25 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MountainSnow, Compass, MapPin, Layers, Navigation, Info } from 'lucide-react';
-import { MapplsRouteResult } from '../lib/mappls';
+import { MountainSnow, Navigation, Layers } from 'lucide-react';
+import { OpenMapRouteResult } from '../lib/openmaps';
+import { useTranslation } from '../contexts/TranslationContext';
 
-interface MapplsMapViewProps {
-  route: MapplsRouteResult | null;
+interface OpenMapViewProps {
+  route: OpenMapRouteResult | null;
 }
 
-declare global {
-  interface Window {
-    mappls?: any;
-    initMapplsMap?: () => void;
-  }
-}
-
-export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
+export const OpenMapView: React.FC<OpenMapViewProps> = ({ route }) => {
+  const { language } = useTranslation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const leafletInstanceRef = useRef<any>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'profile'>('map');
-  const [mapProvider, setMapProvider] = useState<'mappls' | 'osm' | 'none'>('none');
 
   useEffect(() => {
     if (!route || !mapContainerRef.current) return;
     let isCancelled = false;
 
-    async function initMap() {
-      // 1. Check if Mappls Web SDK is loaded with a live key
-      if (typeof window !== 'undefined' && window.mappls && window.mappls.Map) {
-        try {
-          const center = [
-            (route!.origin.latitude + route!.destination.latitude) / 2,
-            (route!.origin.longitude + route!.destination.longitude) / 2,
-          ];
-          const map = new window.mappls.Map(mapContainerRef.current, {
-            center,
-            zoom: 9,
-            traffic: false,
-            geolocation: false,
-          });
-
-          new window.mappls.Marker({
-            map,
-            position: { lat: route!.origin.latitude, lng: route!.origin.longitude },
-            fitbounds: true,
-            popupHtml: `<strong>${route!.origin.placeName}</strong><br/>Altitude: ${route!.origin.altitudeMeters}m`,
-          });
-
-          new window.mappls.Marker({
-            map,
-            position: { lat: route!.destination.latitude, lng: route!.destination.longitude },
-            fitbounds: true,
-            popupHtml: `<strong>${route!.destination.placeName}</strong><br/>Altitude: ${route!.destination.altitudeMeters}m`,
-          });
-
-          setMapProvider('mappls');
-          return;
-        } catch {
-          // Fall through to OpenStreetMap
-        }
-      }
-
-      // 2. OpenStreetMap + Leaflet Fallback
+    async function initOpenMap() {
       try {
         const L = (await import('leaflet')).default;
 
@@ -73,11 +31,11 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
           leafletInstanceRef.current = null;
         }
 
+        const centerLat = (route!.origin.latitude + route!.destination.latitude) / 2;
+        const centerLng = (route!.origin.longitude + route!.destination.longitude) / 2;
+
         const map = L.map(mapContainerRef.current, {
-          center: [
-            (route!.origin.latitude + route!.destination.latitude) / 2,
-            (route!.origin.longitude + route!.destination.longitude) / 2,
-          ],
+          center: [centerLat, centerLng],
           zoom: 9,
           scrollWheelZoom: false,
         });
@@ -92,26 +50,26 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
         // Origin custom pin (Alpine Forest Green)
         const originIcon = L.divIcon({
           className: 'custom-map-pin origin-pin',
-          html: `<div style="background-color: #304B38; color: #E8EDE5; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">A</div>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15],
-          popupAnchor: [0, -16],
+          html: `<div style="background-color: #304B38; color: #E8EDE5; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">A</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
         });
 
         // Destination custom pin (Muted Warm Amber)
         const destIcon = L.divIcon({
           className: 'custom-map-pin dest-pin',
-          html: `<div style="background-color: #B3834D; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">B</div>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15],
-          popupAnchor: [0, -16],
+          html: `<div style="background-color: #B3834D; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">B</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
         });
 
         const originMarker = L.marker([route!.origin.latitude, route!.origin.longitude], { icon: originIcon })
           .bindPopup(
             `<div style="font-size:12px; font-family:sans-serif;">
-              <strong style="color:#304B38;">Origin: ${route!.origin.placeName}</strong><br/>
-              <span style="color:#51554D;">Altitude: ${route!.origin.altitudeMeters}m AMSL</span>
+              <strong style="color:#304B38;">${route!.origin.placeName}</strong><br/>
+              <span style="color:#51554D;">Altitude: ${route!.origin.altitudeMeters}m</span>
             </div>`
           )
           .addTo(map);
@@ -119,13 +77,13 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
         const destMarker = L.marker([route!.destination.latitude, route!.destination.longitude], { icon: destIcon })
           .bindPopup(
             `<div style="font-size:12px; font-family:sans-serif;">
-              <strong style="color:#B3834D;">Destination: ${route!.destination.placeName}</strong><br/>
-              <span style="color:#51554D;">Altitude: ${route!.destination.altitudeMeters}m AMSL</span>
+              <strong style="color:#B3834D;">${route!.destination.placeName}</strong><br/>
+              <span style="color:#51554D;">Altitude: ${route!.destination.altitudeMeters}m</span>
             </div>`
           )
           .addTo(map);
 
-        // Draw mountain transit route polyline
+        // Draw transit route line
         const latlngs = route!.coordinates.map((c) => [c[0], c[1]] as [number, number]);
         const polyline = L.polyline(latlngs, {
           color: '#496951',
@@ -136,24 +94,21 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
 
         polyline.bindPopup(
           `<div style="font-size:12px; font-family:sans-serif;">
-            <strong style="color:#242722;">Himalayan Transit Corridor</strong><br/>
-            One-Way: <strong>${route!.distanceKm} km</strong> (~${Math.floor(route!.durationMinutes / 60)}h ${route!.durationMinutes % 60}m)<br/>
-            Ascent: <strong style="color:#304B38;">Δ +${route!.ascentMeters}m</strong>
+            <strong>${route!.origin.placeName.split('(')[0]} → ${route!.destination.placeName.split('(')[0]}</strong><br/>
+            ${route!.distanceKm} km · ${Math.floor(route!.durationMinutes / 60)}h ${route!.durationMinutes % 60}m
           </div>`
         );
 
         // Fit map bounds with padding
         const group = L.featureGroup([originMarker, destMarker, polyline]);
-        map.fitBounds(group.getBounds(), { padding: [36, 36] });
-
-        setMapProvider('osm');
+        map.fitBounds(group.getBounds(), { padding: [32, 32] });
       } catch (err) {
-        console.error('Leaflet / OSM render error:', err);
+        console.error('OpenStreetMap render error:', err);
       }
     }
 
     if (activeTab === 'map') {
-      initMap();
+      initOpenMap();
     }
 
     return () => {
@@ -169,21 +124,16 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
 
   return (
     <div className="journal-card p-0 overflow-hidden">
-      {/* Map View Header & Mode Tabs */}
+      {/* Mode Tabs */}
       <div
-        className="px-4 py-3 border-b flex items-center justify-between flex-wrap gap-2"
+        className="px-4 py-2.5 border-b flex items-center justify-between flex-wrap gap-2"
         style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}
       >
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-[#496951]" />
-          <div>
-            <span className="text-[12.5px] font-bold text-[#242722] font-mono">
-              HIMALAYAN TRANSIT CORRIDOR
-            </span>
-            <span className="ml-2 font-mono text-[9.5px] uppercase px-1.5 py-0.2 rounded bg-white text-[#304B38] border border-[#2D322B29]">
-              {mapProvider === 'mappls' ? 'Mappls Active' : 'OpenStreetMap'}
-            </span>
-          </div>
+          <span className="text-[12.5px] font-bold text-[#242722]">
+            {language === 'HI' ? 'यात्रा मार्ग दृश्य' : 'Route Overview'}
+          </span>
         </div>
 
         <div className="flex items-center gap-1 bg-white p-0.5 rounded border border-[#2D322B29]">
@@ -196,7 +146,7 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                 : 'text-[#51554D] hover:text-[#242722]'
             }`}
           >
-            Live Map
+            {language === 'HI' ? 'मानचित्र' : 'Map View'}
           </button>
           <button
             type="button"
@@ -207,7 +157,7 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                 : 'text-[#51554D] hover:text-[#242722]'
             }`}
           >
-            Elevation Profile
+            {language === 'HI' ? 'ऊंचाई प्रोफ़ाइल' : 'Elevation Profile'}
           </button>
         </div>
       </div>
@@ -230,7 +180,9 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                 <span className="w-2 h-2 rounded-full bg-[#B3834D]" />
                 <strong>B:</strong> {route.destination.placeName.split('(')[0]} ({route.destination.altitudeMeters}m)
               </span>
-              <span className="hidden sm:inline">Scroll to zoom · Drag to pan</span>
+              <span className="hidden sm:inline">
+                {language === 'HI' ? 'ज़ूम और ड्रैग करें' : 'Scroll to zoom · Drag to pan'}
+              </span>
             </div>
           </div>
         ) : (
@@ -254,7 +206,7 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                 </span>
               </div>
 
-              {/* Dynamic Topographic Elevation Curve */}
+              {/* Topographic Elevation Curve */}
               <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 120">
                 <defs>
                   <linearGradient id="elevationGrad" x1="0" y1="0" x2="0" y2="1">
@@ -286,28 +238,34 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                 className="flex items-center justify-between text-[10px] font-mono text-[#777C72] z-10 pt-1.5 border-t"
                 style={{ borderColor: 'var(--line)' }}
               >
-                <span>0 km (Start Point)</span>
-                <span>Δ +{route.ascentMeters}m Elevation Gain</span>
-                <span>{route.distanceKm} km (Summit)</span>
+                <span>{language === 'HI' ? '0 किमी (प्रस्थान)' : '0 km (Start Point)'}</span>
+                <span>Δ +{route.ascentMeters}m {language === 'HI' ? 'ऊंचाई बढ़त' : 'Elevation Gain'}</span>
+                <span>{route.distanceKm} km {language === 'HI' ? '(गंतव्य)' : '(Arrival)'}</span>
               </div>
             </div>
 
             {/* Geographical Meta Summary */}
             <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
               <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
-                <span className="text-[#777C72] text-[9.5px] block">ORIGIN</span>
+                <span className="text-[#777C72] text-[9.5px] block">
+                  {language === 'HI' ? 'प्रस्थान' : 'START POINT'}
+                </span>
                 <p className="font-bold text-[#242722]">
                   {route.origin.latitude.toFixed(3)}°N, {route.origin.longitude.toFixed(3)}°E
                 </p>
               </div>
               <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
-                <span className="text-[#777C72] text-[9.5px] block">DESTINATION</span>
+                <span className="text-[#777C72] text-[9.5px] block">
+                  {language === 'HI' ? 'गंतव्य' : 'DESTINATION'}
+                </span>
                 <p className="font-bold text-[#242722]">
                   {route.destination.latitude.toFixed(3)}°N, {route.destination.longitude.toFixed(3)}°E
                 </p>
               </div>
               <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
-                <span className="text-[#777C72] text-[9.5px] block">TERRAIN ZONE</span>
+                <span className="text-[#777C72] text-[9.5px] block">
+                  {language === 'HI' ? 'ढलान क्षेत्र' : 'TERRAIN'}
+                </span>
                 <p className="font-bold text-[#304B38] uppercase">
                   {route.terrainZone.replace('_', ' ')}
                 </p>

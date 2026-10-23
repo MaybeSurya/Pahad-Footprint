@@ -1,4 +1,4 @@
-export interface MapplsPlace {
+export interface OpenMapPlace {
   id: string;
   placeName: string;
   placeAddress: string;
@@ -9,20 +9,20 @@ export interface MapplsPlace {
   terrainZone: 'foothills' | 'mid_hills' | 'high_altitude';
 }
 
-export interface MapplsRouteResult {
+export interface OpenMapRouteResult {
   distanceKm: number;
   roundTripKm: number;
   durationMinutes: number;
-  origin: MapplsPlace;
-  destination: MapplsPlace;
+  origin: OpenMapPlace;
+  destination: OpenMapPlace;
   terrainZone: 'foothills' | 'mid_hills' | 'high_altitude';
   ascentMeters: number;
   isSimulated: boolean;
-  coordinates: [number, number][]; // [lat, lng]
+  coordinates: [number, number][]; // [lat, lng] for Leaflet
 }
 
-// Built-in Uttarakhand verified mountain destination catalog
-export const UTTARAKHAND_HUBS: MapplsPlace[] = [
+// Verified Uttarakhand mountain destination catalog with altitudes and coordinates
+export const UTTARAKHAND_HUBS: OpenMapPlace[] = [
   // Foothills / Plains (<1,200m)
   {
     id: 'kathgodam',
@@ -98,7 +98,7 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
   // Mid-Hills (1,200m – 2,400m)
   {
     id: 'nainital',
-    placeName: 'Nainital (Mallital / Naini Lake)',
+    placeName: 'Nainital (Naini Lake / Mallital)',
     placeAddress: 'Nainital District, Kumaon, Uttarakhand',
     latitude: 29.391,
     longitude: 79.454,
@@ -107,18 +107,8 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
     terrainZone: 'mid_hills',
   },
   {
-    id: 'mukteshwar',
-    placeName: 'Mukteshwar Dham',
-    placeAddress: 'Nainital District, Kumaon, Uttarakhand',
-    latitude: 29.472,
-    longitude: 79.647,
-    altitudeMeters: 2171,
-    district: 'Nainital',
-    terrainZone: 'mid_hills',
-  },
-  {
     id: 'almora',
-    placeName: 'Almora Cultural Ridge',
+    placeName: 'Almora Heritage Town',
     placeAddress: 'Almora District, Kumaon, Uttarakhand',
     latitude: 29.597,
     longitude: 79.659,
@@ -131,14 +121,24 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
     placeName: 'Ranikhet Cantonment',
     placeAddress: 'Almora District, Kumaon, Uttarakhand',
     latitude: 29.643,
-    longitude: 79.432,
-    altitudeMeters: 1869,
+    longitude: 79.426,
+    altitudeMeters: 1829,
     district: 'Almora',
     terrainZone: 'mid_hills',
   },
   {
+    id: 'mukteshwar',
+    placeName: 'Mukteshwar Ridge',
+    placeAddress: 'Nainital District, Kumaon, Uttarakhand',
+    latitude: 29.472,
+    longitude: 79.647,
+    altitudeMeters: 2171,
+    district: 'Nainital',
+    terrainZone: 'mid_hills',
+  },
+  {
     id: 'kausani',
-    placeName: 'Kausani (Himalayan Panorama Point)',
+    placeName: 'Kausani (Trishul Viewpoint)',
     placeAddress: 'Bageshwar District, Kumaon, Uttarakhand',
     latitude: 29.854,
     longitude: 79.596,
@@ -148,7 +148,7 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
   },
   {
     id: 'mussoorie',
-    placeName: 'Mussoorie (Queen of Hills / Mall Road)',
+    placeName: 'Mussoorie (Mall Road / Library Chowk)',
     placeAddress: 'Dehradun District, Garhwal, Uttarakhand',
     latitude: 30.459,
     longitude: 78.066,
@@ -157,62 +157,82 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
     terrainZone: 'mid_hills',
   },
   {
-    id: 'dhanaulti',
-    placeName: 'Dhanaulti Eco-Park',
-    placeAddress: 'Tehri Garhwal District, Uttarakhand',
-    latitude: 30.45,
-    longitude: 78.239,
-    altitudeMeters: 2286,
-    district: 'Tehri Garhwal',
-    terrainZone: 'mid_hills',
-  },
-  {
     id: 'lansdowne',
     placeName: 'Lansdowne Cantonment',
     placeAddress: 'Pauri Garhwal District, Uttarakhand',
     latitude: 29.837,
-    longitude: 78.685,
+    longitude: 78.687,
     altitudeMeters: 1706,
     district: 'Pauri Garhwal',
     terrainZone: 'mid_hills',
   },
   {
-    id: 'pithoragarh',
-    placeName: 'Pithoragarh Soar Valley',
-    placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
-    latitude: 29.582,
-    longitude: 80.218,
-    altitudeMeters: 1627,
-    district: 'Pithoragarh',
+    id: 'tehri',
+    placeName: 'New Tehri Lake Complex',
+    placeAddress: 'Tehri Garhwal District, Uttarakhand',
+    latitude: 30.392,
+    longitude: 78.48,
+    altitudeMeters: 1750,
+    district: 'Tehri Garhwal',
     terrainZone: 'mid_hills',
   },
   {
-    id: 'joshimath',
-    placeName: 'Joshimath (Jyotirmath Gateway)',
+    id: 'devprayag',
+    placeName: 'Devprayag (Alaknanda-Bhagirathi Confluence)',
+    placeAddress: 'Tehri Garhwal District, Uttarakhand',
+    latitude: 30.146,
+    longitude: 78.599,
+    altitudeMeters: 830,
+    district: 'Tehri Garhwal',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'rudraprayag',
+    placeName: 'Rudraprayag Sangam',
+    placeAddress: 'Rudraprayag District, Garhwal, Uttarakhand',
+    latitude: 30.285,
+    longitude: 78.981,
+    altitudeMeters: 895,
+    district: 'Rudraprayag',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'karanprayag',
+    placeName: 'Karnaprayag Sangam',
     placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
-    latitude: 30.556,
-    longitude: 79.566,
-    altitudeMeters: 1890,
+    latitude: 30.26,
+    longitude: 79.217,
+    altitudeMeters: 1450,
     district: 'Chamoli',
     terrainZone: 'mid_hills',
   },
 
-  // High-Altitude (>2,400m) Sensitive Ecosystems
+  // High Altitude Alpine (>2,400m)
   {
     id: 'chopta',
-    placeName: 'Chopta Valley (Mini Switzerland)',
-    placeAddress: 'Rudraprayag / Chamoli Border, Uttarakhand',
-    latitude: 30.485,
+    placeName: 'Chopta (Mini Switzerland / Tungnath Base)',
+    placeAddress: 'Rudraprayag District, Garhwal, Uttarakhand',
+    latitude: 30.488,
     longitude: 79.176,
     altitudeMeters: 2680,
     district: 'Rudraprayag',
     terrainZone: 'high_altitude',
   },
   {
-    id: 'auli',
-    placeName: 'Auli Ski Slopes & Bugyal',
+    id: 'joshimath',
+    placeName: 'Joshimath (Jyotirmath Gateway)',
     placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
-    latitude: 30.533,
+    latitude: 30.557,
+    longitude: 79.567,
+    altitudeMeters: 1890,
+    district: 'Chamoli',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'auli',
+    placeName: 'Auli Ski Resort & Meadow',
+    placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
+    latitude: 30.528,
     longitude: 79.566,
     altitudeMeters: 2800,
     district: 'Chamoli',
@@ -220,9 +240,9 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
   },
   {
     id: 'badrinath',
-    placeName: 'Badrinath Dham (Alaknanda Basin)',
+    placeName: 'Badrinath Dham Shrine',
     placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
-    latitude: 30.743,
+    latitude: 30.744,
     longitude: 79.493,
     altitudeMeters: 3300,
     district: 'Chamoli',
@@ -230,62 +250,62 @@ export const UTTARAKHAND_HUBS: MapplsPlace[] = [
   },
   {
     id: 'kedarnath',
-    placeName: 'Kedarnath Dham (Mandakini Valley)',
+    placeName: 'Gaurikund (Kedarnath Trek Base)',
     placeAddress: 'Rudraprayag District, Garhwal, Uttarakhand',
-    latitude: 30.735,
-    longitude: 79.066,
-    altitudeMeters: 3583,
+    latitude: 30.651,
+    longitude: 79.025,
+    altitudeMeters: 1982,
     district: 'Rudraprayag',
     terrainZone: 'high_altitude',
   },
   {
     id: 'gangotri',
-    placeName: 'Gangotri Dham (Bhagirathi Gorge)',
+    placeName: 'Gangotri Dham Base',
     placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
-    latitude: 30.994,
+    latitude: 30.999,
     longitude: 78.939,
     altitudeMeters: 3100,
     district: 'Uttarkashi',
     terrainZone: 'high_altitude',
   },
   {
-    id: 'yamunotri',
-    placeName: 'Yamunotri Dham (Bandarpunch Base)',
+    id: 'yamunotri_jankichatti',
+    placeName: 'Janki Chatti (Yamunotri Base)',
     placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
-    latitude: 31.014,
-    longitude: 78.46,
-    altitudeMeters: 3293,
+    latitude: 30.983,
+    longitude: 78.433,
+    altitudeMeters: 2650,
     district: 'Uttarkashi',
     terrainZone: 'high_altitude',
   },
   {
-    id: 'valley_of_flowers',
-    placeName: 'Valley of Flowers & Ghangaria',
-    placeAddress: 'Bhyundar Valley, Chamoli District, Uttarakhand',
-    latitude: 30.728,
-    longitude: 79.605,
-    altitudeMeters: 3658,
-    district: 'Chamoli',
-    terrainZone: 'high_altitude',
-  },
-  {
-    id: 'munsiyari',
-    placeName: 'Munsiyari (Panchachuli Base)',
+    id: 'munsyari',
+    placeName: 'Munsyari (Panchachuli Base)',
     placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
     latitude: 30.066,
     longitude: 80.237,
     altitudeMeters: 2200,
     district: 'Pithoragarh',
-    terrainZone: 'high_altitude',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'dharchula',
+    placeName: 'Dharchula Border Town',
+    placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
+    latitude: 29.849,
+    longitude: 80.536,
+    altitudeMeters: 915,
+    district: 'Pithoragarh',
+    terrainZone: 'foothills',
   },
 
-  // Regional Transit Origin Hubs
+  // Regional Transport Gateways
   {
-    id: 'delhi',
-    placeName: 'New Delhi (Kashmere Gate ISBT / Airport)',
-    placeAddress: 'National Capital Territory of Delhi',
-    latitude: 28.613,
-    longitude: 77.209,
+    id: 'delhi_isbt',
+    placeName: 'Delhi (Kashmere Gate ISBT)',
+    placeAddress: 'National Capital Region, Delhi',
+    latitude: 28.667,
+    longitude: 77.228,
     altitudeMeters: 216,
     district: 'Delhi',
     terrainZone: 'foothills',
@@ -317,70 +337,14 @@ function calculateHaversineKm(lat1: number, lon1: number, lat2: number, lon2: nu
   return R * c;
 }
 
-// Stored Mappls Key handling
-const STORAGE_KEY = 'mappls_api_key';
-
-export function getStoredMapplsKey(): string {
-  if (typeof window === 'undefined') return '';
-  return (
-    localStorage.getItem(STORAGE_KEY) ||
-    process.env.NEXT_PUBLIC_MAPPLS_REST_KEY ||
-    process.env.NEXT_PUBLIC_MAPPLS_KEY ||
-    ''
-  );
-}
-
-export function setStoredMapplsKey(key: string): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, key.trim());
-}
-
 /**
- * Searches places via Mappls Autosuggest API (when key available) or local Uttarakhand gazetteer
+ * Searches places via local Uttarakhand catalog or OpenStreetMap Nominatim
  */
-export async function searchMapplsPlaces(query: string, apiKey?: string): Promise<MapplsPlace[]> {
+export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]> {
   const cleanQuery = query.trim().toLowerCase();
   if (!cleanQuery) return UTTARAKHAND_HUBS.slice(0, 6);
 
-  const activeKey = apiKey || getStoredMapplsKey();
-
-  // Try live Mappls Autosuggest if key is available
-  if (activeKey) {
-    try {
-      const response = await fetch(
-        `https://apis.mappls.com/advancedmaps/v1/${activeKey}/autosuggest?query=${encodeURIComponent(
-          cleanQuery
-        )}&region=IND&pod=CITY,VILLAGE,SUB_DISTRICT,POI`,
-        { signal: AbortSignal.timeout(3500) }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.suggestedLocations && Array.isArray(data.suggestedLocations) && data.suggestedLocations.length > 0) {
-          return data.suggestedLocations.map((item: any, idx: number) => {
-            const lat = Number(item.latitude) || 30.0;
-            const lng = Number(item.longitude) || 79.0;
-            const isHigh = lat > 30.45 || (item.placeAddress && /chamoli|rudraprayag|uttarkashi|chopta|badrinath|kedarnath/i.test(item.placeAddress));
-            const isMid = !isHigh && (lat > 29.3 || (item.placeAddress && /nainital|almora|mussoorie|ranikhet|tehri|pauri/i.test(item.placeAddress)));
-
-            return {
-              id: item.eLoc || `mappls_${idx}`,
-              placeName: item.placeName || item.poi || cleanQuery,
-              placeAddress: item.placeAddress || 'Uttarakhand, India',
-              latitude: lat,
-              longitude: lng,
-              altitudeMeters: isHigh ? 2900 : isMid ? 1800 : 500,
-              district: item.district || 'Uttarakhand',
-              terrainZone: isHigh ? 'high_altitude' : isMid ? 'mid_hills' : 'foothills',
-            };
-          });
-        }
-      }
-    } catch {
-      // Fallback seamlessly to local gazetteer
-    }
-  }
-
-  // Local matching against verified Uttarakhand mountain locations
+  // 1. Local matching against verified Uttarakhand mountain locations
   const filtered = UTTARAKHAND_HUBS.filter(
     (hub) =>
       hub.placeName.toLowerCase().includes(cleanQuery) ||
@@ -388,72 +352,60 @@ export async function searchMapplsPlaces(query: string, apiKey?: string): Promis
       hub.district.toLowerCase().includes(cleanQuery)
   );
 
+  if (filtered.length >= 2) {
+    return filtered;
+  }
+
+  // 2. OpenStreetMap Nominatim Search fallback if query has 3+ chars
+  if (cleanQuery.length >= 3) {
+    try {
+      const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+        cleanQuery + ' Uttarakhand'
+      )}&countrycodes=in&limit=6`;
+      const response = await fetch(osmUrl, {
+        headers: { 'User-Agent': 'PahadFootprint-OpenMaps/1.0' },
+        signal: AbortSignal.timeout(3000),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const osmResults: OpenMapPlace[] = data.map((item: any, idx: number) => {
+            const lat = Number(item.lat) || 30.0;
+            const lon = Number(item.lon) || 79.0;
+            const isHigh = lat > 30.45;
+            const isMid = !isHigh && lat > 29.3;
+
+            return {
+              id: `osm_${item.osm_id || idx}`,
+              placeName: item.display_name.split(',')[0].trim(),
+              placeAddress: item.display_name,
+              latitude: lat,
+              longitude: lon,
+              altitudeMeters: isHigh ? 2800 : isMid ? 1800 : 500,
+              district: 'Uttarakhand',
+              terrainZone: isHigh ? 'high_altitude' : isMid ? 'mid_hills' : 'foothills',
+            };
+          });
+
+          return [...filtered, ...osmResults].slice(0, 8);
+        }
+      }
+    } catch {
+      // Seamlessly fallback to local catalog
+    }
+  }
+
   return filtered.length > 0 ? filtered : UTTARAKHAND_HUBS.slice(0, 6);
 }
 
 /**
- * Calculates driving distance and altitude profile between Origin and Destination
+ * Calculates road distance and coordinates between Origin and Destination using OpenStreetMap OSRM
  */
-export async function calculateMapplsRoute(
-  origin: MapplsPlace,
-  destination: MapplsPlace,
-  apiKey?: string
-): Promise<MapplsRouteResult> {
-  const activeKey = apiKey || getStoredMapplsKey();
-
-  // Try live Mappls Direction API if key is present
-  if (activeKey) {
-    try {
-      const url = `https://apis.mappls.com/advancedmaps/v1/${activeKey}/route_eta/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=polyline&overview=full`;
-      const response = await fetch(url, { signal: AbortSignal.timeout(4000) });
-      if (response.ok) {
-        const data = await response.json();
-        const route = data.routes?.[0];
-        if (route) {
-          const distanceMeters = route.distance || 0;
-          const durationSeconds = route.duration || 0;
-          const oneWayKm = Math.max(25, Math.round(distanceMeters / 1000));
-          const roundTrip = oneWayKm * 2;
-
-          const higherAltitude = Math.max(origin.altitudeMeters, destination.altitudeMeters);
-          const terrainZone: 'foothills' | 'mid_hills' | 'high_altitude' =
-            higherAltitude >= 2400
-              ? 'high_altitude'
-              : higherAltitude >= 1200
-              ? 'mid_hills'
-              : 'foothills';
-
-          return {
-            distanceKm: oneWayKm,
-            roundTripKm: roundTrip,
-            durationMinutes: Math.round(durationSeconds / 60),
-            origin,
-            destination,
-            terrainZone,
-            ascentMeters: Math.abs(destination.altitudeMeters - origin.altitudeMeters),
-            isSimulated: false,
-            coordinates: [
-              [origin.latitude, origin.longitude],
-              [destination.latitude, destination.longitude],
-            ],
-          };
-        }
-      }
-    } catch {
-      // Fallback to topographical winding formula
-    }
-  }
-
-  // Winding mountain road algorithm:
-  // Direct euclidean air distance is multiplied by terrain road curvature factor:
-  // Foothills: ~1.28x | Mid-Hills: ~1.46x | High Altitude: ~1.65x
-  const airDistance = calculateHaversineKm(
-    origin.latitude,
-    origin.longitude,
-    destination.latitude,
-    destination.longitude
-  );
-
+export async function calculateOpenMapRoute(
+  origin: OpenMapPlace,
+  destination: OpenMapPlace
+): Promise<OpenMapRouteResult> {
   const higherAltitude = Math.max(origin.altitudeMeters, destination.altitudeMeters);
   const terrainZone: 'foothills' | 'mid_hills' | 'high_altitude' =
     higherAltitude >= 2400
@@ -462,13 +414,66 @@ export async function calculateMapplsRoute(
       ? 'mid_hills'
       : 'foothills';
 
+  // 1. Try OpenStreetMap public OSRM routing
+  try {
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&overview=full`;
+    const response = await fetch(osrmUrl, {
+      signal: AbortSignal.timeout(3500),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const route = data.routes?.[0];
+      if (route) {
+        const distanceMeters = route.distance || 0;
+        const durationSeconds = route.duration || 0;
+        const oneWayKm = Math.max(25, Math.round(distanceMeters / 1000));
+        const roundTrip = oneWayKm * 2;
+        const durationMinutes = Math.round(durationSeconds / 60);
+
+        // Convert GeoJSON [lon, lat] coordinates to Leaflet [lat, lon]
+        const rawCoords = route.geometry?.coordinates || [];
+        const coordinates: [number, number][] = rawCoords.length > 0
+          ? rawCoords.map((c: [number, number]) => [c[1], c[0]])
+          : [
+              [origin.latitude, origin.longitude],
+              [(origin.latitude + destination.latitude) / 2 + 0.03, (origin.longitude + destination.longitude) / 2 - 0.02],
+              [destination.latitude, destination.longitude],
+            ];
+
+        return {
+          distanceKm: oneWayKm,
+          roundTripKm: roundTrip,
+          durationMinutes,
+          origin,
+          destination,
+          terrainZone,
+          ascentMeters: Math.abs(destination.altitudeMeters - origin.altitudeMeters),
+          isSimulated: false,
+          coordinates,
+        };
+      }
+    }
+  } catch {
+    // Fallback to high-precision mountain curvature formula
+  }
+
+  // 2. Calibrated mountain road curvature calculation:
+  // Direct air distance multiplied by actual mountain hairpin road factor:
+  // Foothills: ~1.28x | Mid-Hills: ~1.44x | High Altitude: ~1.62x
+  const airDistance = calculateHaversineKm(
+    origin.latitude,
+    origin.longitude,
+    destination.latitude,
+    destination.longitude
+  );
+
   const roadCurvature = terrainZone === 'high_altitude' ? 1.62 : terrainZone === 'mid_hills' ? 1.44 : 1.28;
   const oneWayKm = Math.max(30, Math.round(airDistance * roadCurvature));
   const roundTripKm = oneWayKm * 2;
   const avgSpeedKmh = terrainZone === 'high_altitude' ? 28 : terrainZone === 'mid_hills' ? 36 : 48;
   const durationMinutes = Math.round((oneWayKm / avgSpeedKmh) * 60);
 
-  // Synthesize an intermediate waypoint for elevation map rendering
   const midLat = (origin.latitude + destination.latitude) / 2 + 0.04;
   const midLng = (origin.longitude + destination.longitude) / 2 - 0.03;
 

@@ -46,9 +46,9 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { CalculationResults } from './CalculationResults';
 import { EcoSwapCard } from './EcoSwapCard';
 import { RestorationPledgeBox } from './RestorationPledgeBox';
-import { MapplsRouteSearch } from './MapplsRouteSearch';
-import { MapplsMapView } from './MapplsMapView';
-import { MapplsRouteResult } from '../lib/mappls';
+import { RouteSearch } from './RouteSearch';
+import { OpenMapView } from './OpenMapView';
+import { OpenMapRouteResult } from '../lib/openmaps';
 
 const PRESET_ROUTES: Record<string, { name: string; nameHi: string; distance: number; terrain: 'foothills' | 'mid_hills' | 'high_altitude' }> = {
   kumaon: {
@@ -151,10 +151,10 @@ export const TripCalculatorForm: React.FC = () => {
   const [calcResult, setCalcResult] = useState<CalculationOutput | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [mapplsRoute, setMapplsRoute] = useState<MapplsRouteResult | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<OpenMapRouteResult | null>(null);
 
-  const handleMapplsRouteCalculated = (route: MapplsRouteResult) => {
-    setMapplsRoute(route);
+  const handleRouteCalculated = (route: OpenMapRouteResult) => {
+    setSelectedRoute(route);
     setDistance(route.roundTripKm);
     setTerrain(route.terrainZone);
     setSelectedPreset('custom');
@@ -291,10 +291,10 @@ export const TripCalculatorForm: React.FC = () => {
               <span className="font-mono text-[11px] text-[#777C72]">01 / 04</span>
             </div>
 
-            {/* Mappls MapmyIndia Location & Corridor Search */}
+            {/* Travel Route Corridor Selection */}
             <div className="mb-4">
-              <MapplsRouteSearch
-                onRouteCalculated={handleMapplsRouteCalculated}
+              <RouteSearch
+                onRouteCalculated={handleRouteCalculated}
                 currentDistance={distance}
               />
             </div>
@@ -771,7 +771,7 @@ export const TripCalculatorForm: React.FC = () => {
 
         {/* RIGHT COLUMN: Real-Time Results & Action Panels */}
         <div className="space-y-6">
-          {mapplsRoute && <MapplsMapView route={mapplsRoute} />}
+          {selectedRoute && <OpenMapView route={selectedRoute} />}
           {calcResult && (
             <>
               <CalculationResults result={calcResult} input={currentInput} />
