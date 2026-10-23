@@ -299,6 +299,328 @@ export const UTTARAKHAND_HUBS: OpenMapPlace[] = [
     terrainZone: 'foothills',
   },
 
+  // Complete District Headquarters & Major Towns across all 13 Districts of Uttarakhand
+  {
+    id: 'rudrapur',
+    placeName: 'Rudrapur City (Udham Singh Nagar HQ)',
+    placeAddress: 'Udham Singh Nagar District, Terai, Uttarakhand',
+    latitude: 28.98,
+    longitude: 79.4,
+    altitudeMeters: 210,
+    district: 'Udham Singh Nagar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'kashipur',
+    placeName: 'Kashipur City',
+    placeAddress: 'Udham Singh Nagar District, Uttarakhand',
+    latitude: 29.21,
+    longitude: 78.96,
+    altitudeMeters: 218,
+    district: 'Udham Singh Nagar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'pantnagar',
+    placeName: 'Pantnagar (Airport & University Hub)',
+    placeAddress: 'Udham Singh Nagar District, Uttarakhand',
+    latitude: 29.02,
+    longitude: 79.49,
+    altitudeMeters: 243,
+    district: 'Udham Singh Nagar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'khatima',
+    placeName: 'Khatima Border Town',
+    placeAddress: 'Udham Singh Nagar District, Uttarakhand',
+    latitude: 28.92,
+    longitude: 79.97,
+    altitudeMeters: 212,
+    district: 'Udham Singh Nagar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'champawat',
+    placeName: 'Champawat (Historic Capital & District HQ)',
+    placeAddress: 'Champawat District, Kumaon, Uttarakhand',
+    latitude: 29.33,
+    longitude: 80.09,
+    altitudeMeters: 1615,
+    district: 'Champawat',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'lohaghat',
+    placeName: 'Lohaghat (Mayawati Ashram & Pine Valley)',
+    placeAddress: 'Champawat District, Kumaon, Uttarakhand',
+    latitude: 29.41,
+    longitude: 80.09,
+    altitudeMeters: 1754,
+    district: 'Champawat',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'tanakpur',
+    placeName: 'Tanakpur (Sharda River Railhead)',
+    placeAddress: 'Champawat District, Uttarakhand',
+    latitude: 29.07,
+    longitude: 80.11,
+    altitudeMeters: 255,
+    district: 'Champawat',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'pithoragarh',
+    placeName: 'Pithoragarh (Saur Valley District HQ)',
+    placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
+    latitude: 29.58,
+    longitude: 80.22,
+    altitudeMeters: 1627,
+    district: 'Pithoragarh',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'berinag',
+    placeName: 'Berinag (Tea Gardens & Himalayan Views)',
+    placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
+    latitude: 29.78,
+    longitude: 80.06,
+    altitudeMeters: 1860,
+    district: 'Pithoragarh',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'didihat',
+    placeName: 'Didihat Hill Town',
+    placeAddress: 'Pithoragarh District, Kumaon, Uttarakhand',
+    latitude: 29.8,
+    longitude: 80.25,
+    altitudeMeters: 1725,
+    district: 'Pithoragarh',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'bageshwar',
+    placeName: 'Bageshwar (Saryu Sangam District HQ)',
+    placeAddress: 'Bageshwar District, Kumaon, Uttarakhand',
+    latitude: 29.84,
+    longitude: 79.77,
+    altitudeMeters: 1004,
+    district: 'Bageshwar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'baijnath',
+    placeName: 'Baijnath Temple Valley',
+    placeAddress: 'Bageshwar District, Kumaon, Uttarakhand',
+    latitude: 29.91,
+    longitude: 79.62,
+    altitudeMeters: 1130,
+    district: 'Bageshwar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'gopeshwar',
+    placeName: 'Gopeshwar (Chamoli District HQ)',
+    placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
+    latitude: 30.41,
+    longitude: 79.33,
+    altitudeMeters: 1550,
+    district: 'Chamoli',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'hemkund_sahib',
+    placeName: 'Govindghat (Valley of Flowers / Hemkund Base)',
+    placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
+    latitude: 30.62,
+    longitude: 79.56,
+    altitudeMeters: 1828,
+    district: 'Chamoli',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'pipalkoti',
+    placeName: 'Pipalkoti Pilgrimage Stop',
+    placeAddress: 'Chamoli District, Garhwal, Uttarakhand',
+    latitude: 30.43,
+    longitude: 79.43,
+    altitudeMeters: 1260,
+    district: 'Chamoli',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'uttarkashi',
+    placeName: 'Uttarkashi Town (District HQ)',
+    placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
+    latitude: 30.73,
+    longitude: 78.44,
+    altitudeMeters: 1158,
+    district: 'Uttarkashi',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'barkot',
+    placeName: 'Barkot (Yamunotri Road Junction)',
+    placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
+    latitude: 30.81,
+    longitude: 78.21,
+    altitudeMeters: 1220,
+    district: 'Uttarkashi',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'harsil',
+    placeName: 'Harsil Apple Valley',
+    placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
+    latitude: 31.04,
+    longitude: 78.74,
+    altitudeMeters: 2620,
+    district: 'Uttarkashi',
+    terrainZone: 'high_altitude',
+  },
+  {
+    id: 'sankri',
+    placeName: 'Sankri (Har Ki Dun & Kedarkantha Base)',
+    placeAddress: 'Uttarkashi District, Garhwal, Uttarakhand',
+    latitude: 31.08,
+    longitude: 78.18,
+    altitudeMeters: 1950,
+    district: 'Uttarkashi',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'pauri',
+    placeName: 'Pauri Town (Pauri Garhwal District HQ)',
+    placeAddress: 'Pauri Garhwal District, Uttarakhand',
+    latitude: 30.15,
+    longitude: 78.78,
+    altitudeMeters: 1814,
+    district: 'Pauri Garhwal',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'srinagar_garhwal',
+    placeName: 'Srinagar Garhwal (University Hub)',
+    placeAddress: 'Pauri Garhwal District, Uttarakhand',
+    latitude: 30.22,
+    longitude: 78.78,
+    altitudeMeters: 560,
+    district: 'Pauri Garhwal',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'khirsu',
+    placeName: 'Khirsu Oak Forest',
+    placeAddress: 'Pauri Garhwal District, Uttarakhand',
+    latitude: 30.18,
+    longitude: 78.86,
+    altitudeMeters: 1700,
+    district: 'Pauri Garhwal',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'dhanaulti',
+    placeName: 'Dhanaulti Ridge & Eco-Park',
+    placeAddress: 'Tehri Garhwal District, Uttarakhand',
+    latitude: 30.45,
+    longitude: 78.23,
+    altitudeMeters: 2286,
+    district: 'Tehri Garhwal',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'chamba_tehri',
+    placeName: 'Chamba Garhwal Junction',
+    placeAddress: 'Tehri Garhwal District, Uttarakhand',
+    latitude: 30.36,
+    longitude: 78.4,
+    altitudeMeters: 1524,
+    district: 'Tehri Garhwal',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'kanatal',
+    placeName: 'Kanatal Alpine Viewpoint',
+    placeAddress: 'Tehri Garhwal District, Uttarakhand',
+    latitude: 30.41,
+    longitude: 78.34,
+    altitudeMeters: 2590,
+    district: 'Tehri Garhwal',
+    terrainZone: 'high_altitude',
+  },
+  {
+    id: 'chakrata',
+    placeName: 'Chakrata Cantonment (Tiger Falls)',
+    placeAddress: 'Dehradun District, Jaunsar-Bawar, Uttarakhand',
+    latitude: 30.7,
+    longitude: 77.87,
+    altitudeMeters: 2118,
+    district: 'Dehradun',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'vikasnagar',
+    placeName: 'Vikasnagar Gateway',
+    placeAddress: 'Dehradun District, Uttarakhand',
+    latitude: 30.48,
+    longitude: 77.77,
+    altitudeMeters: 452,
+    district: 'Dehradun',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'roorkee',
+    placeName: 'Roorkee (Canal & IIT Hub)',
+    placeAddress: 'Haridwar District, Uttarakhand',
+    latitude: 29.86,
+    longitude: 77.89,
+    altitudeMeters: 268,
+    district: 'Haridwar',
+    terrainZone: 'foothills',
+  },
+  {
+    id: 'bhimtal',
+    placeName: 'Bhimtal Lake',
+    placeAddress: 'Nainital District, Kumaon, Uttarakhand',
+    latitude: 29.35,
+    longitude: 79.56,
+    altitudeMeters: 1370,
+    district: 'Nainital',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'bhowali',
+    placeName: 'Bhowali Fruit Market Junction',
+    placeAddress: 'Nainital District, Kumaon, Uttarakhand',
+    latitude: 29.38,
+    longitude: 79.52,
+    altitudeMeters: 1706,
+    district: 'Nainital',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'jageshwar',
+    placeName: 'Jageshwar Dham (Ancient Temple Valley)',
+    placeAddress: 'Almora District, Kumaon, Uttarakhand',
+    latitude: 29.64,
+    longitude: 79.85,
+    altitudeMeters: 1870,
+    district: 'Almora',
+    terrainZone: 'mid_hills',
+  },
+  {
+    id: 'binsar',
+    placeName: 'Binsar Wildlife Sanctuary Ridge',
+    placeAddress: 'Almora District, Kumaon, Uttarakhand',
+    latitude: 29.7,
+    longitude: 79.75,
+    altitudeMeters: 2420,
+    district: 'Almora',
+    terrainZone: 'high_altitude',
+  },
+
   // Regional Transport Gateways
   {
     id: 'delhi_isbt',
@@ -342,17 +664,18 @@ function calculateHaversineKm(lat1: number, lon1: number, lat2: number, lon2: nu
  */
 export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]> {
   const cleanQuery = query.trim().toLowerCase();
-  if (!cleanQuery) return UTTARAKHAND_HUBS.slice(0, 6);
+  if (!cleanQuery) return UTTARAKHAND_HUBS;
 
-  // 1. Local matching against verified Uttarakhand mountain locations
+  // 1. Local matching against verified Uttarakhand mountain locations (place name, district, address)
   const filtered = UTTARAKHAND_HUBS.filter(
     (hub) =>
       hub.placeName.toLowerCase().includes(cleanQuery) ||
+      hub.district.toLowerCase().includes(cleanQuery) ||
       hub.placeAddress.toLowerCase().includes(cleanQuery) ||
-      hub.district.toLowerCase().includes(cleanQuery)
+      hub.id.toLowerCase().includes(cleanQuery)
   );
 
-  if (filtered.length >= 2) {
+  if (filtered.length > 0) {
     return filtered;
   }
 
@@ -361,7 +684,7 @@ export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]
     try {
       const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
         cleanQuery + ' Uttarakhand'
-      )}&countrycodes=in&limit=6`;
+      )}&countrycodes=in&limit=10`;
       const response = await fetch(osmUrl, {
         headers: { 'User-Agent': 'PahadFootprint-OpenMaps/1.0' },
         signal: AbortSignal.timeout(3000),
@@ -388,7 +711,7 @@ export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]
             };
           });
 
-          return [...filtered, ...osmResults].slice(0, 8);
+          return osmResults;
         }
       }
     } catch {
@@ -396,7 +719,7 @@ export async function searchOpenMapPlaces(query: string): Promise<OpenMapPlace[]
     }
   }
 
-  return filtered.length > 0 ? filtered : UTTARAKHAND_HUBS.slice(0, 6);
+  return UTTARAKHAND_HUBS;
 }
 
 /**

@@ -27,6 +27,10 @@ import {
   SedanIcon,
   HatchbackIcon,
   CoupeIcon,
+  BicycleIcon,
+  MotorcycleIcon,
+  ScootyIcon,
+  TwoWheelerIcon,
   BusIcon,
   TrainIcon,
   HelicopterIcon,
@@ -50,82 +54,106 @@ import { RouteSearch } from './RouteSearch';
 import { OpenMapView } from './OpenMapView';
 import { OpenMapRouteResult } from '../lib/openmaps';
 
-const PRESET_ROUTES: Record<string, { name: string; nameHi: string; distance: number; terrain: 'foothills' | 'mid_hills' | 'high_altitude' }> = {
-  kumaon: {
-    name: 'Kumaon Hill Circuit: Kathgodam – Nainital – Almora (320 km)',
-    nameHi: 'कुमाऊं हिल सर्किट: काठगोदाम – नैनीताल – अल्मोड़ा (320 किमी)',
-    distance: 320,
-    terrain: 'mid_hills',
-  },
-  garhwal: {
-    name: 'Garhwal Pilgrim Loop: Rishikesh – Devprayag – Chopta (410 km)',
-    nameHi: 'गढ़वाल यात्रा लूप: ऋषिकेश – देवप्रयाग – चोपता (410 किमी)',
-    distance: 410,
-    terrain: 'high_altitude',
-  },
-  corbett: {
-    name: 'Foothill to Ridge: Ramnagar – Corbett – Ranikhet (210 km)',
-    nameHi: 'तराई से रानीखेत मार्ग: रामनगर – कॉर्बेट – रानीखेत (210 किमी)',
-    distance: 210,
-    terrain: 'foothills',
-  },
-  custom: {
-    name: 'Custom Mountain Route (Enter Distance Manually)',
-    nameHi: 'कस्टम रास्ता (दूरी स्वयं दर्ज करें)',
-    distance: 320,
-    terrain: 'mid_hills',
-  },
-};
-
-const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType, number>> = {
+const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Partial<Record<FuelType, number>>> = {
   suv: { diesel: 195, petrol: 185, cng: 135, lpg: 145, hybrid: 110, ev: 50 },
   sedan: { diesel: 155, petrol: 140, cng: 110, lpg: 120, hybrid: 90, ev: 42 },
   hatchback: { diesel: 130, petrol: 120, cng: 95, lpg: 105, hybrid: 78, ev: 36 },
   coupe: { diesel: 165, petrol: 155, cng: 125, lpg: 135, hybrid: 100, ev: 48 },
+  motorcycle: { petrol: 55, hybrid: 38, ev: 18 },
+  scooty: { petrol: 50, hybrid: 35, ev: 16 },
+  bicycle: { pedal: 0, ev: 8 },
+};
+
+// Strict fuel allowances per vehicle type
+const ALLOWED_FUELS_BY_VEHICLE: Record<PrivateVehicleType, FuelType[]> = {
+  bicycle: ['pedal', 'ev'],
+  motorcycle: ['petrol', 'hybrid', 'ev'],
+  scooty: ['petrol', 'hybrid', 'ev'],
+  suv: ['diesel', 'petrol', 'cng', 'lpg', 'hybrid', 'ev'],
+  sedan: ['diesel', 'petrol', 'cng', 'lpg', 'hybrid', 'ev'],
+  hatchback: ['diesel', 'petrol', 'cng', 'lpg', 'hybrid', 'ev'],
+  coupe: ['diesel', 'petrol', 'cng', 'lpg', 'hybrid', 'ev'],
 };
 
 export const TripCalculatorForm: React.FC = () => {
   const { t, language } = useTranslation();
-  const [selectedPreset, setSelectedPreset] = useState<string>('kumaon');
   const [distance, setDistance] = useState<number>(320);
   const [terrain, setTerrain] = useState<'foothills' | 'mid_hills' | 'high_altitude'>('mid_hills');
 
-  // Expanded transportation state
+  // Expanded transportation state: 4-Wheeler Car, Two-Wheeler, or Public Transit
   const [transportCategory, setTransportCategory] = useState<TransportCategory>('private');
   const [vehicleType, setVehicleType] = useState<PrivateVehicleType>('suv');
   const [fuelType, setFuelType] = useState<FuelType>('diesel');
   const [transitMode, setTransitMode] = useState<TransitMode>('bus');
 
-  const transportMode = transportCategory === 'private' ? vehicleType : transitMode;
+  const transportMode = transportCategory === 'transit' ? transitMode : vehicleType;
+
+  const handleSelectVehicle = (v: PrivateVehicleType) => {
+    setVehicleType(v);
+    const allowed = ALLOWED_FUELS_BY_VEHICLE[v] || ['petrol'];
+    if (!allowed.includes(fuelType)) {
+      setFuelType(allowed[0]);
+    }
+  };
+
+  const handleSelectCategory = (cat: TransportCategory) => {
+    setTransportCategory(cat);
+    if (cat === 'two_wheeler') {
+      if (!['motorcycle', 'scooty', 'bicycle'].includes(vehicleType)) {
+        setVehicleType('motorcycle');
+        if (!ALLOWED_FUELS_BY_VEHICLE['motorcycle'].includes(fuelType)) {
+          setFuelType('petrol');
+        }
+      }
+    } else if (cat === 'private') {
+      if (!['suv', 'sedan', 'hatchback', 'coupe'].includes(vehicleType)) {
+        setVehicleType('suv');
+        if (!ALLOWED_FUELS_BY_VEHICLE['suv'].includes(fuelType)) {
+          setFuelType('diesel');
+        }
+      }
+    }
+  };
 
   const getPassengerLimit = (
     category: TransportCategory,
     vehicle: PrivateVehicleType,
     transit: TransitMode
   ) => {
+    if (category === 'two_wheeler') {
+      if (vehicle === 'bicycle') {
+        return { min: 1, max: 1, label: language === 'HI' ? 'अधिकतम 1 (साइकिल सवार)' : 'Max 1 (Bicycle Single Rider)' };
+      }
+      return { min: 1, max: 2, label: language === 'HI' ? 'अधिकतम 2 (राइडर + पिलियन)' : 'Max 2 (Rider + Pillion)' };
+    }
     if (category === 'private') {
       switch (vehicle) {
+        case 'bicycle':
+          return { min: 1, max: 1, label: language === 'HI' ? 'अधिकतम 1 (साइकिल सवार)' : 'Max 1 (Bicycle Single Rider)' };
+        case 'motorcycle':
+        case 'scooty':
+          return { min: 1, max: 2, label: language === 'HI' ? 'अधिकतम 2 (राइडर + पिलियन)' : 'Max 2 (Rider + Pillion)' };
         case 'coupe':
-          return { min: 1, max: 2, label: 'Max 2 (Coupe 2-Seater)' };
+          return { min: 1, max: 2, label: language === 'HI' ? 'अधिकतम 2 (कूपे 2-सीटर)' : 'Max 2 (Coupe 2-Seater)' };
         case 'hatchback':
-          return { min: 1, max: 4, label: 'Max 4 (Hatchback Cabin)' };
+          return { min: 1, max: 4, label: language === 'HI' ? 'अधिकतम 4 (हैचबैक)' : 'Max 4 (Hatchback Cabin)' };
         case 'sedan':
-          return { min: 1, max: 5, label: 'Max 5 (Sedan Cabin)' };
+          return { min: 1, max: 5, label: language === 'HI' ? 'अधिकतम 5 (सेडान)' : 'Max 5 (Sedan Cabin)' };
         case 'suv':
         default:
-          return { min: 1, max: 7, label: 'Max 7 (SUV 4×4 Cabin)' };
+          return { min: 1, max: 7, label: language === 'HI' ? 'अधिकतम 7 (एसयूवी 4×4)' : 'Max 7 (SUV 4×4 Cabin)' };
       }
     } else {
       switch (transit) {
         case 'helicopter':
-          return { min: 1, max: 6, label: 'Max 6 (Heli Alpine Payload)' };
+          return { min: 1, max: 6, label: language === 'HI' ? 'अधिकतम 6 (हेलीकॉप्टर)' : 'Max 6 (Heli Alpine Payload)' };
         case 'bus':
-          return { min: 1, max: 45, label: 'Max 45 (Bus Group)' };
+          return { min: 1, max: 45, label: language === 'HI' ? 'अधिकतम 45 (बस समूह)' : 'Max 45 (Bus Group)' };
         case 'train':
-          return { min: 1, max: 20, label: 'Max 20 (Rail Party)' };
+          return { min: 1, max: 20, label: language === 'HI' ? 'अधिकतम 20 (ट्रेन पार्टी)' : 'Max 20 (Rail Party)' };
         case 'flight':
         default:
-          return { min: 1, max: 10, label: 'Max 10 (Flight Group)' };
+          return { min: 1, max: 10, label: language === 'HI' ? 'अधिकतम 10 (फ्लाइट)' : 'Max 10 (Flight Group)' };
       }
     }
   };
@@ -157,7 +185,6 @@ export const TripCalculatorForm: React.FC = () => {
     setSelectedRoute(route);
     setDistance(route.roundTripKm);
     setTerrain(route.terrainZone);
-    setSelectedPreset('custom');
   };
 
   // Recalculate on any input change
@@ -185,6 +212,7 @@ export const TripCalculatorForm: React.FC = () => {
     vehicleType,
     fuelType,
     transitMode,
+    transportMode,
     passengers,
     nights,
     accommodation,
@@ -192,23 +220,18 @@ export const TripCalculatorForm: React.FC = () => {
     habitFood,
   ]);
 
-  const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const key = e.target.value;
-    setSelectedPreset(key);
-    if (PRESET_ROUTES[key]) {
-      setDistance(PRESET_ROUTES[key].distance);
-      setTerrain(PRESET_ROUTES[key].terrain);
-    }
-  };
-
   const handleSaveTrip = async () => {
     if (!calcResult) return;
     setIsSaving(true);
     try {
       const session = getStoredSession();
+      const routeName = selectedRoute
+        ? `${selectedRoute.origin.placeName.split('(')[0].trim()} → ${selectedRoute.destination.placeName.split('(')[0].trim()} (${selectedRoute.roundTripKm} km)`
+        : `Uttarakhand Mountain Corridor (${distance} km)`;
+
       await logTripRecord(
         {
-          routeName: PRESET_ROUTES[selectedPreset]?.name || 'Custom Uttarakhand Itinerary',
+          routeName,
           distanceKm: distance,
           terrainZone: terrain,
           transportMode,
@@ -299,29 +322,7 @@ export const TripCalculatorForm: React.FC = () => {
               />
             </div>
 
-            {/* Route Preset Dropdown */}
-            <div className="mb-4">
-              <label htmlFor="route-preset" className="block text-[12.5px] font-semibold text-[#242722] mb-1.5">
-                {t('calculator.circuitPreset')}
-              </label>
-              <div className="relative">
-                <select
-                  id="route-preset"
-                  value={selectedPreset}
-                  onChange={handlePresetChange}
-                  className="w-full h-10 px-3 pr-8 bg-[#FAF9F5] border border-[#2D322B29] rounded text-[13px] font-medium text-[#242722] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#496951] focus:border-[#496951] transition-all"
-                >
-                  {Object.entries(PRESET_ROUTES).map(([key, route]) => (
-                    <option key={key} value={key}>
-                      {language === 'HI' ? route.nameHi : route.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <p className="text-[11px] text-[#777C72] mt-1 font-mono">
-                {t('calculator.routeHint')}
-              </p>
-            </div>
+
 
             {/* Terrain Multiplier Radios */}
             <div className="mb-4">
@@ -410,36 +411,148 @@ export const TripCalculatorForm: React.FC = () => {
               <span className="font-mono text-[11px] text-[#777C72]">02 / 04</span>
             </div>
 
-            {/* Mode Category Selector: Private Vehicle vs Public & Regional Transit */}
-            <div className="flex rounded bg-[#F0EEE6] p-1 border border-[#2D322B29] mb-4">
+            {/* Mode Category Selector: 4-Wheeler Car vs Two-Wheeler vs Public & Regional Transit */}
+            <div className="grid grid-cols-3 rounded bg-[#F0EEE6] p-1 border border-[#2D322B29] mb-4 gap-1">
               <button
                 type="button"
-                onClick={() => setTransportCategory('private')}
-                className={`flex-1 py-1.5 px-2 sm:px-3 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                onClick={() => handleSelectCategory('private')}
+                className={`py-1.5 px-1 sm:px-2 rounded text-[11px] sm:text-[12px] font-semibold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                   transportCategory === 'private'
                     ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
                     : 'text-[#51554D] hover:text-[#242722]'
                 }`}
               >
-                <PrivateVehicleIcon className="w-3.5 h-3.5 text-[#496951]" />
-                <span>{t('calculator.privateVehicle')}</span>
+                <PrivateVehicleIcon className="w-3.5 h-3.5 text-[#496951] flex-shrink-0" />
+                <span className="truncate">{language === 'HI' ? '4-पहिया कार' : '4-Wheeler'}</span>
               </button>
               <button
                 type="button"
-                onClick={() => setTransportCategory('transit')}
-                className={`flex-1 py-1.5 px-2 sm:px-3 rounded text-[11.5px] sm:text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                onClick={() => handleSelectCategory('two_wheeler')}
+                className={`py-1.5 px-1 sm:px-2 rounded text-[11px] sm:text-[12px] font-semibold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
+                  transportCategory === 'two_wheeler'
+                    ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
+                    : 'text-[#51554D] hover:text-[#242722]'
+                }`}
+              >
+                <TwoWheelerIcon className="w-3.5 h-3.5 text-[#496951] flex-shrink-0" />
+                <span className="truncate">{language === 'HI' ? 'दोपहिया वाहन' : 'Two-Wheeler'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectCategory('transit')}
+                className={`py-1.5 px-1 sm:px-2 rounded text-[11px] sm:text-[12px] font-semibold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                   transportCategory === 'transit'
                     ? 'bg-white text-[#304B38] shadow-xs border border-[#496951]/30 font-bold'
                     : 'text-[#51554D] hover:text-[#242722]'
                 }`}
               >
-                <BusIcon className="w-3.5 h-3.5 text-[#496951]" />
-                <span>{t('calculator.publicTransit')}</span>
+                <BusIcon className="w-3.5 h-3.5 text-[#496951] flex-shrink-0" />
+                <span className="truncate">{language === 'HI' ? 'पब्लिक ट्रांजिट' : 'Transit'}</span>
               </button>
             </div>
 
-            {/* Option A: Private Vehicle (Body Type + Fuel Type Selection) */}
-            {transportCategory === 'private' ? (
+            {/* Option A: Two-Wheeler (Bicycle, Motorcycle, Scooty) */}
+            {transportCategory === 'two_wheeler' && (
+              <div className="space-y-4 mb-4">
+                {/* Vehicle Selection */}
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-[#242722] mb-1.5">
+                    {language === 'HI' ? 'दोपहिया वाहन का प्रकार' : 'Two-Wheeler Vehicle Type'}
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      {
+                        id: 'bicycle',
+                        name: language === 'HI' ? 'साइकिल' : 'Bicycle',
+                        icon: BicycleIcon,
+                        desc: language === 'HI' ? 'पैडल / ई-बाइक (0g उत्सर्जन)' : 'Pedal / E-Bike (Zero/Low CO₂)',
+                      },
+                      {
+                        id: 'motorcycle',
+                        name: language === 'HI' ? 'मोटरसाइकिल' : 'Motorcycle',
+                        icon: MotorcycleIcon,
+                        desc: language === 'HI' ? 'रॉयल एनफील्ड, पल्सर, हिमालयन' : 'Royal Enfield, Pulsar, etc.',
+                      },
+                      {
+                        id: 'scooty',
+                        name: language === 'HI' ? 'स्कूटी / स्कूटर' : 'Scooty',
+                        icon: ScootyIcon,
+                        desc: language === 'HI' ? 'एक्टिवा, जुपिटर, ओला / एथर' : 'Activa, Jupiter, Ather, etc.',
+                      },
+                    ].map((item) => {
+                      const IconComp = item.icon;
+                      const isSel = vehicleType === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => handleSelectVehicle(item.id as any)}
+                          className={`p-2.5 rounded border text-left transition-all ${
+                            isSel
+                              ? 'border-[#496951] bg-[#E8EDE5]/50 shadow-xs'
+                              : 'border-[#2D322B29] bg-[#FAF9F5] hover:border-[#2D322B29]/70'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <IconComp className={`w-3.5 h-3.5 ${isSel ? 'text-[#304B38]' : 'text-[#777C72]'}`} />
+                            {isSel && <span className="font-mono text-[10px] font-bold text-[#304B38]">✓</span>}
+                          </div>
+                          <p className="text-[12px] font-bold text-[#242722] leading-tight">{item.name}</p>
+                          <p className="text-[9.5px] text-[#777C72] mt-0.5 truncate">{item.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Fuel Engine Type for Two-Wheelers: Only allowed fuels */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[11.5px] font-semibold text-[#242722]">
+                      {t('calculator.fuelType')}
+                    </label>
+                    <span className="font-mono text-[10.5px] font-bold text-[#304B38] bg-[#E8EDE5] px-2 py-0.5 rounded border border-[#496951]/25">
+                      {vehicleType === 'bicycle' && fuelType === 'pedal'
+                        ? (language === 'HI' ? '0 g CO₂e/km (शून्य उत्सर्जन 🌿)' : '0 g CO₂e/km (Zero Emission 🌿)')
+                        : `${PRIVATE_VEHICLE_MATRIX[vehicleType]?.[fuelType] ?? 0} g CO₂e/km`}
+                    </span>
+                  </div>
+                  <div className={`grid gap-1.5 ${
+                    (ALLOWED_FUELS_BY_VEHICLE[vehicleType] || []).length === 2 ? 'grid-cols-2' : 'grid-cols-3'
+                  }`}>
+                    {[
+                      { id: 'pedal', label: language === 'HI' ? 'पैडल (0g)' : 'Pedal (0g)', icon: Leaf },
+                      { id: 'petrol', label: language === 'HI' ? 'पेट्रोल' : 'Petrol', icon: Fuel },
+                      { id: 'hybrid', label: language === 'HI' ? 'हाइब्रिड' : 'Hybrid', icon: Leaf },
+                      { id: 'ev', label: 'EV', icon: Zap },
+                    ]
+                      .filter((fuel) => (ALLOWED_FUELS_BY_VEHICLE[vehicleType] || []).includes(fuel.id as FuelType))
+                      .map((fuel) => {
+                        const FuelIcon = fuel.icon;
+                        const isFuelSel = fuelType === fuel.id;
+                        return (
+                          <button
+                            key={fuel.id}
+                            type="button"
+                            onClick={() => setFuelType(fuel.id as any)}
+                            className={`py-1.5 px-1 text-center rounded border text-[11px] font-semibold transition-all ${
+                              isFuelSel
+                                ? 'bg-[#242722] text-white border-[#242722] shadow-xs'
+                                : 'bg-[#FAF9F5] text-[#51554D] border-[#2D322B29] hover:bg-white'
+                            }`}
+                          >
+                            <FuelIcon className={`w-3 h-3 mx-auto mb-0.5 ${isFuelSel ? 'text-[#E8EDE5]' : 'text-[#777C72]'}`} />
+                            <span>{fuel.label}</span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Option B: 4-Wheeler Car (SUV, Sedan, Hatchback, Coupe) */}
+            {transportCategory === 'private' && (
               <div className="space-y-4 mb-4">
                 {/* Vehicle Body Type */}
                 <div>
@@ -459,7 +572,7 @@ export const TripCalculatorForm: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setVehicleType(item.id as any)}
+                          onClick={() => handleSelectVehicle(item.id as any)}
                           className={`p-2.5 rounded border text-left transition-all ${
                             isSel
                               ? 'border-[#496951] bg-[#E8EDE5]/50 shadow-xs'
@@ -478,14 +591,14 @@ export const TripCalculatorForm: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Fuel Engine Type */}
+                {/* Fuel Engine Type for 4-Wheelers */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-[11.5px] font-semibold text-[#242722]">
                       {t('calculator.fuelType')}
                     </label>
                     <span className="font-mono text-[10.5px] font-bold text-[#304B38] bg-[#E8EDE5] px-2 py-0.5 rounded border border-[#496951]/25">
-                      {PRIVATE_VEHICLE_MATRIX[vehicleType][fuelType]} g CO₂e/km
+                      {PRIVATE_VEHICLE_MATRIX[vehicleType]?.[fuelType] ?? 0} g CO₂e/km
                     </span>
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
@@ -518,7 +631,10 @@ export const TripCalculatorForm: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+
+            {/* Option C: Public & Regional Transit */}
+            {transportCategory === 'transit' && (
               /* Option B: Public & Regional Transit */
               <div className="mb-4">
                 <label className="block text-[11.5px] font-semibold text-[#242722] mb-1.5">

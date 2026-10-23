@@ -102,6 +102,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
           <Link href="/" className={navLinkClass(pathname === '/')}>
+            {language === 'HI' ? 'होम' : 'Home'}
+          </Link>
+          <Link href="/calculator/route" className={navLinkClass(pathname?.startsWith('/calculator'))}>
             {t('navigation.calculator')}
           </Link>
           <Link href="/methodology" className={navLinkClass(pathname === '/methodology')}>
@@ -252,17 +255,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           </div>
 
           {[
-            { href: '/', label: t('navigation.calculator') },
-            { href: '/methodology', label: t('navigation.methodology') },
-            { href: '/restoration', label: t('navigation.restoration') },
-            { href: '/admin', label: t('navigation.adminAnalytics') },
-          ].map(({ href, label }) => (
+            { href: '/', label: language === 'HI' ? 'होम' : 'Home', active: pathname === '/' },
+            { href: '/calculator/route', label: t('navigation.calculator'), active: pathname?.startsWith('/calculator') },
+            { href: '/methodology', label: t('navigation.methodology'), active: pathname === '/methodology' },
+            { href: '/restoration', label: t('navigation.restoration'), active: pathname === '/restoration' },
+            { href: '/admin', label: t('navigation.adminAnalytics'), active: pathname === '/admin' },
+          ].map(({ href, label, active }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setMobileMenuOpen(false)}
               className={`py-2.5 px-3 rounded text-[14px] font-medium transition-colors ${
-                pathname === href
+                active
                   ? 'bg-[#E8EDE5] text-[#304B38] font-semibold'
                   : 'text-[#51554D] hover:bg-[#F0EEE6]'
               }`}

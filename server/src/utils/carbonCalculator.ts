@@ -1,13 +1,23 @@
-export type PrivateVehicleType = 'suv' | 'sedan' | 'hatchback' | 'coupe';
-export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev';
+export type PrivateVehicleType =
+  | 'suv'
+  | 'sedan'
+  | 'hatchback'
+  | 'coupe'
+  | 'motorcycle'
+  | 'scooty'
+  | 'bicycle';
+export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev' | 'pedal';
 export type TransitMode = 'bus' | 'train' | 'helicopter' | 'flight';
-export type TransportCategory = 'private' | 'transit';
+export type TransportCategory = 'private' | 'two_wheeler' | 'transit';
 
 export type TransportMode =
   | 'suv'
   | 'sedan'
   | 'hatchback'
   | 'coupe'
+  | 'motorcycle'
+  | 'scooty'
+  | 'bicycle'
   | 'ev'
   | 'bus'
   | 'train'
@@ -75,6 +85,7 @@ export const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType,
     lpg: 145,
     hybrid: 110,
     ev: 50,
+    pedal: 0,
   },
   sedan: {
     diesel: 155,
@@ -83,6 +94,7 @@ export const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType,
     lpg: 120,
     hybrid: 90,
     ev: 42,
+    pedal: 0,
   },
   hatchback: {
     diesel: 130,
@@ -91,6 +103,7 @@ export const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType,
     lpg: 105,
     hybrid: 78,
     ev: 36,
+    pedal: 0,
   },
   coupe: {
     diesel: 165,
@@ -99,6 +112,34 @@ export const PRIVATE_VEHICLE_MATRIX: Record<PrivateVehicleType, Record<FuelType,
     lpg: 135,
     hybrid: 100,
     ev: 48,
+    pedal: 0,
+  },
+  motorcycle: {
+    petrol: 55,
+    hybrid: 38,
+    ev: 18,
+    diesel: 55,
+    cng: 55,
+    lpg: 55,
+    pedal: 0,
+  },
+  scooty: {
+    petrol: 50,
+    hybrid: 35,
+    ev: 16,
+    diesel: 50,
+    cng: 50,
+    lpg: 50,
+    pedal: 0,
+  },
+  bicycle: {
+    pedal: 0,
+    ev: 8,
+    petrol: 0,
+    hybrid: 0,
+    diesel: 0,
+    cng: 0,
+    lpg: 0,
   },
 };
 

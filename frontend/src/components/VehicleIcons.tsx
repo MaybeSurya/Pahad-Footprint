@@ -310,6 +310,112 @@ export const PrivateVehicleIcon: React.FC<VehicleIconProps> = ({
 );
 
 /**
+ * Bicycle: Mountain trail / hybrid tourer bicycle with crank and pedals
+ */
+export const BicycleIcon: React.FC<VehicleIconProps> = ({
+  className = 'w-4 h-4',
+  ...props
+}) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.65"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={className}
+    {...props}
+  >
+    {/* Wheels */}
+    <circle cx="5" cy="16.5" r="3.2" />
+    <circle cx="19" cy="16.5" r="3.2" />
+    {/* Frame Triangle */}
+    <path d="M5 16.5 10 10l5 6.5H5Z" />
+    <path d="M10 10h4.5l4.5 6.5" />
+    {/* Handlebars */}
+    <path d="M15 7.5h2l-2.5 4.5" />
+    {/* Saddle & Seatpost */}
+    <path d="M8.5 8h3" />
+    <path d="M10 8v2" />
+    {/* Pedal Crank */}
+    <circle cx="12" cy="16.5" r="0.9" fill="currentColor" />
+  </svg>
+);
+
+/**
+ * Motorcycle: Himalayan adventure tourer / road motorcycle with tank & fork
+ */
+export const MotorcycleIcon: React.FC<VehicleIconProps> = ({
+  className = 'w-4 h-4',
+  ...props
+}) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.65"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={className}
+    {...props}
+  >
+    {/* Wheels */}
+    <circle cx="5" cy="16" r="3" />
+    <circle cx="19" cy="16" r="3" />
+    {/* Engine & Lower Frame */}
+    <path d="M5 16h3.5l2-3.5h3.5l1.5 3.5H19" />
+    {/* Tank & Stepped Seat */}
+    <path d="M8 12.5c.5-1.5 2-2.5 4-2.5 2 0 3 1.2 4.5 1.5l1.5-1.5" />
+    {/* Front Fork & Handlebar */}
+    <path d="M19 16l-3-8h-2" />
+    {/* Exhaust Pipe */}
+    <path d="M9 16.5h6l2-1.5" />
+  </svg>
+);
+
+/**
+ * Scooty: Step-through mountain scooter with front apron & flat floorboard
+ */
+export const ScootyIcon: React.FC<VehicleIconProps> = ({
+  className = 'w-4 h-4',
+  ...props
+}) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.65"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={className}
+    {...props}
+  >
+    {/* Wheels */}
+    <circle cx="5.5" cy="16.5" r="2.5" />
+    <circle cx="18.5" cy="16.5" r="2.5" />
+    {/* Step-through flat floorboard */}
+    <path d="M5.5 16.5H9l2.5-3.5h3l2 3.5h2" />
+    {/* Rear body & contoured seat */}
+    <path d="M5.5 16.5c0-2 1.5-3.5 3.5-3.5h2" />
+    <path d="M7 11h4.5c1 0 1.5.5 2 1.5" />
+    {/* Front Apron & Headlamp Handlebars */}
+    <path d="M14.5 13l2.5-5.5h-2" />
+    <path d="M17 7.5h1" />
+  </svg>
+);
+
+/**
+ * Two-Wheeler generic category icon
+ */
+export const TwoWheelerIcon: React.FC<VehicleIconProps> = ({
+  className = 'w-4 h-4',
+  ...props
+}) => <MotorcycleIcon className={className} {...props} />;
+
+/**
  * Helper to dynamically render a vehicle icon by type key
  */
 export const VehicleIconByType: React.FC<{ type: string; className?: string }> = ({
@@ -325,6 +431,17 @@ export const VehicleIconByType: React.FC<{ type: string; className?: string }> =
       return <HatchbackIcon className={className} />;
     case 'coupe':
       return <CoupeIcon className={className} />;
+    case 'motorcycle':
+    case 'bike':
+      return <MotorcycleIcon className={className} />;
+    case 'scooty':
+    case 'scooter':
+      return <ScootyIcon className={className} />;
+    case 'bicycle':
+    case 'cycle':
+      return <BicycleIcon className={className} />;
+    case 'two_wheeler':
+      return <TwoWheelerIcon className={className} />;
     case 'bus':
       return <BusIcon className={className} />;
     case 'train':

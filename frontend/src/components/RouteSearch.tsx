@@ -160,25 +160,34 @@ export const RouteSearch: React.FC<RouteSearchProps> = ({
                 setShowOriginDropdown(true);
                 searchOpenMapPlaces(originQuery).then(setOriginResults);
               }}
-              placeholder={language === 'HI' ? 'स्थान खोजें (उदा. काठगोदाम, ऋषिकेश)...' : 'Search start point (e.g. Kathgodam, Rishikesh)...'}
+              placeholder={language === 'HI' ? 'उत्तराखंड का कोई भी शहर/जिला खोजें...' : 'Search any Uttarakhand city/district...'}
               className="w-full h-9 px-3 bg-white border border-[#2D322B29] rounded text-[12.5px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
             />
           </div>
 
           {/* Autocomplete Dropdown */}
           {showOriginDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#2D322B29] rounded shadow-elevated z-40 max-h-56 overflow-y-auto">
-              {(originResults.length > 0 ? originResults : UTTARAKHAND_HUBS.slice(0, 6)).map((place) => (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#2D322B29] rounded shadow-elevated z-40 max-h-64 overflow-y-auto divide-y divide-[#2D322B14]">
+              <div className="sticky top-0 bg-[#F0EEE6] px-3 py-1 text-[10px] font-mono font-bold text-[#777C72] uppercase tracking-wider z-10 flex justify-between">
+                <span>{language === 'HI' ? 'उत्तराखंड के जिले एवं शहर' : 'Uttarakhand Cities & Districts'}</span>
+                <span>{(originResults.length > 0 ? originResults : UTTARAKHAND_HUBS).length} places</span>
+              </div>
+              {(originResults.length > 0 ? originResults : UTTARAKHAND_HUBS).map((place) => (
                 <button
                   key={place.id}
                   type="button"
                   onClick={() => selectOrigin(place)}
-                  className="w-full px-3 py-2 text-left hover:bg-[#FAF9F5] border-b border-[#2D322B14] last:border-b-0 transition-colors"
+                  className="w-full px-3 py-2 text-left hover:bg-[#FAF9F5] transition-colors flex items-center justify-between gap-2"
                 >
-                  <div className="text-[12px] font-bold text-[#242722]">{place.placeName}</div>
-                  <div className="text-[10.5px] text-[#777C72] flex items-center justify-between">
-                    <span>{place.district}</span>
-                    <span className="font-mono text-[#496951]">{place.altitudeMeters}m</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-bold text-[#242722] truncate">{place.placeName}</div>
+                    <div className="text-[10.5px] text-[#777C72] truncate">{place.placeAddress}</div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/20 mb-0.5">
+                      {place.district}
+                    </span>
+                    <div className="font-mono text-[10px] text-[#496951] font-semibold">{place.altitudeMeters}m</div>
                   </div>
                 </button>
               ))}
@@ -201,25 +210,34 @@ export const RouteSearch: React.FC<RouteSearchProps> = ({
                 setShowDestDropdown(true);
                 searchOpenMapPlaces(destQuery).then(setDestResults);
               }}
-              placeholder={language === 'HI' ? 'गंतव्य खोजें (उदा. नैनीताल, चोपता)...' : 'Search destination (e.g. Nainital, Chopta)...'}
+              placeholder={language === 'HI' ? 'उत्तराखंड का कोई भी शहर/जिला खोजें...' : 'Search any Uttarakhand city/district...'}
               className="w-full h-9 px-3 bg-white border border-[#2D322B29] rounded text-[12.5px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
             />
           </div>
 
           {/* Autocomplete Dropdown */}
           {showDestDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#2D322B29] rounded shadow-elevated z-40 max-h-56 overflow-y-auto">
-              {(destResults.length > 0 ? destResults : UTTARAKHAND_HUBS.slice(6, 14)).map((place) => (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#2D322B29] rounded shadow-elevated z-40 max-h-64 overflow-y-auto divide-y divide-[#2D322B14]">
+              <div className="sticky top-0 bg-[#F0EEE6] px-3 py-1 text-[10px] font-mono font-bold text-[#777C72] uppercase tracking-wider z-10 flex justify-between">
+                <span>{language === 'HI' ? 'उत्तराखंड के जिले एवं शहर' : 'Uttarakhand Cities & Districts'}</span>
+                <span>{(destResults.length > 0 ? destResults : UTTARAKHAND_HUBS).length} places</span>
+              </div>
+              {(destResults.length > 0 ? destResults : UTTARAKHAND_HUBS).map((place) => (
                 <button
                   key={place.id}
                   type="button"
                   onClick={() => selectDestination(place)}
-                  className="w-full px-3 py-2 text-left hover:bg-[#FAF9F5] border-b border-[#2D322B14] last:border-b-0 transition-colors"
+                  className="w-full px-3 py-2 text-left hover:bg-[#FAF9F5] transition-colors flex items-center justify-between gap-2"
                 >
-                  <div className="text-[12px] font-bold text-[#242722]">{place.placeName}</div>
-                  <div className="text-[10.5px] text-[#777C72] flex items-center justify-between">
-                    <span>{place.district}</span>
-                    <span className="font-mono text-[#B3834D]">{place.altitudeMeters}m</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-bold text-[#242722] truncate">{place.placeName}</div>
+                    <div className="text-[10.5px] text-[#777C72] truncate">{place.placeAddress}</div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-[#F1EADD] text-[#8A5D2E] border border-[#B3834D]/25 mb-0.5">
+                      {place.district}
+                    </span>
+                    <div className="font-mono text-[10px] text-[#B3834D] font-semibold">{place.altitudeMeters}m</div>
                   </div>
                 </button>
               ))}

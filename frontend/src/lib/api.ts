@@ -16,6 +16,9 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
     sedan: { diesel: 155, petrol: 140, cng: 110, lpg: 120, hybrid: 90, ev: 42 },
     hatchback: { diesel: 130, petrol: 120, cng: 95, lpg: 105, hybrid: 78, ev: 36 },
     coupe: { diesel: 165, petrol: 155, cng: 125, lpg: 135, hybrid: 100, ev: 48 },
+    motorcycle: { petrol: 55, hybrid: 38, ev: 18 },
+    scooty: { petrol: 50, hybrid: 35, ev: 16 },
+    bicycle: { pedal: 0, ev: 8 },
   };
 
   const transitFactors: Record<string, number> = {
@@ -29,26 +32,31 @@ export function calculateLocalDeterministic(input: CalculationInput): Calculatio
     input.transportCategory === 'transit' ||
     ['bus', 'train', 'helicopter', 'flight'].includes(String(input.transportMode).toLowerCase());
 
-    let transportKgPP = 0;
-    let baselineTransportKgPP = 0;
-    let rateLabel = '';
-    if (isTransit) {
-      const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
-      const factor = transitFactors[modeKey] || 30;
-      rateLabel = `${factor} g CO₂e/pkm (${modeKey.toUpperCase()})`;
-      const activeMultiplier = modeKey === 'train' ? 1.0 : terrainMultiplier;
-      transportKgPP = (distance * factor * activeMultiplier) / 1000;
-      baselineTransportKgPP = (distance * factor) / 1000;
-    } else {
-      const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
-      const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
-      const factor =
-        privateMatrix[vType]?.[fType] ||
-        (input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
-      rateLabel = `${factor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
-      transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
-      baselineTransportKgPP = (distance * factor) / (1000 * passengers);
-    }
+  let transportKgPP = 0;
+  let baselineTransportKgPP = 0;
+  let rateLabel = '';
+  if (isTransit) {
+    const modeKey = (input.transitMode || input.transportMode || 'bus').toLowerCase();
+    const factor = transitFactors[modeKey] || 30;
+    rateLabel = `${factor} g CO₂e/pkm (${modeKey.toUpperCase()})`;
+    const activeMultiplier = modeKey === 'train' ? 1.0 : terrainMultiplier;
+    transportKgPP = (distance * factor * activeMultiplier) / 1000;
+    baselineTransportKgPP = (distance * factor) / 1000;
+  } else {
+    const vType = (input.vehicleType || (input.transportMode === 'sedan' ? 'sedan' : 'suv')).toLowerCase();
+    const fType = (input.fuelType || (input.transportMode === 'ev' ? 'ev' : 'diesel')).toLowerCase();
+    const factor =
+      privateMatrix[vType]?.[fType] ??
+      (vType === 'bicycle' && fType === 'pedal' ? 0 : input.transportMode === 'sedan' ? 140 : input.transportMode === 'ev' ? 45 : 180);
+
+    rateLabel =
+      vType === 'bicycle' && fType === 'pedal'
+        ? '0 g CO₂e/km (PEDAL BICYCLE - ZERO EMISSION)'
+        : `${factor} g CO₂e/vkm (${fType.toUpperCase()} ${vType.toUpperCase()})`;
+
+    transportKgPP = (distance * factor * terrainMultiplier) / (1000 * passengers);
+    baselineTransportKgPP = (distance * factor) / (1000 * passengers);
+  }
 
     const uphillDeltaPP = Math.max(0, transportKgPP - baselineTransportKgPP);
     const uphillDeltaTotal = uphillDeltaPP * passengers;

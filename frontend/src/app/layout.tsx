@@ -5,6 +5,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { SmoothScrollProvider } from '../components/SmoothScrollProvider';
 import { TranslationProvider } from '../contexts/TranslationContext';
+import { TripProvider } from '../contexts/TripContext';
 
 export const metadata: Metadata = {
   title: 'Pahad Footprint — Greener Uttarakhand Trips & Carbon Accounting',
@@ -34,21 +35,23 @@ export default function RootLayout({
       >
         <SmoothScrollProvider>
           <TranslationProvider>
-            {/* Accessible Skip Link */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 z-[100] px-4 py-2 bg-white text-[#304B38] font-bold border-2 border-[#496951] rounded shadow-elevated"
-            >
-              Skip to main content
-            </a>
+            <TripProvider>
+              {/* Accessible Skip Link */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 z-[100] px-4 py-2 bg-white text-[#304B38] font-bold border-2 border-[#496951] rounded shadow-elevated"
+              >
+                Skip to main content
+              </a>
 
-            <Navbar />
+              <Navbar />
 
-            <main id="main-content" className="flex-1 w-full max-w-[1380px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-6 sm:py-10 lg:py-12">
-              {children}
-            </main>
+              <main id="main-content" className="flex-1 w-full max-w-[1380px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-6 sm:py-10 lg:py-12">
+                {children}
+              </main>
 
-            <Footer />
+              <Footer />
+            </TripProvider>
           </TranslationProvider>
         </SmoothScrollProvider>
       </body>

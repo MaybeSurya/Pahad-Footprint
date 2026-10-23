@@ -1,13 +1,23 @@
-export type PrivateVehicleType = 'suv' | 'sedan' | 'hatchback' | 'coupe';
-export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev';
+export type PrivateVehicleType =
+  | 'suv'
+  | 'sedan'
+  | 'hatchback'
+  | 'coupe'
+  | 'motorcycle'
+  | 'scooty'
+  | 'bicycle';
+export type FuelType = 'petrol' | 'diesel' | 'cng' | 'lpg' | 'hybrid' | 'ev' | 'pedal';
 export type TransitMode = 'bus' | 'train' | 'helicopter' | 'flight';
-export type TransportCategory = 'private' | 'transit';
+export type TransportCategory = 'private' | 'two_wheeler' | 'transit';
 
 export type TransportMode =
   | 'suv'
   | 'sedan'
   | 'hatchback'
   | 'coupe'
+  | 'motorcycle'
+  | 'scooty'
+  | 'bicycle'
   | 'ev'
   | 'bus'
   | 'train'

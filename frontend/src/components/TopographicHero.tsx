@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MountainSnow, Compass, ShieldCheck, TreePine, ArrowDown } from 'lucide-react';
+import Link from 'next/link';
+import { MountainSnow, Compass, ShieldCheck, TreePine, ArrowRight } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
 
 if (typeof window !== 'undefined') {
@@ -80,19 +81,19 @@ export const TopographicHero: React.FC = () => {
 
           {/* CTA Actions */}
           <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 mb-7 sm:mb-9">
-            <a
-              href="#calculator"
+            <Link
+              href="/calculator/route"
               className="btn-primary"
             >
               <span>{t('hero.ctaConfigure')}</span>
-              <ArrowDown className="w-3.5 h-3.5" />
-            </a>
-            <a
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
               href="/methodology"
               className="text-link text-[13px] sm:text-[14px]"
             >
               {t('hero.ctaMethodology')}
-            </a>
+            </Link>
           </div>
 
           {/* Field Note Index Line */}
