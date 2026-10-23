@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Award,
-  Trees,
   Download,
   Share2,
   CheckCircle2,
-  ExternalLink,
   ShieldCheck,
   QrCode,
   Sparkles,
@@ -48,20 +48,94 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
     }
   );
 
-  // Payload encoded into the QR Code via MaybeSurya QrX API
-  const qrVerificationText = `https://pahadfootprint.in/verify?cert=${certificateId}&trees=${treeCount}&name=${encodeURIComponent(
-    travelerName
-  )}&date=${encodeURIComponent(formattedDate)}`;
+  // Verification URL pointing to our internal verification page
+  const origin =
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : 'https://nav.maybesurya.dev';
 
-  // MaybeSurya QrX API endpoint: https://qrgen.maybesurya.dev/api/qrgen?data=...
+  const qrVerificationText = `${origin}/verify?cert=${encodeURIComponent(
+    certificateId
+  )}&name=${encodeURIComponent(travelerName)}&trees=${treeCount}&date=${encodeURIComponent(
+    formattedDate
+  )}`;
+
+  // QrX API endpoint generates QR code image for this verification URL
   const qrCodeUrl = `https://qrgen.maybesurya.dev/api/qrgen?data=${encodeURIComponent(
     qrVerificationText
   )}`;
 
   const handlePrint = () => {
-    if (typeof window !== 'undefined') {
-      window.print();
-    }
+    if (typeof window === 'undefined' || !certRef.current) return;
+
+    // Remove any previous print iframes
+    const oldIframe = document.getElementById('cert-print-frame');
+    if (oldIframe) oldIframe.remove();
+
+    const iframe = document.createElement('iframe');
+    iframe.id = 'cert-print-frame';
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    const certHtml = certRef.current.outerHTML;
+
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Recognition Certificate - ${certificateId}</title>
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 12mm;
+            }
+            * {
+              box-sizing: border-box;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            body {
+              margin: 0;
+              padding: 16px;
+              background: #FAF9F5;
+              font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            #cert-printable {
+              width: 100%;
+              max-width: 760px;
+              margin: 0 auto;
+            }
+          </style>
+          ${Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+            .map((el) => el.outerHTML)
+            .join('\n')}
+        </head>
+        <body>
+          <div style="width: 100%; max-width: 760px; margin: 0 auto;">
+            ${certHtml}
+          </div>
+        </body>
+      </html>
+    `);
+    doc.close();
+
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    }, 350);
   };
 
   const handleShare = async () => {
@@ -90,6 +164,7 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
     >
       {/* Certificate Frame */}
       <div
+        id="cert-printable"
         ref={certRef}
         className="p-6 sm:p-8 rounded-xl border-2 shadow-elevated relative overflow-hidden bg-[#FAF9F5] print:p-8 print:border-black"
         style={{
@@ -106,17 +181,16 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
 
         {/* Certificate Inner Border */}
         <div className="border border-[#496951]/25 rounded-lg p-5 sm:p-7 relative z-10 space-y-5 text-center">
-          {/* Header & Seal */}
+          {/* Header & Website Seal */}
           <div className="flex flex-col items-center space-y-2">
-            <div
-              className="w-12 h-12 rounded-full border-2 flex items-center justify-center shadow-xs"
-              style={{
-                backgroundColor: 'var(--green-pale)',
-                borderColor: 'var(--green-deep)',
-                color: 'var(--green-deep)',
-              }}
-            >
-              <Trees className="w-6 h-6 text-[#304B38]" />
+            <div className="w-14 h-14 rounded-full border-2 border-[#304B38] flex items-center justify-center shadow-xs overflow-hidden bg-[#FAF9F5] p-1">
+              <Image
+                src="/icons/icon.svg"
+                alt="Pahad Footprint Official Seal"
+                width={48}
+                height={48}
+                className="w-full h-full object-contain rounded-full"
+              />
             </div>
 
             <div>
@@ -179,7 +253,7 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
             </div>
           </div>
 
-          {/* Footer Metadata & QrX Live QR Code */}
+          {/* Footer Metadata & Verifiable QR Code */}
           <div className="pt-3 border-t border-[#2D322B14] flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Left metadata */}
             <div className="text-left font-mono text-[11px] space-y-1">
@@ -196,39 +270,34 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
               </div>
             </div>
 
-            {/* Right: MaybeSurya QrX Generated QR Code */}
+            {/* Right: Embedded QR Code */}
             <div className="flex items-center gap-3 p-2 rounded-lg bg-white border border-[#2D322B1F] shadow-xs">
               <div className="relative w-16 h-16 rounded overflow-hidden flex items-center justify-center bg-[#FAF9F5]">
-                {/* Embedded QR Code from MaybeSurya QrX API */}
                 <img
                   src={qrCodeUrl}
                   alt={`QR Verification Code for certificate ${certificateId}`}
                   className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => {
-                    // Fallback to text icon if network is offline in hills
                     (e.target as HTMLElement).style.display = 'none';
                   }}
                 />
               </div>
 
-              <div className="text-left text-[10px] font-mono">
+              <div className="text-left text-[10.5px] font-mono">
                 <span className="font-bold text-[#242722] block flex items-center gap-1">
-                  <QrCode className="w-3 h-3 text-[#304B38]" />
+                  <QrCode className="w-3.5 h-3.5 text-[#304B38]" />
                   <span>Scan to Verify</span>
                 </span>
-                <span className="text-[#777C72] block leading-tight mt-0.5">
-                  Live verification via
+                <span className="text-[#777C72] block text-[9.5px] mt-0.5">
+                  Van Panchayat Registry
                 </span>
-                <a
-                  href="https://docs.maybesurya.dev/qrx/introduction"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#304B38] font-bold hover:underline inline-flex items-center gap-0.5 mt-0.5"
+                <Link
+                  href={`/verify?cert=${encodeURIComponent(certificateId)}&name=${encodeURIComponent(travelerName)}`}
+                  className="text-[#304B38] font-bold hover:underline inline-flex items-center gap-0.5 mt-0.5 text-[10px]"
                 >
-                  <span>MaybeSurya QrX</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </a>
+                  <span>Verify Online →</span>
+                </Link>
               </div>
             </div>
           </div>

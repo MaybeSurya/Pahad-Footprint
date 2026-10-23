@@ -94,19 +94,20 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded border flex items-center justify-center flex-shrink-0"
+                className="w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 overflow-hidden shadow-2xs"
                 style={{
                   backgroundColor: 'var(--paper-card)',
                   borderColor: 'var(--line)',
-                  color: 'var(--green-deep)',
                 }}
                 aria-hidden="true"
               >
-                <svg className="w-5 h-5" viewBox="0 0 42 42" fill="none">
-                  <path d="M4 31 15.2 14l6.1 8.5 4.1-6.1L38 31H4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                  <path d="m15.2 14 3.1 4.4-3.9-1.2M25.4 16.4l2.3 3.3-3.4-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                  <path d="M8 35h26" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-                </svg>
+                <Image
+                  src="/icons/icon.svg"
+                  alt="Pahad Footprint Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="font-bold tracking-tight text-[16px] text-[#242722] block leading-tight">
@@ -200,13 +201,13 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="https://docs.maybesurya.dev/weather/overview"
+                  href="https://weather.maybesurya.dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#242722] hover:underline inline-flex items-center gap-1 text-[#304B38] font-medium"
                 >
                   <CloudSun className="w-3.5 h-3.5" />
-                  <span>Live Weather & AQI (MaybeSurya)</span>
+                  <span>Live Weather & AQI</span>
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
               </li>
@@ -244,16 +245,13 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://docs.maybesurya.dev/qrx/introduction"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#242722] hover:underline inline-flex items-center gap-1 text-[#51554D]"
+                <Link
+                  href="/verify"
+                  className="hover:text-[#242722] hover:underline inline-flex items-center gap-1.5 text-[#51554D] font-medium transition-colors"
                 >
                   <QrCode className="w-3.5 h-3.5 text-[#304B38]" />
-                  <span>{language === 'HI' ? 'प्रमाण पत्र QR सत्यापन (QrX)' : 'QR Code Verification (QrX)'}</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </a>
+                  <span>{language === 'HI' ? 'प्रमाण पत्र सत्यापन' : 'Verify Certificate'}</span>
+                </Link>
               </li>
               <li className="pt-1">
                 <div className="p-2.5 rounded border border-[#496951]/20 bg-[#E8EDE5]/50 text-[11px] text-[#304B38]">
@@ -274,7 +272,7 @@ export const Footer: React.FC = () => {
               {t('footer.copyright')}
             </p>
             <p className="text-[10.5px] font-mono text-[#777C72]">
-              Himalayan Weather & QrX QR APIs by MaybeSurya · OpenStreetMap & Leaflet · ARAI Hill Factors
+              Himalayan Weather API by MaybeSurya · OpenStreetMap & Leaflet · ARAI Hill Factors
             </p>
           </div>
 

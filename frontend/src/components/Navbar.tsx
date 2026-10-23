@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, BookOpen, Trees, BarChart3 } from 'lucide-react';
+import { Home, Compass, BookOpen, Trees, BarChart3, User } from 'lucide-react';
 import { UserSession } from '../types';
 import { getStoredSession, clearSession } from '../lib/api';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -70,21 +71,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#496951] rounded p-1"
             aria-label="Pahad Footprint - Home"
           >
-            {/* Pen-and-ink etched mountain mark */}
+            {/* Website Icon */}
             <div
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded border flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105 overflow-hidden shadow-2xs"
               style={{
                 backgroundColor: 'var(--paper-card)',
                 borderColor: 'var(--line)',
-                color: 'var(--green-deep)',
               }}
               aria-hidden="true"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 42 42" fill="none">
-                <path d="M4 31 15.2 14l6.1 8.5 4.1-6.1L38 31H4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                <path d="m15.2 14 3.1 4.4-3.9-1.2M25.4 16.4l2.3 3.3-3.4-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                <path d="M8 35h26" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-              </svg>
+              <Image
+                src="/icons/icon.svg"
+                alt="Pahad Footprint Logo"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div>
               <span className="text-[15px] sm:text-[16px] font-bold tracking-tight text-[#242722] block leading-tight">
@@ -100,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           </span>
         </div>
 
-// Desktop Navigation Links
+        {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
           <Link href="/" className={`${navLinkClass(pathname === '/')} flex items-center gap-1.5`}>
             <Home className="w-3.5 h-3.5" />
@@ -199,7 +202,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           ) : (
             <button
               onClick={onOpenAuth}
-              className="button-primary text-[11px] sm:text-[11.5px] py-1 sm:py-1.5 px-2.5 sm:px-3 rounded"
+              className="button-primary text-[12px] sm:text-[12.5px] py-1.5 px-3 sm:px-3.5 rounded font-semibold whitespace-nowrap min-h-[34px] flex items-center justify-center shadow-xs"
             >
               {t('navigation.signIn')}
             </button>
@@ -280,6 +283,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
               <span>{label}</span>
             </Link>
           ))}
+
+          {!session && (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenAuth?.();
+              }}
+              className="button-primary w-full py-2.5 text-[13px] font-bold rounded flex items-center justify-center gap-2 mt-2 shadow-xs"
+            >
+              <User className="w-4 h-4" />
+              <span>{t('navigation.signIn')}</span>
+            </button>
+          )}
         </div>
       )}
     </header>

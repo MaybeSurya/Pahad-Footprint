@@ -123,7 +123,7 @@ export const DestinationWeatherCard: React.FC<DestinationWeatherCardProps> = ({
           onClick={fetchReport}
           disabled={isRefreshing}
           className="p-1.5 rounded border border-[#2D322B1F] bg-[#FAF9F5] text-[#51554D] hover:text-[#242722] hover:bg-[#F0EEE6] transition-colors"
-          title="Refresh live weather & AQI from MaybeSurya API"
+          title="Refresh live weather & AQI from API"
         >
           <RotateCcw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
