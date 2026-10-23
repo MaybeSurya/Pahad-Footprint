@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trees, ShieldCheck, CheckCircle2, Leaf, ArrowRight } from 'lucide-react';
+import { useTranslation } from '../contexts/TranslationContext';
 
 interface RestorationPledgeBoxProps {
   saplings: {
@@ -17,6 +18,7 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   saplings,
   onPledgeSuccess,
 }) => {
+  const { t } = useTranslation();
   const [pledged, setPledged] = useState(false);
 
   const handlePledge = () => {
@@ -24,81 +26,130 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
     if (onPledgeSuccess) onPledgeSuccess();
   };
 
+  const suggestedText = t('pledge.suggested')
+    .replace('{perPerson}', saplings.perPerson.toString())
+    .replace('{total}', saplings.total.toString());
+
+  const buttonText = t('pledge.pledgeButton').replace(
+    '{total}',
+    saplings.total.toString()
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.15 }}
-      className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4"
+      transition={{ duration: 0.35, delay: 0.12 }}
+      className="journal-card space-y-4"
     >
-      {/* Header with Oak Icon */}
-      <div className="flex items-start gap-3.5">
-        <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center flex-shrink-0 text-emerald-700 shadow-xs">
-          <Trees className="w-5 h-5" />
+      {/* Header */}
+      <div className="flex items-start gap-3">
+        <div
+          className="w-9 h-9 rounded border flex items-center justify-center flex-shrink-0"
+          style={{
+            backgroundColor: 'var(--green-pale)',
+            borderColor: 'rgba(73, 105, 81, 0.25)',
+            color: 'var(--green-deep)',
+          }}
+        >
+          <Trees className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-[15px] font-bold text-slate-900">
-            Local Restoration Pledge: Himalayan Banj Oak
-          </h3>
-          <p className="text-[12.5px] text-slate-600 mt-0.5 leading-relaxed">
-            Suggested illustrative contribution:{' '}
-            <strong className="text-emerald-700 font-semibold">{saplings.perPerson} saplings per person</strong> ({saplings.total} saplings for this travel party).
+          <div className="section-kicker">
+            <span>{t('pledge.kicker')}</span>
+          </div>
+          <h4 className="text-[14.5px] font-bold text-[#242722] tracking-tight">
+            {t('pledge.title')}
+          </h4>
+          <p className="text-[12px] text-[#51554D] mt-1 leading-relaxed">
+            {suggestedText}
           </p>
         </div>
       </div>
 
-      {/* Keystone Species Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center gap-3.5 text-white shadow-xs">
-        <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-          <Leaf className="w-5 h-5 text-emerald-400" />
+      {/* Indigenous Species Card */}
+      <div
+        className="rounded p-3.5 flex items-center gap-3 border"
+        style={{
+          backgroundColor: 'var(--ink)',
+          borderColor: 'var(--ink)',
+          color: '#FFFFFF',
+        }}
+      >
+        <div
+          className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0"
+          style={{ backgroundColor: 'rgba(232, 237, 229, 0.15)' }}
+        >
+          <Leaf className="w-4 h-4 text-[#E8EDE5]" />
         </div>
         <div>
-          <p className="text-[13px] font-bold text-white">Banj Oak (Quercus leucotrichophora)</p>
-          <p className="text-[11.5px] text-slate-300 leading-normal mt-0.5">
-            Key ecosystem keystone: stabilizes fragile mountain topsoil and recharges Himalayan aquifers.
+          <div className="flex items-baseline gap-2">
+            <span className="text-[13px] font-bold text-white">
+              {t('pledge.speciesTitle')}
+            </span>
+            <span className="text-[11px] italic text-[#CFCABF]">
+              {t('pledge.speciesLatin')}
+            </span>
+          </div>
+          <p className="text-[11px] text-[#CFCABF] mt-0.5 leading-snug">
+            {t('pledge.speciesDesc')}
           </p>
         </div>
       </div>
 
-      {/* Van Panchayat Disclaimer Banner */}
-      <p className="text-[11.5px] text-slate-600 bg-slate-50 p-3.5 rounded-xl border border-slate-200 leading-relaxed">
-        <strong className="text-slate-800">Community Notice:</strong> Pledges support Van Panchayat local nurseries and tree-planting drives. They represent voluntary illustrative contributions and are not certified carbon offsets.
-      </p>
+      {/* Community Caveat Notice */}
+      <div
+        className="rounded p-3 text-[11px] leading-relaxed border"
+        style={{
+          backgroundColor: 'var(--paper-deep)',
+          borderColor: 'var(--line)',
+          color: 'var(--ink-soft)',
+        }}
+      >
+        <strong className="text-[#242722]">{t('pledge.fieldNoteTitle')}</strong>{' '}
+        {t('pledge.fieldNoteBody')}
+      </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-2.5 pt-1">
+      {/* Action Button & Confirmation */}
+      <div className="pt-1 space-y-2">
         <AnimatePresence mode="wait">
           {pledged ? (
             <motion.div
               key="pledged"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-emerald-800 font-semibold text-[13px] flex items-center justify-center gap-2 shadow-xs"
+              className="p-3 rounded text-center font-semibold flex items-center justify-center gap-2 border text-[12.5px]"
+              style={{
+                backgroundColor: 'var(--green-pale)',
+                borderColor: 'rgba(73, 105, 81, 0.3)',
+                color: 'var(--green-deep)',
+              }}
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              Pledge Recorded in Van Panchayat Ledger!
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{t('pledge.pledgeThankYou')}</span>
             </motion.div>
           ) : (
             <motion.button
               key="unpledged"
               type="button"
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.99 }}
               onClick={handlePledge}
-              className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-[13.5px] font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs hover:shadow-sm"
+              className="btn-accent w-full justify-center py-3 text-[13px]"
             >
-              <ShieldCheck className="w-4 h-4 text-emerald-200" />
-              Pledge {saplings.total} Oak Saplings
+              <ShieldCheck className="w-4 h-4" />
+              <span>{buttonText}</span>
             </motion.button>
           )}
         </AnimatePresence>
 
-        <Link
-          href="/methodology"
-          className="text-[12px] font-medium text-emerald-700 hover:text-emerald-800 hover:underline flex items-center justify-center gap-1 mt-1 group"
-        >
-          <span>Model v1.2-2026 | IPCC Methodology &amp; Estimation Protocols</span>
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-        </Link>
+        <div className="text-center">
+          <Link
+            href="/methodology"
+            className="text-link text-[11.5px]"
+          >
+            {t('pledge.methodologyLink')}
+          </Link>
+        </div>
       </div>
     </motion.div>
   );

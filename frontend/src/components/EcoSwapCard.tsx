@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingDown, Info } from 'lucide-react';
+import { Sparkles, TrendingDown, Info, ArrowRight } from 'lucide-react';
 import { CalculationOutput } from '../types';
+import { useTranslation } from '../contexts/TranslationContext';
 
 interface EcoSwapCardProps {
   ecoSwap: CalculationOutput['ecoSwap'];
@@ -11,50 +12,100 @@ interface EcoSwapCardProps {
 }
 
 export const EcoSwapCard: React.FC<EcoSwapCardProps> = ({ ecoSwap, currentPerPerson }) => {
+  const { t } = useTranslation();
+
+  const impactReductionText = t('ecoSwap.impactReduction').replace(
+    '{percent}',
+    ecoSwap.percentageReduction.toString()
+  );
+
+  const reducesFromToText = t('ecoSwap.reducesFromTo')
+    .replace('{from}', currentPerPerson.toFixed(1))
+    .replace('{to}', ecoSwap.newPerPersonCo2e.toFixed(1));
+
+  const summaryBodyText = t('ecoSwap.summaryBody')
+    .replace('{transport}', ecoSwap.recommendedTransport.split('(')[0].trim())
+    .replace('{stay}', ecoSwap.recommendedStay.split('(')[0].trim())
+    .replace('{perPerson}', ecoSwap.newPerPersonCo2e.toFixed(1))
+    .replace('{total}', ecoSwap.newTotalCo2e.toFixed(1))
+    .replace('{saved}', ecoSwap.savingsPerPerson.toFixed(1));
+
+  const greenCessBodyText = t('ecoSwap.greenCessBody').replace(
+    '{amount}',
+    ecoSwap.greenCessAmountInr.toString()
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.1 }}
-      className="relative overflow-hidden bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+      transition={{ duration: 0.35, delay: 0.08 }}
+      className="journal-card relative overflow-hidden"
     >
-      {/* Decorative Emerald Accent Strip */}
-      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-600" />
+      {/* Accent left hairline */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-1"
+        style={{ backgroundColor: 'var(--green)' }}
+      />
 
-      <div className="pl-2">
-        <div className="flex items-center gap-3 mb-3.5">
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 flex-shrink-0">
-            <Sparkles className="w-4 h-4" />
+      <div className="pl-1">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-8 h-8 rounded border flex items-center justify-center flex-shrink-0"
+              style={{
+                backgroundColor: 'var(--green-pale)',
+                borderColor: 'rgba(73, 105, 81, 0.25)',
+                color: 'var(--green-deep)',
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="section-kicker">
+                <span>{t('ecoSwap.badge')}</span>
+              </div>
+              <h4 className="text-[14.5px] font-bold text-[#242722] tracking-tight">
+                {t('ecoSwap.title')}
+              </h4>
+            </div>
           </div>
-          <div>
-            <h3 className="text-[15px] font-bold text-slate-900">Verified Eco-Swap Alternative</h3>
-            <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
-              {ecoSwap.recommendedTransport.split('(')[0]} + {ecoSwap.recommendedStay.split('(')[0]}
-            </p>
-          </div>
+
+          <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/25">
+            {impactReductionText}
+          </span>
         </div>
 
-        {/* Primary Savings Box */}
-        <div className="bg-emerald-50/60 rounded-xl p-4 mb-3 border border-emerald-200/80">
-          <div className="flex items-center gap-1.5 text-[14px] font-bold text-emerald-800 mb-1">
-            <TrendingDown className="w-4 h-4 text-emerald-600" />
-            <span>
-              Emissions drop from {currentPerPerson.toFixed(1)} kg to {ecoSwap.newPerPersonCo2e.toFixed(1)} kg CO₂e/person (−{ecoSwap.percentageReduction}%)
-            </span>
+        {/* Savings description box */}
+        <div
+          className="rounded p-3.5 mb-3 border"
+          style={{
+            backgroundColor: 'var(--green-pale)',
+            borderColor: 'rgba(73, 105, 81, 0.25)',
+          }}
+        >
+          <div className="flex items-center gap-1.5 mb-1 text-[13px] font-bold text-[#304B38]">
+            <TrendingDown className="w-4 h-4" />
+            <span>{reducesFromToText}</span>
           </div>
-          <p className="text-[12.5px] text-slate-600 leading-relaxed">
-            Switching to public transport and an eco-homestay lowers your emissions to{' '}
-            <strong className="text-slate-900">{ecoSwap.newPerPersonCo2e.toFixed(1)} kg CO₂e/person</strong> ({ecoSwap.newTotalCo2e.toFixed(1)} kg whole trip) — saving{' '}
-            <strong className="text-emerald-700 font-semibold">{ecoSwap.savingsPerPerson.toFixed(1)} kg CO₂e</strong> per person, achieving a {ecoSwap.percentageReduction}% net reduction.
+          <p className="text-[12px] text-[#51554D] leading-relaxed">
+            {summaryBodyText}
           </p>
         </div>
 
-        {/* Uttarakhand Green Cess Note */}
-        <div className="bg-amber-50/60 rounded-xl p-3.5 flex items-start gap-2.5 border border-amber-200/80">
-          <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-          <p className="text-[11.5px] text-slate-600 leading-relaxed">
-            <strong className="text-slate-900">Potential Travel-Cost Saving:</strong> Switching from an eligible out-of-state private vehicle to shared public transit avoids the{' '}
-            <strong className="text-amber-800 font-semibold">₹{ecoSwap.greenCessAmountInr} vehicle-entry Green Cess</strong> (under Uttarakhand Transport Dept. May 2025 notification; subject to notified exemptions).
+        {/* Green Cess note */}
+        <div
+          className="rounded p-3 flex items-start gap-2.5 border"
+          style={{
+            backgroundColor: 'var(--paper-deep)',
+            borderColor: 'var(--line)',
+          }}
+        >
+          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-[#777C72]" />
+          <p className="text-[11px] text-[#51554D] leading-relaxed">
+            <strong className="text-[#242722]">{t('ecoSwap.greenCessTitle')}</strong>{' '}
+            {greenCessBodyText}
           </p>
         </div>
       </div>

@@ -132,38 +132,50 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
     if (zone === 'high_altitude') {
       return {
         label: 'High Altitude (1.40× fuel burn)',
-        bg: 'bg-[#FFDAD6] text-[#BA1A1A] border-[#FECACA]',
+        className: 'badge-amber',
       };
     }
     if (zone === 'mid_hills') {
       return {
         label: 'Mid-Hills (1.25× fuel burn)',
-        bg: 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]',
+        className: 'badge-accent',
       };
     }
     return {
       label: 'Foothills (1.00× fuel burn)',
-      bg: 'bg-[#C1ECD4] text-[#002114] border-[#A3CCA9]',
+      className: 'badge-mono',
     };
   };
 
   return (
-    <div className="bg-white border border-[#D8E8DF] rounded-2xl p-5 shadow-card space-y-4">
+    <div
+      className="p-4 rounded border space-y-3.5 mb-4"
+      style={{
+        backgroundColor: 'var(--paper-subtle)',
+        borderColor: 'var(--line)',
+      }}
+    >
       {/* Header with Mappls Branding & Key Configuration */}
-      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[#D8E8DF] pb-3">
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b pb-2.5" style={{ borderColor: 'var(--line)' }}>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#1B4332] text-white flex items-center justify-center shadow-sm">
-            <Route className="w-4 h-4" />
+          <div
+            className="w-7 h-7 rounded border flex items-center justify-center text-[#304B38]"
+            style={{
+              backgroundColor: 'var(--green-pale)',
+              borderColor: 'rgba(73, 105, 81, 0.25)',
+            }}
+          >
+            <Route className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h3 className="text-[14px] font-bold text-[#111827] flex items-center gap-1.5">
-              <span>Mappls Route &amp; Terrain Distance Engine</span>
-              <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#EDF6F0] text-[#1B4332] border border-[#D8E8DF]">
-                {apiKey ? 'API Active' : 'Intelligent Fallback'}
+            <h4 className="text-[12.5px] font-bold text-[#242722] flex items-center gap-1.5 font-mono">
+              <span>MAPPLS ROUTE &amp; ALTITUDE ENGINE</span>
+              <span className="font-mono text-[9px] uppercase px-1.5 py-0.2 rounded bg-[#E8EDE5] text-[#304B38] border border-[#496951]/20">
+                {apiKey ? 'API Active' : 'Verified GIS Defaults'}
               </span>
-            </h3>
-            <p className="text-[11.5px] text-[#4B5563]">
-              Powered by MapmyIndia / Mappls topographic GIS coordinates &amp; altitudinal gradients.
+            </h4>
+            <p className="text-[11px] text-[#777C72]">
+              Himalayan road distance &amp; altitudinal slope coordinates
             </p>
           </div>
         </div>
@@ -171,12 +183,12 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
         <button
           type="button"
           onClick={() => setShowKeyConfig((prev) => !prev)}
-          className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#1B4332] bg-[#EDF6F0] hover:bg-[#D8E8DF] px-2.5 py-1.5 rounded-lg border border-[#D8E8DF] transition-colors"
+          className="inline-flex items-center gap-1 text-[10.5px] font-mono font-semibold text-[#51554D] bg-white hover:bg-[#F0EEE6] px-2 py-1 rounded border border-[#2D322B29] transition-colors"
           aria-expanded={showKeyConfig}
           aria-label="Configure Mappls API Key"
         >
-          <Key className="w-3.5 h-3.5 text-[#1B4332]" />
-          <span>{apiKey ? 'Configured' : 'Set Mappls Key'}</span>
+          <Key className="w-3 h-3 text-[#777C72]" />
+          <span>{apiKey ? 'Key Set' : 'Configure Key'}</span>
         </button>
       </div>
 
@@ -187,30 +199,31 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden bg-[#EDF6F0] border border-[#D8E8DF] rounded-xl p-3.5 text-[12px] space-y-2"
+            className="overflow-hidden p-3 rounded border text-[11.5px] space-y-2"
+            style={{
+              backgroundColor: 'var(--paper-deep)',
+              borderColor: 'var(--line)',
+            }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold text-[#1B4332] flex items-center gap-1.5">
-                <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span className="font-bold text-[#242722] flex items-center gap-1.5 font-mono">
+                <SlidersHorizontal className="w-3 h-3 text-[#496951]" />
                 Mappls Developer Credentials
               </span>
-              <span className="text-[11px] text-[#4B5563]">Optional (App works seamlessly with verified defaults)</span>
+              <span className="text-[10.5px] text-[#777C72]">Works out of the box with verified defaults</span>
             </div>
-            <p className="text-[11.5px] text-[#4B5563]">
-              Enter your MapmyIndia / Mappls REST API Key for live road network ETA and routing:
-            </p>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 placeholder="Paste Mappls REST API Key..."
                 value={keyInput}
                 onChange={(e) => setKeyInput(e.target.value)}
-                className="flex-1 h-9 px-3 bg-white border border-[#D8E8DF] rounded-lg text-[12.5px] font-mono text-[#111827] focus:ring-2 focus:ring-[#1B4332]"
+                className="flex-1 h-8 px-2.5 bg-white border border-[#2D322B29] rounded text-[12px] font-mono text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
               />
               <button
                 type="button"
                 onClick={handleSaveKey}
-                className="h-9 px-4 bg-[#1B4332] text-white font-semibold rounded-lg text-[12px] hover:bg-[#143225] transition-colors"
+                className="h-8 px-3 btn-accent text-[11px] rounded"
               >
                 Save
               </button>
@@ -220,11 +233,11 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
       </AnimatePresence>
 
       {/* Dual Search Columns: Origin and Destination */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Origin Search */}
         <div ref={originRef} className="relative">
-          <label className="block text-[12px] font-semibold text-[#111827] mb-1 flex items-center gap-1.5">
-            <Navigation className="w-3.5 h-3.5 text-[#10B981]" />
+          <label className="block text-[11.5px] font-semibold text-[#242722] mb-1 flex items-center gap-1">
+            <Navigation className="w-3 h-3 text-[#304B38]" />
             Origin (Start Point)
           </label>
           <div className="relative">
@@ -237,28 +250,28 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
                 searchMapplsPlaces(originQuery, apiKey).then(setOriginResults);
               }}
               placeholder="Search origin in Uttarakhand / NCR..."
-              className="w-full h-10 pl-3 pr-8 bg-[#F8FAF9] border border-[#D8E8DF] rounded-xl text-[13px] text-[#111827] focus:bg-white focus:ring-2 focus:ring-[#1B4332]"
+              className="w-full h-9 pl-2.5 pr-14 bg-white border border-[#2D322B29] rounded text-[12.5px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
             />
-            <span className="absolute right-2.5 top-2.5 text-[11px] font-bold text-[#4B5563] bg-white px-1.5 py-0.5 rounded border border-[#D8E8DF]">
+            <span className="absolute right-2 top-2 font-mono text-[10px] font-bold text-[#777C72] bg-[#F0EEE6] px-1 py-0.2 rounded border border-[#2D322B29]">
               {origin.altitudeMeters}m
             </span>
           </div>
 
-          {/* Origin Autocomplete Dropdown */}
+          {/* Autocomplete Dropdown */}
           {showOriginDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-[#D8E8DF] rounded-xl shadow-elevated max-h-56 overflow-y-auto divide-y divide-[#D8E8DF]">
+            <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-[#2D322B29] rounded shadow-elevated max-h-52 overflow-y-auto divide-y divide-[#2D322B29]/30">
               {originResults.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => selectOrigin(item)}
-                  className="w-full px-3.5 py-2.5 text-left hover:bg-[#EDF6F0] flex items-center justify-between text-[12.5px] transition-colors"
+                  className="w-full px-3 py-2 text-left hover:bg-[#F0EEE6] flex items-center justify-between text-[12px] transition-colors"
                 >
                   <div>
-                    <p className="font-semibold text-[#111827]">{item.placeName}</p>
-                    <p className="text-[11px] text-[#4B5563] truncate max-w-[210px]">{item.placeAddress}</p>
+                    <p className="font-semibold text-[#242722]">{item.placeName}</p>
+                    <p className="text-[10px] text-[#777C72] truncate max-w-[200px]">{item.placeAddress}</p>
                   </div>
-                  <span className="text-[10.5px] font-bold text-[#1B4332] bg-[#EDF6F0] px-1.5 py-0.5 rounded border border-[#D8E8DF]">
+                  <span className="font-mono text-[10px] text-[#304B38] bg-[#E8EDE5] px-1 py-0.2 rounded">
                     {item.altitudeMeters}m
                   </span>
                 </button>
@@ -269,8 +282,8 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
 
         {/* Destination Search */}
         <div ref={destRef} className="relative">
-          <label className="block text-[12px] font-semibold text-[#111827] mb-1 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-[#C85A32]" />
+          <label className="block text-[11.5px] font-semibold text-[#242722] mb-1 flex items-center gap-1">
+            <MapPin className="w-3 h-3 text-[#B3834D]" />
             Destination (Mountain Hub)
           </label>
           <div className="relative">
@@ -283,28 +296,28 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
                 searchMapplsPlaces(destQuery, apiKey).then(setDestResults);
               }}
               placeholder="Search destination (Nainital, Chopta, Badrinath...)"
-              className="w-full h-10 pl-3 pr-8 bg-[#F8FAF9] border border-[#D8E8DF] rounded-xl text-[13px] text-[#111827] focus:bg-white focus:ring-2 focus:ring-[#1B4332]"
+              className="w-full h-9 pl-2.5 pr-14 bg-white border border-[#2D322B29] rounded text-[12.5px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
             />
-            <span className="absolute right-2.5 top-2.5 text-[11px] font-bold text-[#4B5563] bg-white px-1.5 py-0.5 rounded border border-[#D8E8DF]">
+            <span className="absolute right-2 top-2 font-mono text-[10px] font-bold text-[#777C72] bg-[#F0EEE6] px-1 py-0.2 rounded border border-[#2D322B29]">
               {destination.altitudeMeters}m
             </span>
           </div>
 
-          {/* Destination Autocomplete Dropdown */}
+          {/* Autocomplete Dropdown */}
           {showDestDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-[#D8E8DF] rounded-xl shadow-elevated max-h-56 overflow-y-auto divide-y divide-[#D8E8DF]">
+            <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-[#2D322B29] rounded shadow-elevated max-h-52 overflow-y-auto divide-y divide-[#2D322B29]/30">
               {destResults.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => selectDestination(item)}
-                  className="w-full px-3.5 py-2.5 text-left hover:bg-[#EDF6F0] flex items-center justify-between text-[12.5px] transition-colors"
+                  className="w-full px-3 py-2 text-left hover:bg-[#F0EEE6] flex items-center justify-between text-[12px] transition-colors"
                 >
                   <div>
-                    <p className="font-semibold text-[#111827]">{item.placeName}</p>
-                    <p className="text-[11px] text-[#4B5563] truncate max-w-[210px]">{item.placeAddress}</p>
+                    <p className="font-semibold text-[#242722]">{item.placeName}</p>
+                    <p className="text-[10px] text-[#777C72] truncate max-w-[200px]">{item.placeAddress}</p>
                   </div>
-                  <span className="text-[10.5px] font-bold text-[#1B4332] bg-[#EDF6F0] px-1.5 py-0.5 rounded border border-[#D8E8DF]">
+                  <span className="font-mono text-[10px] text-[#304B38] bg-[#E8EDE5] px-1 py-0.2 rounded">
                     {item.altitudeMeters}m
                   </span>
                 </button>
@@ -314,11 +327,11 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
         </div>
       </div>
 
-      {/* Fast Popular Mountain Corridor Shortcuts */}
-      <div className="flex items-center gap-1.5 flex-wrap text-[11.5px]">
-        <span className="text-[#4B5563] font-semibold flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-[#1B4332]" />
-          Popular:
+      {/* Mountain Corridor Shortcuts */}
+      <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+        <span className="text-[#777C72] font-mono flex items-center gap-1">
+          <Sparkles className="w-3 h-3 text-[#496951]" />
+          Corridors:
         </span>
         {[
           { label: 'Nainital (320 km)', orig: UTTARAKHAND_HUBS[0], dest: UTTARAKHAND_HUBS[7] },
@@ -337,52 +350,47 @@ export const MapplsRouteSearch: React.FC<MapplsRouteSearchProps> = ({
               setDestQuery(shortcut.dest.placeName);
               computeRoute(shortcut.orig, shortcut.dest, apiKey);
             }}
-            className="px-2.5 py-1 rounded-full bg-[#EDF6F0] hover:bg-[#D8E8DF] text-[#1B4332] font-medium border border-[#D8E8DF] transition-colors"
+            className="px-2 py-0.5 rounded bg-white hover:bg-[#F0EEE6] text-[#304B38] font-mono text-[10.5px] border border-[#2D322B29] transition-colors"
           >
             {shortcut.label}
           </button>
         ))}
       </div>
 
-      {/* Mappls Live Route Summary Banner */}
+      {/* Mappls Route Calculation Summary Banner */}
       {routeResult && (
-        <div className="bg-[#EDF6F0] border border-[#D8E8DF] rounded-xl p-3.5 space-y-2">
+        <div className="p-3 rounded border space-y-2" style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}>
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#1B4332]" />
-              <span className="text-[13px] font-bold text-[#111827]">
-                {origin.placeName.split('(')[0]} → {destination.placeName.split('(')[0]}
+            <div className="flex items-center gap-1.5 font-bold text-[12.5px] text-[#242722]">
+              <Compass className="w-3.5 h-3.5 text-[#496951]" />
+              <span>
+                {origin.placeName.split('(')[0].trim()} → {destination.placeName.split('(')[0].trim()}
               </span>
             </div>
 
-            {/* Incline & Altitude Severity Badge */}
-            <span
-              className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                terrainBadge(routeResult.terrainZone).bg
-              }`}
-            >
+            <span className={terrainBadge(routeResult.terrainZone).className}>
               {terrainBadge(routeResult.terrainZone).label}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px]">
-            <div className="bg-white p-2.5 rounded-lg border border-[#D8E8DF]">
-              <span className="text-[11px] text-[#4B5563]">One-Way Distance</span>
-              <p className="font-bold text-[#111827] text-[14px]">{routeResult.distanceKm} km</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11.5px]">
+            <div className="bg-white p-2 rounded border border-[#2D322B29]">
+              <span className="text-[10px] text-[#777C72] font-mono block">ONE-WAY DISTANCE</span>
+              <p className="font-mono font-bold text-[#242722] text-[13px]">{routeResult.distanceKm} km</p>
             </div>
-            <div className="bg-white p-2.5 rounded-lg border border-[#D8E8DF]">
-              <span className="text-[11px] text-[#4B5563]">Round-Trip Circuit</span>
-              <p className="font-bold text-[#1B4332] text-[14px]">{routeResult.roundTripKm} km</p>
+            <div className="bg-white p-2 rounded border border-[#2D322B29]">
+              <span className="text-[10px] text-[#777C72] font-mono block">CIRCUIT TOTAL</span>
+              <p className="font-mono font-bold text-[#304B38] text-[13px]">{routeResult.roundTripKm} km</p>
             </div>
-            <div className="bg-white p-2.5 rounded-lg border border-[#D8E8DF]">
-              <span className="text-[11px] text-[#4B5563]">Elevation Delta</span>
-              <p className="font-bold text-[#111827] text-[14px]">
-                {origin.altitudeMeters}m ↗ {destination.altitudeMeters}m (+{routeResult.ascentMeters}m)
+            <div className="bg-white p-2 rounded border border-[#2D322B29]">
+              <span className="text-[10px] text-[#777C72] font-mono block">ALTITUDE ASCENT</span>
+              <p className="font-mono font-bold text-[#242722] text-[13px]">
+                {origin.altitudeMeters}m ↗ {destination.altitudeMeters}m
               </p>
             </div>
-            <div className="bg-white p-2.5 rounded-lg border border-[#D8E8DF]">
-              <span className="text-[11px] text-[#4B5563]">Avg. Travel Time</span>
-              <p className="font-bold text-[#111827] text-[14px]">
+            <div className="bg-white p-2 rounded border border-[#2D322B29]">
+              <span className="text-[10px] text-[#777C72] font-mono block">ESTIMATED DRIVE</span>
+              <p className="font-mono font-bold text-[#242722] text-[13px]">
                 ~{Math.floor(routeResult.durationMinutes / 60)}h {routeResult.durationMinutes % 60}m
               </p>
             </div>

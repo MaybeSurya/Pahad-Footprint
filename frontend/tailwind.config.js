@@ -8,100 +8,107 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Modern Alpine Emerald Palette
-        brand: {
-          50: '#F0FDF4',
-          100: '#DCFCE7',
-          200: '#BBF7D0',
-          300: '#86EFAC',
-          400: '#4ADE80',
-          500: '#22C55E',
-          600: '#16A34A',
-          700: '#15803D',
-          800: '#166534',
-          900: '#14532D',
-          DEFAULT: '#15803D',
+        // Himalayan Field Guide & Paper Palette
+        paper: {
+          DEFAULT: '#F7F6F0',
+          deep: '#F0EEE6',
+          card: '#FFFFFF',
+          subtle: '#FAF9F5',
         },
-        // Modern high-contrast Slate Neutrals
+        ink: {
+          DEFAULT: '#242722',
+          soft: '#51554D',
+          faint: '#777C72',
+          muted: '#8C9186',
+        },
+        line: {
+          DEFAULT: 'rgba(45, 50, 43, 0.16)',
+          strong: 'rgba(45, 50, 43, 0.28)',
+          subtle: 'rgba(45, 50, 43, 0.08)',
+        },
+        // Deep Alpine / Forest Green
+        green: {
+          DEFAULT: '#496951',
+          deep: '#304B38',
+          pale: '#E8EDE5',
+          light: '#F0F4EE',
+        },
+        // Muted Warm Amber for caveats/warnings
+        amber: {
+          DEFAULT: '#B3834D',
+          pale: '#F1EADD',
+          deep: '#8A5D2E',
+        },
+        // Base / Surface mappings for component compatibility
+        base: '#F7F6F0',
+        surface: {
+          DEFAULT: '#F0EEE6',
+          raised: '#FFFFFF',
+        },
+        border: {
+          DEFAULT: 'rgba(45, 50, 43, 0.16)',
+          strong: 'rgba(45, 50, 43, 0.28)',
+        },
+        accent: {
+          DEFAULT: '#496951',
+          hover: '#304B38',
+          light: '#E8EDE5',
+          text: '#304B38',
+          border: 'rgba(73, 105, 81, 0.3)',
+        },
+        // Legacy slate mappings
         slate: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          950: '#020617',
-        },
-        // Himalayan Terracotta & Clay Accents
-        terracotta: {
-          DEFAULT: '#EA580C',
-          hover: '#C2410C',
-          light: '#FFF7ED',
-          border: '#FED7AA',
-        },
-        // Glacier Blue & High-Altitude Accents
-        glacier: {
-          DEFAULT: '#2563EB',
-          hover: '#1D4ED8',
-          light: '#EFF6FF',
-          border: '#BFDBFE',
-        },
-        // Legacy tokens preserved for compatibility
-        forest: {
-          DEFAULT: '#15803D',
-          hover: '#166534',
-          light: '#22C55E',
-          dark: '#14532D',
-        },
-        mist: {
-          DEFAULT: '#F8FAFC',
-          border: '#E2E8F0',
-          hover: '#F1F5F9',
-          dark: '#CBD5E1',
-        },
-        alabaster: {
-          DEFAULT: '#F8FAFC',
-          surface: '#FFFFFF',
-          dim: '#F1F5F9',
-        },
-        charcoal: {
-          DEFAULT: '#0F172A',
-          light: '#334155',
-        },
-        slateText: {
-          DEFAULT: '#334155',
-          muted: '#64748B',
-        },
-        status: {
-          verified: '#15803D',
-          verifiedBg: '#DCFCE7',
-          pledged: '#B45309',
-          pledgedBg: '#FEF3C7',
-          calculated: '#334155',
-          calculatedBg: '#F1F5F9',
-          error: '#DC2626',
-          errorBg: '#FEE2E2',
+          50: '#F9F8F5',
+          100: '#F0EEE6',
+          200: '#E4E1D8',
+          300: '#CFCABF',
+          400: '#9E9A90',
+          500: '#777C72',
+          600: '#51554D',
+          700: '#3D423A',
+          800: '#2E322B',
+          900: '#242722',
+          950: '#181A16',
         },
       },
+
       borderRadius: {
-        card: '16px',
-        btn: '10px',
-        input: '10px',
+        card: '12px',
+        btn: '6px',
+        input: '6px',
       },
+
       gap: {
-        grid: '24px',
+        grid: '20px',
       },
+
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['"DM Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'SFMono-Regular', 'Consolas', 'monospace'],
+        devanagari: ['"Noto Sans Devanagari"', '"Nirmala UI"', 'sans-serif'],
       },
+
       boxShadow: {
-        card: '0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)',
-        elevated: '0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04)',
-        glow: '0 0 25px -5px rgba(22, 163, 74, 0.25)',
+        card: '0 1px 3px rgba(36, 39, 34, 0.05)',
+        elevated: '0 8px 24px rgba(36, 39, 34, 0.08)',
+        subtle: '0 2px 8px rgba(36, 39, 34, 0.04)',
+        paper: '0 1px 2px rgba(36, 39, 34, 0.06), 0 0 0 1px rgba(45, 50, 43, 0.12)',
+      },
+
+      keyframes: {
+        'fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pulse-dot': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.4' },
+        },
+      },
+
+      animation: {
+        'fade-up': 'fade-up 0.4s ease forwards',
+        'pulse-dot': 'pulse-dot 2s ease infinite',
       },
     },
   },

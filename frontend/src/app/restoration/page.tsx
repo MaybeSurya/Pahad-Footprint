@@ -1,8 +1,116 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { motion, useInView } from 'framer-motion';
+import { ArrowLeft, Trees, ShieldCheck, Leaf, CheckCircle2, Compass, ArrowRight } from 'lucide-react';
+import gsap from 'gsap';
+import { useTranslation } from '../../contexts/TranslationContext';
+
+// ─── Animated progress bar ───────────────────────────────────────────────────
+function ProgressBar({ target, isInView }: { target: number; isInView: boolean }) {
+  const fillRef = useRef<HTMLDivElement>(null);
+  const triggered = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || triggered.current || !fillRef.current) return;
+    triggered.current = true;
+    gsap.to(fillRef.current, {
+      scaleX: target / 100,
+      duration: 1.2,
+      ease: 'power2.out',
+      delay: 0.2,
+    });
+  }, [isInView, target]);
+
+  return (
+    <div className="progress-track h-2 bg-[#F0EEE6] rounded-full overflow-hidden border border-[#2D322B29]">
+      <div
+        ref={fillRef}
+        className="h-full bg-[#496951] rounded-full"
+        style={{ transform: 'scaleX(0)', transformOrigin: 'left' }}
+      />
+    </div>
+  );
+}
+
+// ─── Initiative card ─────────────────────────────────────────────────────────
+interface InitiativeCardProps {
+  icon: React.ReactNode;
+  title: string;
+  speciesLatin?: string;
+  description: string;
+  stat: string;
+  progress: number;
+  progressLabel: string;
+  delay?: number;
+}
+
+function InitiativeCard({
+  icon,
+  title,
+  speciesLatin,
+  description,
+  stat,
+  progress,
+  progressLabel,
+  delay = 0,
+}: InitiativeCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-40px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay }}
+      className="journal-card flex flex-col justify-between"
+    >
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div
+            className="w-9 h-9 rounded border flex items-center justify-center text-[#304B38]"
+            style={{
+              backgroundColor: 'var(--green-pale)',
+              borderColor: 'rgba(73, 105, 81, 0.25)',
+            }}
+          >
+            {icon}
+          </div>
+          <span className="font-mono text-[11px] font-bold text-[#304B38] px-2 py-0.5 rounded bg-[#E8EDE5]">
+            {progress}% OF TARGET
+          </span>
+        </div>
+
+        <div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="font-bold text-[15px] text-[#242722]">{title}</h3>
+            {speciesLatin && (
+              <span className="text-[11px] italic text-[#777C72]">
+                {speciesLatin}
+              </span>
+            )}
+          </div>
+          <p className="text-[12px] text-[#51554D] leading-relaxed mt-1">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 pt-3 border-t" style={{ borderColor: 'var(--line)' }}>
+        <div className="flex justify-between items-center text-[11px] font-mono mb-1.5">
+          <span className="font-bold text-[#242722]">{stat}</span>
+          <span className="text-[#777C72]">{progressLabel}</span>
+        </div>
+        <ProgressBar target={progress} isInView={isInView} />
+      </div>
+    </motion.div>
+  );
+}
 
 export default function RestorationPage() {
+  const { t, language } = useTranslation();
   const [pledged, setPledged] = useState(false);
   const [name, setName] = useState('');
   const [saplings, setSaplings] = useState(9);
@@ -14,153 +122,162 @@ export default function RestorationPage() {
   };
 
   return (
-    <div className="max-w-[900px] mx-auto space-y-6">
+    <div className="max-w-[980px] mx-auto space-y-8 py-4">
+      {/* Back Link */}
+      <div>
+        <Link
+          href="/"
+          className="text-link font-mono text-[11.5px]"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>{t('restoration.backLink')}</span>
+        </Link>
+      </div>
+
       {/* Header */}
-      <div className="flex items-center gap-3.5 mb-2">
-        <div className="w-12 h-12 rounded-card bg-[#1B4332] text-white flex items-center justify-center flex-shrink-0">
-          <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z" />
-          </svg>
+      <div className="pb-4 border-b" style={{ borderColor: 'var(--line)' }}>
+        <div className="section-kicker mb-2">
+          <span>{t('restoration.kicker')}</span>
         </div>
+        <h1
+          className="text-[30px] sm:text-[40px] font-semibold tracking-[-0.035em] leading-tight mb-3"
+          style={{ color: 'var(--ink)' }}
+        >
+          {t('restoration.pageHeader')}
+        </h1>
+        <p
+          className="text-[15px] sm:text-[16px] leading-relaxed max-w-2xl"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          {t('restoration.pageSubtitle')}
+        </p>
+      </div>
+
+      {/* 3 Restoration Initiatives Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <InitiativeCard
+          icon={<Trees className="w-4 h-4" />}
+          title={t('restoration.banjOakTitle')}
+          speciesLatin="Quercus leucotrichophora"
+          description={t('restoration.banjOakDesc')}
+          stat={language === 'HI' ? '6,420 पौधे लगाए' : '6,420 Planted'}
+          progress={65}
+          progressLabel={language === 'HI' ? '65% लक्ष्य पूरा' : '65% of Seasonal Goal'}
+          delay={0.05}
+        />
+
+        <InitiativeCard
+          icon={<Compass className="w-4 h-4" />}
+          title={t('restoration.rhododendronTitle')}
+          speciesLatin="Rhododendron arboreum"
+          description={t('restoration.rhododendronDesc')}
+          stat={language === 'HI' ? '142 हेक्टेयर' : '142 Hectares'}
+          progress={47}
+          progressLabel={language === 'HI' ? '47% संरक्षित' : '47% Protected'}
+          delay={0.12}
+        />
+
+        <InitiativeCard
+          icon={<ShieldCheck className="w-4 h-4" />}
+          title={t('restoration.deodarTitle')}
+          speciesLatin="Cedrus deodara"
+          description={t('restoration.deodarDesc')}
+          stat={language === 'HI' ? '23 वन पंचायतें' : '23 Councils'}
+          progress={85}
+          progressLabel={language === 'HI' ? '85% सक्रिय' : '85% Operational'}
+          delay={0.2}
+        />
+      </div>
+
+      {/* Pledge Form */}
+      <div className="journal-card p-6 space-y-4">
         <div>
-          <h1 className="text-[26px] font-bold text-[#111827]">Local Restoration Initiatives</h1>
-          <p className="text-[13.5px] text-[#4B5563]">
-            Community-governed Van Panchayat nurseries and oak reforestation corridors across Uttarakhand.
+          <h2 className="text-[17px] font-bold text-[#242722]">
+            {t('restoration.pledgeHeading')}
+          </h2>
+          <p className="text-[12.5px] text-[#51554D] mt-1">
+            {t('restoration.pledgeSub')}
           </p>
         </div>
-      </div>
-
-      {/* Van Panchayat Initiatives Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-grid">
-        <div className="pahad-card flex flex-col justify-between">
-          <div>
-            <div className="w-9 h-9 rounded-lg bg-[#1B4332] text-white flex items-center justify-center mb-3">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2L6 10h3.5v5H8v4h8v-4h-1.5v-5H18L12 2z" />
-              </svg>
-            </div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-1">Banj Oak Drive</h3>
-            <p className="text-[12px] text-[#4B5563] leading-relaxed mb-4">
-              Community nursery planting of Quercus leucotrichophora to restore mountain aquifer tables.
-            </p>
-          </div>
-          <div>
-            <div className="flex justify-between text-[11.5px] font-bold text-[#111827] mb-1">
-              <span>6,420 Planted</span>
-              <span className="text-[#1B4332]">65% of Target</span>
-            </div>
-            <div className="h-2 bg-[#EDF6F0] rounded-full overflow-hidden">
-              <div className="h-full bg-[#1B4332] rounded-full" style={{ width: '65%' }} />
-            </div>
-          </div>
-        </div>
-
-        <div className="pahad-card flex flex-col justify-between">
-          <div>
-            <div className="w-9 h-9 rounded-lg bg-[#2D6A4F] text-white flex items-center justify-center mb-3">
-              <svg className="w-5 h-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064" />
-              </svg>
-            </div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-1">Glacial Catchment Buffer</h3>
-            <p className="text-[12px] text-[#4B5563] leading-relaxed mb-4">
-              Revegetation of high-altitude moraines around Kedarnath &amp; Nanda Devi perimeter.
-            </p>
-          </div>
-          <div>
-            <div className="flex justify-between text-[11.5px] font-bold text-[#111827] mb-1">
-              <span>142 ha Restored</span>
-              <span className="text-[#2D6A4F]">47% of Target</span>
-            </div>
-            <div className="h-2 bg-[#EDF6F0] rounded-full overflow-hidden">
-              <div className="h-full bg-[#2D6A4F] rounded-full" style={{ width: '47%' }} />
-            </div>
-          </div>
-        </div>
-
-        <div className="pahad-card flex flex-col justify-between">
-          <div>
-            <div className="w-9 h-9 rounded-lg bg-[#C85A32] text-white flex items-center justify-center mb-3">
-              <svg className="w-5 h-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-1">Van Panchayat Councils</h3>
-            <p className="text-[12px] text-[#4B5563] leading-relaxed mb-4">
-              Direct seed nursery support and forest guard equipment for 23 village councils.
-            </p>
-          </div>
-          <div>
-            <div className="flex justify-between text-[11.5px] font-bold text-[#111827] mb-1">
-              <span>23 Councils</span>
-              <span className="text-[#C85A32]">85% Operational</span>
-            </div>
-            <div className="h-2 bg-[#EDF6F0] rounded-full overflow-hidden">
-              <div className="h-full bg-[#C85A32] rounded-full" style={{ width: '85%' }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Interactive Pledge Form */}
-      <div className="pahad-card-mist">
-        <h2 className="text-[18px] font-bold text-[#111827] mb-1">Make a Community Restoration Pledge</h2>
-        <p className="text-[13px] text-[#4B5563] mb-4">
-          Contributions directly sponsor sapling rearing in Van Panchayat village nurseries across Uttarakhand.
-        </p>
 
         {pledged ? (
-          <div className="p-4 bg-[#C1ECD4] border border-[#1B4332]/40 rounded-card text-center">
-            <h3 className="text-[16px] font-bold text-[#002114]">Pledge Confirmed: {saplings} Banj Oak Saplings!</h3>
-            <p className="text-[12.5px] text-[#1B4332] mt-1">
-              Thank you, {name || 'Fellow Mountain Traveler'}! Your pledge is logged to the Van Panchayat registry.
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-5 rounded border text-center space-y-1.5"
+            style={{
+              backgroundColor: 'var(--green-pale)',
+              borderColor: 'rgba(73, 105, 81, 0.3)',
+            }}
+          >
+            <div className="flex items-center justify-center gap-2 font-bold text-[15px] text-[#304B38]">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>
+                {language === 'HI'
+                  ? `संकल्प दर्ज हुआ: ${saplings} बांज ओक के पौधे`
+                  : `Pledge Intention Recorded: ${saplings} Banj Oak Saplings`}
+              </span>
+            </div>
+            <p className="text-[12px] text-[#51554D]">
+              {language === 'HI'
+                ? `धन्यवाद, ${name || 'पहाड़ी यात्री'}! आपका संकल्प स्थानीय वन पंचायत रिकॉर्ड में सुरक्षित हो गया है।`
+                : `Thank you, ${name || 'Mountain Traveler'}! Your pledge is logged to the local Van Panchayat ledger.`}
             </p>
-          </div>
+          </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[12.5px] font-semibold text-[#111827] mb-1">Your Name</label>
+                <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                  {language === 'HI' ? 'यात्री का नाम' : 'Traveler Name'}
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Maya Bhatt"
+                  placeholder={language === 'HI' ? 'उदा. माया भट्ट' : 'e.g. Maya Bhatt'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full h-10 px-3 bg-white border border-[#D8E8DF] rounded-input text-[13px] text-[#111827]"
+                  className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
                 />
               </div>
               <div>
-                <label className="block text-[12.5px] font-semibold text-[#111827] mb-1">Number of Saplings</label>
+                <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                  {language === 'HI' ? 'पौधों की संख्या' : 'Number of Oak Saplings'}
+                </label>
                 <input
                   type="number"
                   min={1}
                   max={500}
                   value={saplings}
                   onChange={(e) => setSaplings(Number(e.target.value))}
-                  className="w-full h-10 px-3 bg-white border border-[#D8E8DF] rounded-input text-[13px] text-[#111827]"
+                  className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] font-mono text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[12.5px] font-semibold text-[#111827] mb-1">Restoration Corridor</label>
+              <label className="block text-[12px] font-semibold text-[#242722] mb-1">
+                {language === 'HI' ? 'पौधारोपण क्षेत्र' : 'Restoration Area'}
+              </label>
               <select
                 value={initiative}
                 onChange={(e) => setInitiative(e.target.value)}
-                className="w-full h-10 px-3 bg-white border border-[#D8E8DF] rounded-input text-[13px] text-[#111827]"
+                className="w-full h-10 px-3 bg-white border border-[#2D322B29] rounded text-[13px] text-[#242722] focus:outline-none focus:ring-1 focus:ring-[#496951]"
               >
-                <option>Banj Oak Mid-Hill Reforestation (Kumaon Division)</option>
-                <option>Glacial Catchment Moraine Stabilization (Garhwal Division)</option>
-                <option>Van Panchayat Village Nursery Support Fund</option>
+                <option>
+                  {language === 'HI' ? 'बांज ओक पौधारोपण (कुमाऊं मंडल)' : 'Banj Oak Mid-Hill Reforestation (Kumaon Division)'}
+                </option>
+                <option>
+                  {language === 'HI' ? 'पहाड़ी जलधारा संरक्षण (गढ़वाल मंडल)' : 'Glacial Catchment Spring Protection (Garhwal Division)'}
+                </option>
+                <option>
+                  {language === 'HI' ? 'ग्राम वन पंचायत सामुदायिक नर्सरी फंड' : 'Van Panchayat Village Nursery Support Fund'}
+                </option>
               </select>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#1B4332] hover:bg-[#143225] text-white font-semibold text-[13.5px] rounded-btn shadow transition-colors"
-            >
-              Confirm Community Reforestation Pledge
+            <button type="submit" className="button-primary w-full py-3">
+              {language === 'HI' ? 'पौधारोपण संकल्प दर्ज करें' : 'Confirm Tree Planting Pledge'}
             </button>
           </form>
         )}

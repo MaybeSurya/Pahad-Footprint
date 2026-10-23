@@ -1,105 +1,224 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MountainSnow, Leaf, Trees, ShieldCheck, Compass, ArrowDownRight, Sparkles } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MountainSnow, Compass, ShieldCheck, TreePine, ArrowDown } from 'lucide-react';
+import { useTranslation } from '../contexts/TranslationContext';
 
-export function TopographicHero() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.1,
-      },
-    },
-  };
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 18 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
+export const TopographicHero: React.FC = () => {
+  const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mountainVisualRef = useRef<HTMLDivElement>(null);
+
+  // GSAP subtle parallax effect on mountain visual
+  useEffect(() => {
+    if (!mountainVisualRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(mountainVisualRef.current, {
+        y: 28,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.2,
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <motion.section
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white p-6 sm:p-10 shadow-elevated border border-slate-700/60"
+    <section
+      ref={containerRef}
+      className="section-grid relative border-b overflow-hidden py-10 sm:py-16 mb-8"
+      style={{
+        borderColor: 'var(--line)',
+        backgroundColor: 'var(--paper)',
+      }}
+      aria-label="Himalayan Eco-Carbon Accounting Overview"
     >
-      {/* Ambient Mountain Backdrop Contours */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-20 mix-blend-screen bg-repeat"
-        style={{
-          backgroundImage: `radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
-                            radial-gradient(circle at 15% 85%, rgba(59, 130, 246, 0.18) 0%, transparent 55%)`,
-        }}
-      />
-
-      <div className="relative z-10 max-w-4xl">
-        {/* Ecological Protocol Badge */}
-        <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 backdrop-blur-md border border-emerald-400/25 text-[12px] font-semibold text-emerald-300 mb-4">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-          <span>Uttarakhand Eco-Carbon Protocol • IPCC Elevation Adjusted</span>
-        </motion.div>
-
-        {/* Hero Title */}
-        <motion.h1
-          variants={itemVariants}
-          className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.18]"
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] items-center gap-10 lg:gap-14">
+        {/* LEFT COLUMN: Editorial Field-Guide Copy */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10"
         >
-          Travel Consciously Across the <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200">Himalayan Ridge</span>
-        </motion.h1>
-
-        {/* Narrative Description */}
-        <motion.p variants={itemVariants} className="mt-3.5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed font-normal">
-          High-altitude roads, hairpin bends, and delicate alpine valleys multiply travel carbon emissions by up to 1.8×. Measure your exact journey footprint, discover low-impact alternatives, and restore local mountain biomes.
-        </motion.p>
-
-        {/* Quick KPI Stat Chips */}
-        <motion.div variants={itemVariants} className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-          <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 transition-all hover:bg-slate-800/80">
-            <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-emerald-400">
-              <Compass className="w-3.5 h-3.5" />
-              <span>Journeys</span>
-            </div>
-            <p className="mt-1 text-2xl font-black tracking-tight text-white">1,482</p>
-            <span className="text-[11px] text-slate-400">Verified routes</span>
+          {/* Eyebrow Pill */}
+          <div className="eyebrow-pill mb-5">
+            <span className="text-[#304B38]">★</span>
+            <span>{t('hero.eyebrow')}</span>
           </div>
 
-          <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 transition-all hover:bg-slate-800/80">
-            <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-amber-400">
-              <MountainSnow className="w-3.5 h-3.5" />
-              <span>Mitigated</span>
-            </div>
-            <p className="mt-1 text-2xl font-black tracking-tight text-white">214.8<span className="text-sm font-normal text-slate-300 ml-0.5">t</span></p>
-            <span className="text-[11px] text-slate-400">Gross CO₂e offset</span>
+          {/* Editorial Headline */}
+          <h1
+            className="text-[34px] sm:text-[46px] lg:text-[56px] font-semibold leading-[1.08] tracking-[-0.035em] mb-5"
+            style={{ color: 'var(--ink)' }}
+          >
+            {t('hero.headline')}{' '}
+            <span style={{ color: 'var(--green)' }}>{t('hero.headlineAccent')}</span>
+          </h1>
+
+          {/* Description */}
+          <p
+            className="text-[15px] sm:text-[16.5px] leading-relaxed max-w-[580px] mb-7"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            {t('hero.description')}
+          </p>
+
+          {/* CTA Actions */}
+          <div className="flex flex-wrap items-center gap-5 mb-9">
+            <a
+              href="#calculator"
+              className="btn-primary"
+            >
+              <span>{t('hero.ctaConfigure')}</span>
+              <ArrowDown className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href="/methodology"
+              className="text-link"
+            >
+              {t('hero.ctaMethodology')}
+            </a>
           </div>
 
-          <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 transition-all hover:bg-slate-800/80">
-            <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-emerald-400">
-              <Trees className="w-3.5 h-3.5" />
-              <span>Reforested</span>
-            </div>
-            <p className="mt-1 text-2xl font-black tracking-tight text-white">9,780</p>
-            <span className="text-[11px] text-slate-400">Oak &amp; Deodar planted</span>
-          </div>
-
-          <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 transition-all hover:bg-slate-800/80">
-            <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-cyan-400">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Standard</span>
-            </div>
-            <p className="mt-1 text-2xl font-black tracking-tight text-white">ARAI</p>
-            <span className="text-[11px] text-slate-400">Verified factors</span>
+          {/* Field Note Index Line */}
+          <div
+            className="flex items-center gap-3 text-[11px] font-mono tracking-wider pt-2"
+            style={{ color: 'var(--ink-faint)' }}
+          >
+            <span>{t('hero.fig01')}</span>
+            <span
+              className="flex-1 max-w-[120px] h-[1px]"
+              style={{ backgroundColor: 'var(--line)' }}
+            />
+            <span className="hidden sm:inline">30.0869° N, 78.2676° E</span>
           </div>
         </motion.div>
+
+        {/* RIGHT COLUMN: Monochromatic Etched Himalayan Mountain Plate */}
+        <div
+          ref={mountainVisualRef}
+          className="relative flex items-center justify-center min-h-[320px] sm:min-h-[380px] select-none"
+        >
+          {/* Concentric Contour Rings */}
+          <div className="hero-contour hero-contour-one" />
+          <div className="hero-contour hero-contour-two" />
+
+          {/* Archival Field-Guide Etched Plate */}
+          <div className="relative z-10 w-full max-w-[500px]">
+            <div
+              className="relative rounded-lg overflow-hidden border shadow-sm"
+              style={{
+                borderColor: 'var(--line-strong)',
+                backgroundColor: 'var(--paper-card)',
+              }}
+            >
+              {/* Corner crosshairs */}
+              <span className="absolute top-2 left-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
+              <span className="absolute top-2 right-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
+              <span className="absolute bottom-2 left-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
+              <span className="absolute bottom-2 right-2 z-20 font-mono text-[10px] leading-none select-none text-[#777C72]">+</span>
+
+              {/* Elevation Altitude Callout Tag */}
+              <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#F7F6F0]/95 backdrop-blur-xs border border-[#2D322B29] shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#496951]" />
+                <span className="font-mono text-[10.5px] font-semibold text-[#304B38]">
+                  {t('hero.nandaDeviAltitude')}
+                </span>
+              </div>
+
+              {/* Monochromatic Etched Mountain WebP Image */}
+              <div className="relative w-full aspect-[4/3] sm:aspect-[16/11]">
+                <Image
+                  src="/images/hero_mountain.webp"
+                  alt="Monochromatic woodblock etching of Himalayan peak sanctuary in Uttarakhand"
+                  fill
+                  priority
+                  className="object-cover mix-blend-multiply opacity-90 transition-transform duration-700 hover:scale-[1.02]"
+                  sizes="(max-width: 768px) 100vw, 500px"
+                />
+                {/* Paper texture overlay tint */}
+                <div
+                  className="absolute inset-0 pointer-events-none mix-blend-color"
+                  style={{ backgroundColor: 'rgba(247, 246, 240, 0.12)' }}
+                />
+              </div>
+
+              {/* Archival Field Caption Bar */}
+              <div
+                className="px-3.5 py-2 border-t flex items-center justify-between text-[10.5px] font-mono tracking-wider"
+                style={{
+                  backgroundColor: 'var(--paper-subtle)',
+                  borderColor: 'var(--line)',
+                  color: 'var(--ink-faint)',
+                }}
+              >
+                <span>{t('hero.fig01Survey')}</span>
+                <span className="text-[#496951] font-semibold">{t('hero.plate04')}</span>
+              </div>
+            </div>
+
+            {/* Coordinates Sub-caption */}
+            <div
+              className="flex items-center justify-between mt-2 px-1 text-[10px] font-mono tracking-wider"
+              style={{ color: 'var(--ink-faint)' }}
+            >
+              <span>{t('hero.alpineCrest')}</span>
+              <span>{t('hero.copperplate')}</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </motion.section>
+
+        {/* BOTTOMLINE: Proof Points from Editorial Reference */}
+      <div
+        className="mt-8 pt-5 border-t grid grid-cols-1 sm:grid-cols-3 gap-4"
+        style={{ borderColor: 'var(--line)' }}
+      >
+        <div className="flex items-start gap-3">
+          <span className="font-mono text-[11px] font-bold text-[#496951] mt-0.5">{t('hero.proof01Number')}</span>
+          <div>
+            <h2 className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{t('hero.proof01Title')}</h2>
+            <p className="text-[12px] leading-relaxed mt-0.5" style={{ color: 'var(--ink-soft)' }}>
+              {t('hero.proof01Text')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <span className="font-mono text-[11px] font-bold text-[#496951] mt-0.5">{t('hero.proof02Number')}</span>
+          <div>
+            <h2 className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{t('hero.proof02Title')}</h2>
+            <p className="text-[12px] leading-relaxed mt-0.5" style={{ color: 'var(--ink-soft)' }}>
+              {t('hero.proof02Text')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <span className="font-mono text-[11px] font-bold text-[#496951] mt-0.5">{t('hero.proof03Number')}</span>
+          <div>
+            <h2 className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{t('hero.proof03Title')}</h2>
+            <p className="text-[12px] leading-relaxed mt-0.5" style={{ color: 'var(--ink-soft)' }}>
+              {t('hero.proof03Text')}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
-}
+};

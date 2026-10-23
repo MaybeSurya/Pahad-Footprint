@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MountainSnow, Compass, MapPin, Layers, Navigation, Info, ExternalLink } from 'lucide-react';
+import { MountainSnow, Compass, MapPin, Layers, Navigation, Info } from 'lucide-react';
 import { MapplsRouteResult } from '../lib/mappls';
 
 interface MapplsMapViewProps {
@@ -61,7 +61,7 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
         }
       }
 
-      // 2. OpenStreetMap + Leaflet Fallback (Works 100% reliably out of the box with zero API keys)
+      // 2. OpenStreetMap + Leaflet Fallback
       try {
         const L = (await import('leaflet')).default;
 
@@ -89,40 +89,38 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
           attribution: '&copy; OpenStreetMap contributors',
         }).addTo(map);
 
-        // Origin custom pin (Forest Green)
+        // Origin custom pin (Alpine Forest Green)
         const originIcon = L.divIcon({
           className: 'custom-map-pin origin-pin',
-          html: `<div style="background-color: #1B4332; color: #C1ECD4; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; border: 2.5px solid white; box-shadow: 0 4px 12px rgba(27,67,50,0.35);">A</div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 17],
-          popupAnchor: [0, -18],
+          html: `<div style="background-color: #304B38; color: #E8EDE5; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">A</div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -16],
         });
 
-        // Destination custom pin (Terracotta Red)
+        // Destination custom pin (Muted Warm Amber)
         const destIcon = L.divIcon({
           className: 'custom-map-pin dest-pin',
-          html: `<div style="background-color: #C85A32; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; border: 2.5px solid white; box-shadow: 0 4px 12px rgba(200,90,50,0.35);">B</div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 17],
-          popupAnchor: [0, -18],
+          html: `<div style="background-color: #B3834D; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 2px solid white; box-shadow: 0 2px 8px rgba(36,39,34,0.3);">B</div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -16],
         });
 
         const originMarker = L.marker([route!.origin.latitude, route!.origin.longitude], { icon: originIcon })
           .bindPopup(
-            `<div style="font-size:12.5px; font-family:sans-serif;">
-              <strong style="color:#1B4332;">Origin: ${route!.origin.placeName}</strong><br/>
-              <span style="color:#4B5563;">Altitude: ${route!.origin.altitudeMeters}m</span><br/>
-              <span style="color:#6B7280; font-size:11px;">${route!.origin.placeAddress}</span>
+            `<div style="font-size:12px; font-family:sans-serif;">
+              <strong style="color:#304B38;">Origin: ${route!.origin.placeName}</strong><br/>
+              <span style="color:#51554D;">Altitude: ${route!.origin.altitudeMeters}m AMSL</span>
             </div>`
           )
           .addTo(map);
 
         const destMarker = L.marker([route!.destination.latitude, route!.destination.longitude], { icon: destIcon })
           .bindPopup(
-            `<div style="font-size:12.5px; font-family:sans-serif;">
-              <strong style="color:#C85A32;">Destination: ${route!.destination.placeName}</strong><br/>
-              <span style="color:#4B5563;">Altitude: ${route!.destination.altitudeMeters}m</span><br/>
-              <span style="color:#6B7280; font-size:11px;">${route!.destination.placeAddress}</span>
+            `<div style="font-size:12px; font-family:sans-serif;">
+              <strong style="color:#B3834D;">Destination: ${route!.destination.placeName}</strong><br/>
+              <span style="color:#51554D;">Altitude: ${route!.destination.altitudeMeters}m AMSL</span>
             </div>`
           )
           .addTo(map);
@@ -130,23 +128,23 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
         // Draw mountain transit route polyline
         const latlngs = route!.coordinates.map((c) => [c[0], c[1]] as [number, number]);
         const polyline = L.polyline(latlngs, {
-          color: '#1B4332',
-          weight: 4.5,
+          color: '#496951',
+          weight: 4,
           opacity: 0.9,
-          dashArray: '7, 6',
+          dashArray: '6, 6',
         }).addTo(map);
 
         polyline.bindPopup(
           `<div style="font-size:12px; font-family:sans-serif;">
-            <strong style="color:#111827;">Mountain Transit Corridor</strong><br/>
+            <strong style="color:#242722;">Himalayan Transit Corridor</strong><br/>
             One-Way: <strong>${route!.distanceKm} km</strong> (~${Math.floor(route!.durationMinutes / 60)}h ${route!.durationMinutes % 60}m)<br/>
-            Altitude Rise: <strong style="color:#1B4332;">Δ +${route!.ascentMeters}m</strong>
+            Ascent: <strong style="color:#304B38;">Δ +${route!.ascentMeters}m</strong>
           </div>`
         );
 
         // Fit map bounds with padding
         const group = L.featureGroup([originMarker, destMarker, polyline]);
-        map.fitBounds(group.getBounds(), { padding: [40, 40] });
+        map.fitBounds(group.getBounds(), { padding: [36, 36] });
 
         setMapProvider('osm');
       } catch (err) {
@@ -170,40 +168,43 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
   if (!route) return null;
 
   return (
-    <div className="bg-white border border-[#D8E8DF] rounded-2xl overflow-hidden shadow-card">
+    <div className="journal-card p-0 overflow-hidden">
       {/* Map View Header & Mode Tabs */}
-      <div className="px-5 py-3.5 bg-[#EDF6F0] border-b border-[#D8E8DF] flex items-center justify-between flex-wrap gap-2">
+      <div
+        className="px-4 py-3 border-b flex items-center justify-between flex-wrap gap-2"
+        style={{ backgroundColor: 'var(--paper-deep)', borderColor: 'var(--line)' }}
+      >
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-[#1B4332]" />
+          <Layers className="w-4 h-4 text-[#496951]" />
           <div>
-            <span className="text-[13px] font-bold text-[#111827]">
-              Himalayan Transit Corridor &amp; Topography
+            <span className="text-[12.5px] font-bold text-[#242722] font-mono">
+              HIMALAYAN TRANSIT CORRIDOR
             </span>
-            <span className="ml-2 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full bg-white text-[#1B4332] border border-[#D8E8DF]">
-              {mapProvider === 'mappls' ? 'Mappls Active' : 'OpenStreetMap Live'}
+            <span className="ml-2 font-mono text-[9.5px] uppercase px-1.5 py-0.2 rounded bg-white text-[#304B38] border border-[#2D322B29]">
+              {mapProvider === 'mappls' ? 'Mappls Active' : 'OpenStreetMap'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-[#D8E8DF]">
+        <div className="flex items-center gap-1 bg-white p-0.5 rounded border border-[#2D322B29]">
           <button
             type="button"
             onClick={() => setActiveTab('map')}
-            className={`px-3 py-1 rounded-lg text-[11.5px] font-semibold transition-colors ${
+            className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors ${
               activeTab === 'map'
-                ? 'bg-[#1B4332] text-white shadow-sm'
-                : 'text-[#4B5563] hover:text-[#111827]'
+                ? 'bg-[#242722] text-white shadow-xs'
+                : 'text-[#51554D] hover:text-[#242722]'
             }`}
           >
-            Live Map Canvas
+            Live Map
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('profile')}
-            className={`px-3 py-1 rounded-lg text-[11.5px] font-semibold transition-colors ${
+            className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors ${
               activeTab === 'profile'
-                ? 'bg-[#1B4332] text-white shadow-sm'
-                : 'text-[#4B5563] hover:text-[#111827]'
+                ? 'bg-[#242722] text-white shadow-xs'
+                : 'text-[#51554D] hover:text-[#242722]'
             }`}
           >
             Elevation Profile
@@ -212,36 +213,43 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
       </div>
 
       {/* Main Viewport Content */}
-      <div className="relative p-4 sm:p-5">
+      <div className="p-4 space-y-3">
         {activeTab === 'map' ? (
           <div>
             <div
               ref={mapContainerRef}
               id="mountain-map"
-              className="h-64 sm:h-72 w-full rounded-xl overflow-hidden border border-[#D8E8DF] relative z-10 shadow-inner"
+              className="h-60 sm:h-68 w-full rounded border overflow-hidden relative z-10"
+              style={{ borderColor: 'var(--line)' }}
             />
-            <div className="mt-2.5 flex items-center justify-between text-[11px] text-[#4B5563] px-1">
+            <div className="mt-2 flex items-center justify-between text-[10.5px] font-mono text-[#777C72]">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#1B4332]" />
+                <span className="w-2 h-2 rounded-full bg-[#304B38]" />
                 <strong>A:</strong> {route.origin.placeName.split('(')[0]} ({route.origin.altitudeMeters}m)
-                <span className="mx-1">•</span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#C85A32]" />
+                <span className="mx-1">→</span>
+                <span className="w-2 h-2 rounded-full bg-[#B3834D]" />
                 <strong>B:</strong> {route.destination.placeName.split('(')[0]} ({route.destination.altitudeMeters}m)
               </span>
-              <span>Scroll to zoom • Drag to pan</span>
+              <span className="hidden sm:inline">Scroll to zoom · Drag to pan</span>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* SVG Elevation Cross-Section Diagram */}
-            <div className="relative h-36 w-full rounded-xl bg-gradient-to-b from-[#EDF6F0] to-[#E2ECE5] border border-[#D8E8DF] p-3 overflow-hidden flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-[#1B4332] z-10">
+            <div
+              className="relative h-32 w-full rounded p-3 overflow-hidden flex flex-col justify-between border"
+              style={{
+                backgroundColor: 'var(--paper-deep)',
+                borderColor: 'var(--line)',
+              }}
+            >
+              <div className="flex items-center justify-between text-[11px] font-mono font-semibold text-[#304B38] z-10">
                 <span className="flex items-center gap-1">
-                  <Navigation className="w-3 h-3 text-[#10B981]" />
+                  <Navigation className="w-3 h-3 text-[#304B38]" />
                   {route.origin.placeName.split('(')[0]} ({route.origin.altitudeMeters}m)
                 </span>
                 <span className="flex items-center gap-1">
-                  <MountainSnow className="w-3.5 h-3.5 text-[#C85A32]" />
+                  <MountainSnow className="w-3 h-3 text-[#B3834D]" />
                   {route.destination.placeName.split('(')[0]} ({route.destination.altitudeMeters}m)
                 </span>
               </div>
@@ -250,8 +258,8 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
               <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 120">
                 <defs>
                   <linearGradient id="elevationGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1B4332" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#1B4332" stopOpacity="0.05" />
+                    <stop offset="0%" stopColor="#496951" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#496951" stopOpacity="0.02" />
                   </linearGradient>
                 </defs>
                 <path
@@ -268,36 +276,39 @@ export const MapplsMapView: React.FC<MapplsMapViewProps> = ({ route }) => {
                         250,${60 - (route.destination.altitudeMeters / 4000) * 50}
                         400,${100 - (route.destination.altitudeMeters / 4000) * 80}`}
                   fill="none"
-                  stroke="#1B4332"
-                  strokeWidth="3.5"
+                  stroke="#496951"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                 />
               </svg>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-[#4B5563] z-10 pt-2 border-t border-[#D8E8DF]/60">
+              <div
+                className="flex items-center justify-between text-[10px] font-mono text-[#777C72] z-10 pt-1.5 border-t"
+                style={{ borderColor: 'var(--line)' }}
+              >
                 <span>0 km (Start Point)</span>
-                <span>Δ +{route.ascentMeters}m Vertical Elevation Rise</span>
-                <span>{route.distanceKm} km (Summit Destination)</span>
+                <span>Δ +{route.ascentMeters}m Elevation Gain</span>
+                <span>{route.distanceKm} km (Summit)</span>
               </div>
             </div>
 
             {/* Geographical Meta Summary */}
-            <div className="grid grid-cols-3 gap-2.5 text-[11.5px]">
-              <div className="p-2.5 rounded-lg bg-[#F8FAF9] border border-[#D8E8DF]">
-                <span className="text-[#4B5563] text-[10.5px]">Origin Coordinates</span>
-                <p className="font-mono font-bold text-[#111827]">
+            <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
+              <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
+                <span className="text-[#777C72] text-[9.5px] block">ORIGIN</span>
+                <p className="font-bold text-[#242722]">
                   {route.origin.latitude.toFixed(3)}°N, {route.origin.longitude.toFixed(3)}°E
                 </p>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#F8FAF9] border border-[#D8E8DF]">
-                <span className="text-[#4B5563] text-[10.5px]">Destination Coordinates</span>
-                <p className="font-mono font-bold text-[#111827]">
+              <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
+                <span className="text-[#777C72] text-[9.5px] block">DESTINATION</span>
+                <p className="font-bold text-[#242722]">
                   {route.destination.latitude.toFixed(3)}°N, {route.destination.longitude.toFixed(3)}°E
                 </p>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#F8FAF9] border border-[#D8E8DF]">
-                <span className="text-[#4B5563] text-[10.5px]">Gradient Classification</span>
-                <p className="font-bold text-[#1B4332] uppercase">
+              <div className="p-2 rounded bg-[#FAF9F5] border border-[#2D322B29]">
+                <span className="text-[#777C72] text-[9.5px] block">TERRAIN ZONE</span>
+                <p className="font-bold text-[#304B38] uppercase">
                   {route.terrainZone.replace('_', ' ')}
                 </p>
               </div>

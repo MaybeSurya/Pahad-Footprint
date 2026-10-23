@@ -3,52 +3,466 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   PAHAD FOOTPRINT — Himalayan Field Guide & Nature Journal
+   Palette: Warm Paper (#F7F6F0), Charcoal Ink (#242722),
+            Deep Forest Green (#304B38 / #496951),
+            Muted Amber (#B3834D), Fine Hairlines (var(--line))
+   ============================================================ */
+
 :root {
-  --color-brand: #15803D;
-  --color-brand-light: #22C55E;
-  --color-brand-soft: #F0FDF4;
-  --color-slate-base: #F8FAFC;
-  --color-slate-card: #FFFFFF;
-  --color-slate-border: #E2E8F0;
-  --color-slate-title: #0F172A;
-  --color-slate-body: #334155;
-  --color-slate-muted: #64748B;
-  --color-terracotta: #EA580C;
-  --color-glacier: #2563EB;
+  /* Canvas & Paper Surfaces */
+  --paper:               #F7F6F0;
+  --paper-deep:          #F0EEE6;
+  --paper-card:          #FFFFFF;
+  --paper-subtle:        #FAF9F5;
+
+  /* Typography / Ink Tones */
+  --ink:                 #242722;
+  --ink-soft:            #51554D;
+  --ink-faint:           #777C72;
+  --ink-muted:           #8C9186;
+
+  /* Hairlines & Grid Dividers */
+  --line:                rgba(45, 50, 43, 0.16);
+  --line-strong:         rgba(45, 50, 43, 0.28);
+  --grid:                rgba(54, 61, 51, 0.08);
+
+  /* Deep Forest / Alpine Green Accent */
+  --green:               #496951;
+  --green-deep:          #304B38;
+  --green-pale:          #E8EDE5;
+  --green-light:         #F0F4EE;
+
+  /* Muted Warm Amber */
+  --amber:               #B3834D;
+  --amber-pale:          #F1EADD;
+  --amber-deep:          #8A5D2E;
+
+  /* Base mappings for component compatibility */
+  --color-base:          var(--paper);
+  --color-surface:       var(--paper-deep);
+  --color-surface-raised: var(--paper-card);
+  --color-border:        var(--line);
+  --color-border-strong: var(--line-strong);
+  --color-text-primary:  var(--ink);
+  --color-text-secondary: var(--ink-soft);
+  --color-text-muted:    var(--ink-faint);
+
+  --color-accent:        var(--green);
+  --color-accent-hover:  var(--green-deep);
+  --color-accent-light:  var(--green-pale);
+  --color-accent-text:   var(--green-deep);
+
+  --page-max:            1380px;
+  --radius:              8px;
+}
+
+/* ============================================================
+   BASE & RESET
+   ============================================================ */
+
+html {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+/* Lenis smooth scrolling integration */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 body {
-  color: #0F172A;
-  background-color: #F8FAFC;
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
-/* Custom styled range slider */
-input[type="range"] {
-  accent-color: #15803D;
-}
-
-/* Modern clean card base classes */
-.pahad-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s ease-in-out;
-}
-
-.pahad-card-mist {
-  background-color: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 18px;
-  padding: 24px;
-}
-
-/* Accessible focus visible with modern emerald ring */
+/* Accessible focus ring */
 *:focus-visible {
-  outline: 2px solid #16A34A;
+  outline: 2px solid var(--green);
   outline-offset: 2px;
+}
+
+/* Range input styled to nature journal */
+input[type="range"] {
+  accent-color: var(--green);
+}
+
+/* ============================================================
+   EDITORIAL GRID & SECTION BACKDROPS
+   ============================================================ */
+
+.section-grid {
+  isolation: isolate;
+  position: relative;
+}
+
+.section-grid::before {
+  content: "";
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.85;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(8.33333% - 1px),
+    var(--grid) calc(8.33333% - 1px),
+    var(--grid) 8.33333%
+  );
+  position: absolute;
+  inset: 0;
+}
+
+/* ============================================================
+   EDITORIAL PILLS, KICKERS & LABELS
+   ============================================================ */
+
+.eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green-deep);
+  background-color: rgba(232, 237, 229, 0.85);
+  border: 1px solid rgba(73, 105, 81, 0.28);
+  border-radius: 9999px;
+  line-height: 1.2;
+}
+
+.section-kicker {
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mono-meta {
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   JOURNAL CARDS & FIELD CONTAINERS
+   ============================================================ */
+
+.journal-card,
+.pahad-card {
+  background-color: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 2px rgba(36, 39, 34, 0.05);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.journal-card:hover,
+.pahad-card:hover {
+  border-color: var(--line-strong);
+}
+
+.journal-card-inset,
+.pahad-card-mist {
+  background-color: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.journal-card-accent,
+.pahad-card-accent {
+  background-color: var(--green-pale);
+  border: 1px solid rgba(73, 105, 81, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* ============================================================
+   BUTTONS & CONTROLS
+   ============================================================ */
+
+.btn-primary,
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--ink);
+  color: #FFFFFF;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.15s ease, border-color 0.18s ease;
+}
+
+.btn-primary:hover,
+.button-primary:hover {
+  background-color: var(--green-deep);
+  border-color: var(--green-deep);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active,
+.button-primary:active {
+  transform: translateY(0);
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--green);
+  color: #FFFFFF;
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.15s ease;
+}
+
+.btn-accent:hover {
+  background-color: var(--green-deep);
+  transform: translateY(-1px);
+}
+
+.btn-outline,
+.button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-outline:hover,
+.button-outline:hover {
+  background-color: var(--paper-deep);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.text-link {
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.text-link:hover {
+  color: var(--green-deep);
+  border-color: var(--green-deep);
+}
+
+/* ============================================================
+   BREAKDOWN BARS & METRIC TRACKS
+   ============================================================ */
+
+.breakdown-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.breakdown-label-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.breakdown-track {
+  height: 6px;
+  background-color: rgba(45, 50, 43, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.breakdown-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.breakdown-fill.tone-ink {
+  background-color: var(--ink);
+}
+
+.breakdown-fill.tone-amber {
+  background-color: var(--amber);
+}
+
+.breakdown-fill.tone-green {
+  background-color: var(--green);
+}
+
+/* ============================================================
+   ETCHED HIMALAYAN CONTOUR MOTIFS
+   ============================================================ */
+
+.hero-contour {
+  border: 1px solid rgba(73, 105, 81, 0.22);
+  border-radius: 50%;
+  position: absolute;
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+.hero-contour-one {
+  width: 440px;
+  height: 200px;
+  bottom: 24px;
+  right: -20px;
+}
+
+.hero-contour-two {
+  width: 520px;
+  height: 260px;
+  bottom: -6px;
+  right: -60px;
+}
+
+/* ============================================================
+   BADGES & CHIPS
+   ============================================================ */
+
+.badge-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: var(--green-pale);
+  color: var(--green-deep);
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  border: 1px solid rgba(73, 105, 81, 0.25);
+}
+
+.badge-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: var(--amber-pale);
+  color: var(--amber-deep);
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  border: 1px solid rgba(179, 131, 77, 0.3);
+}
+
+.badge-mono {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  background-color: var(--paper-deep);
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+/* Progress track used in restoration page */
+.progress-track {
+  height: 6px;
+  background-color: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--green);
+  border-radius: 999px;
+  transform-origin: left;
+}
+
+/* Responsive bento grid */
+.bento-grid {
+  display: grid;
+  gap: 16px;
+}
+.bento-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.bento-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.bento-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 900px) {
+  .bento-grid-4,
+  .bento-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .bento-grid-4,
+  .bento-grid-3,
+  .bento-grid-2 {
+    grid-template-columns: 1fr;
+  }
 }
