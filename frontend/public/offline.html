@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pahad Footprint — Offline Himalayan Mountain Mode</title>
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --paper: #FAF9F5;
+      --paper-deep: #F0EEE6;
+      --ink: #242722;
+      --ink-soft: #51554D;
+      --green-deep: #304B38;
+      --green-mid: #496951;
+      --green-pale: #E8EDE5;
+      --amber: #B3834D;
+      --line: #2D322B1F;
+      --line-strong: #2D322B3D;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 840px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+    header {
+      border-bottom: 1px solid var(--line-strong);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-box {
+      width: 44px;
+      height: 44px;
+      background-color: var(--green-deep);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .brand-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--green-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background-color: var(--ink);
+      color: white;
+      font-size: 11.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      border: 1px solid var(--line-strong);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--amber);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(36, 39, 34, 0.04);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 600px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      height: 40px;
+      padding: 8px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background-color: var(--paper);
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+    }
+    select:focus, input:focus {
+      border-color: var(--green-mid);
+      background-color: #FFFFFF;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+    .checkbox-item input {
+      accent-color: var(--green-deep);
+      width: 16px;
+      height: 16px;
+    }
+    .result-box {
+      background-color: var(--green-pale);
+      border: 1px solid rgba(73, 105, 81, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(73, 105, 81, 0.2);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .result-num {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--green-deep);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      font-size: 11.5px;
+    }
+    .result-item-label {
+      color: var(--ink-soft);
+      display: block;
+    }
+    .result-item-val {
+      font-weight: 700;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background-color: var(--green-deep);
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #243a2b;
+    }
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--line-strong);
+      color: var(--ink);
+    }
+    .btn-outline:hover {
+      background-color: var(--paper-deep);
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .reconnect-bar {
+      display: none;
+      background-color: var(--green-deep);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Reconnection Notice Bar -->
+    <div id="reconnect-bar" class="reconnect-bar">
+      <span>🌐 Internet connectivity restored!</span>
+      <button class="btn btn-outline" style="background: white; color: var(--green-deep); padding: 4px 10px; font-size: 11.5px;" onclick="window.location.reload()">
+        Sync Fresh Online Version ↺
+      </button>
+    </div>
+
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="logo-box">⛰️</div>
+        <div>
+          <div class="brand-title">Pahad Footprint</div>
+          <div class="brand-sub">Himalayan Expedition Offline Guide</div>
+        </div>
+      </div>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span>Mountain Offline Mode Active</span>
+      </div>
+    </header>
+
+    <!-- Main Offline Field Calculator -->
+    <div class="card">
+      <div class="card-title">
+        <span>🏔️ High-Altitude Carbon Calculator (100% Offline Engine)</span>
+      </div>
+      <p class="card-desc">
+        Calculate road transit carbon footprints, terrain curvature penalties, and accommodation footprints anywhere in Uttarakhand without internet.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <label for="route-select">Select Uttarakhand Corridor</label>
+          <select id="route-select" onchange="handleRouteChange()">
+            <option value="295,high">Rishikesh ➔ Badrinath (NH-58 · 295 km · High Altitude 3,100m)</option>
+            <option value="88,mid" selected>Kathgodam ➔ Almora / Kausani (88 km · Mid-Hills 1,860m)</option>
+            <option value="240,high">Haridwar ➔ Kedarnath Corridor (240 km · High Altitude 3,584m)</option>
+            <option value="36,mid">Kathgodam ➔ Nainital (36 km · Mid-Hills 2,084m)</option>
+            <option value="34,mid">Dehradun ➔ Mussoorie Foothills (34 km · Mid-Hills 2,005m)</option>
+            <option value="265,high">Rishikesh ➔ Gangotri (265 km · High Altitude 3,415m)</option>
+            <option value="custom">Custom Mountain Distance (specify below)...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="distance-input">One-Way Distance (km)</label>
+          <input type="number" id="distance-input" value="88" min="5" max="1500" oninput="calculateOffline()" />
+        </div>
+
+        <div>
+          <label for="mode-select">Transport Mode & Fuel Type</label>
+          <select id="mode-select" onchange="calculateOffline()">
+            <option value="30,transit" selected>Shared UTC Bus (30 g CO₂e/pkm · Lowest Impact)</option>
+            <option value="195,private">SUV / 4×4 Diesel (195 g CO₂e/vkm · Steep Grade)</option>
+            <option value="140,private">Sedan / Hatchback Petrol (140 g CO₂e/vkm)</option>
+            <option value="55,private">Motorcycle / Scooter (55 g CO₂e/vkm)</option>
+            <option value="45,private">Electric Vehicle EV (45 g CO₂e/vkm · Clean Grid)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="pax-input">Passenger Count</label>
+          <input type="number" id="pax-input" value="2" min="1" max="10" oninput="calculateOffline()" />
+        </div>
+
+        <div>
+          <label for="stay-select">Night Stays in Uttarakhand</label>
+          <select id="stay-select" onchange="calculateOffline()">
+            <option value="6,homestay" selected>Pahadi Homestay (6.0 kg CO₂e/night · Recommended)</option>
+            <option value="9,hotel">Standard Mountain Hotel (9.0 kg CO₂e/night)</option>
+            <option value="3.5,camp">Eco Campsite / Tent (3.5 kg CO₂e/night)</option>
+            <option value="24,luxury">Luxury Heated Resort (24.0 kg CO₂e/night)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nights-input">Number of Nights</label>
+          <input type="number" id="nights-input" value="3" min="0" max="30" oninput="calculateOffline()" />
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="checkbox" id="habit-water" checked onchange="calculateOffline()" />
+          <span>Used refillable spring water flasks (Saves 2.0 kg CO₂e · Zero plastic waste)</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="habit-food" checked onchange="calculateOffline()" />
+          <span>Consumed locally harvested Millets/Madua, Bhatt & Rajma (Saves 3.0 kg CO₂e)</span>
+        </label>
+      </div>
+
+      <!-- Result View -->
+      <div class="result-box">
+        <div class="result-header">
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: var(--green-deep); font-weight: 700;">
+              Total Estimated Footprint (Per Person)
+            </span>
+            <div id="result-pp" class="result-num">24.2 kg CO₂e</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: var(--ink-soft);">Trip Total</span>
+            <div id="result-total" style="font-size: 18px; font-weight: 700; color: var(--ink); font-family: monospace;">48.4 kg</div>
+          </div>
+        </div>
+
+        <div class="result-breakdown">
+          <div>
+            <span class="result-item-label">Transit Footprint</span>
+            <span id="result-transit" class="result-item-val">13.2 kg</span>
+          </div>
+          <div>
+            <span class="result-item-label">Stay Footprint</span>
+            <span id="result-stay" class="result-item-val">18.0 kg</span>
+          </div>
+          <div>
+            <span class="result-item-label">Elevation Adjustment</span>
+            <span id="result-elevation" class="result-item-val">+25% Curvature</span>
+          </div>
+          <div>
+            <span class="result-item-label">Recommended Saplings</span>
+            <span id="result-saplings" class="result-item-val">3 Banj Oak</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary" onclick="saveOfflineTrip()">
+          ✓ Save to Offline Mountain Log
+        </button>
+        <button type="button" class="btn btn-outline" onclick="window.print()">
+          🖨️ Print Offline Field Notes
+        </button>
+      </div>
+      <div id="save-msg" style="font-size: 12px; color: var(--green-deep); font-weight: 600; margin-top: 8px; display: none;">
+        ✓ Saved to device storage. It will sync to your main log when connection returns.
+      </div>
+    </div>
+
+    <!-- Cached Navigation Portal -->
+    <div class="card">
+      <div class="card-title">
+        <span>📍 Cached Expedition Portals</span>
+      </div>
+      <p class="card-desc">
+        Tap below to return to any previously viewed application screens cached on your device:
+      </p>
+      <div class="nav-links">
+        <a href="/" class="btn btn-outline">🏠 Main Field Calculator</a>
+        <a href="/calculator/transport" class="btn btn-outline">🚗 Transport Selector</a>
+        <a href="/calculator/stay" class="btn btn-outline">🏡 Stay & Homestays</a>
+        <a href="/calculator/habits" class="btn btn-outline">🌿 Mountain Habits</a>
+        <a href="/calculator/results" class="btn btn-outline">📊 Results & Eco-Swaps</a>
+        <a href="/restoration" class="btn btn-outline">🌱 Van Panchayat Restoration</a>
+        <a href="/verify" class="btn btn-outline">🛡️ Verify Certificate</a>
+        <a href="/faq" class="btn btn-outline">📖 FAQ & Field Rules</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Offline calculation physics
+    function handleRouteChange() {
+      const select = document.getElementById('route-select');
+      const val = select.value;
+      if (val !== 'custom') {
+        const parts = val.split(',');
+        document.getElementById('distance-input').value = parts[0];
+      }
+      calculateOffline();
+    }
+
+    function calculateOffline() {
+      const dist = Math.max(1, parseFloat(document.getElementById('distance-input').value) || 88);
+      const pax = Math.max(1, parseInt(document.getElementById('pax-input').value) || 1);
+      const nights = Math.max(0, parseInt(document.getElementById('nights-input').value) || 0);
+
+      const modeVal = document.getElementById('mode-select').value.split(',');
+      const modeFactor = parseFloat(modeVal[0]);
+      const isTransit = modeVal[1] === 'transit';
+
+      const stayVal = document.getElementById('stay-select').value.split(',');
+      const stayFactor = parseFloat(stayVal[0]);
+
+      const routeVal = document.getElementById('route-select').value;
+      const isHigh = routeVal.includes('high') || dist > 200;
+      const terrainMult = isHigh ? 1.40 : 1.25;
+
+      let transportKgPP = 0;
+      if (isTransit) {
+        transportKgPP = (dist * modeFactor * terrainMult) / 1000;
+      } else {
+        transportKgPP = (dist * modeFactor * terrainMult) / (1000 * pax);
+      }
+
+      const stayKgPP = nights * stayFactor;
+
+      let habits = 0;
+      if (document.getElementById('habit-water').checked) habits += 2.0;
+      if (document.getElementById('habit-food').checked) habits += 3.0;
+
+      const grossPP = transportKgPP + stayKgPP;
+      const netPP = Math.max(0.5, grossPP - habits);
+      const netTotal = netPP * pax;
+      const saplings = Math.max(2, Math.round(netPP / 20));
+
+      document.getElementById('result-pp').textContent = netPP.toFixed(1) + ' kg CO₂e';
+      document.getElementById('result-total').textContent = netTotal.toFixed(1) + ' kg';
+      document.getElementById('result-transit').textContent = transportKgPP.toFixed(1) + ' kg';
+      document.getElementById('result-stay').textContent = stayKgPP.toFixed(1) + ' kg';
+      document.getElementById('result-elevation').textContent = isHigh ? '+40% High Altitude' : '+25% Mid-Hills';
+      document.getElementById('result-saplings').textContent = saplings + ' Banj Oak';
+    }
+
+    function saveOfflineTrip() {
+      try {
+        const dist = parseFloat(document.getElementById('distance-input').value) || 88;
+        const pax = parseInt(document.getElementById('pax-input').value) || 1;
+        const netPP = parseFloat(document.getElementById('result-pp').textContent) || 20;
+
+        const stored = localStorage.getItem('pahad_offline_trip_logs');
+        const queue = stored ? JSON.parse(stored) : [];
+        queue.push({
+          id: 'offline_' + Date.now(),
+          data: {
+            distanceKm: dist,
+            passengers: pax,
+            co2eKg: netPP,
+            timestamp: new Date().toISOString()
+          }
+        });
+        localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(queue));
+
+        const msg = document.getElementById('save-msg');
+        msg.style.display = 'block';
+        setTimeout(() => { msg.style.display = 'none'; }, 4000);
+      } catch (e) {
+        alert('Could not save to offline storage: ' + e.message);
+      }
+    }
+
+    // Monitor connectivity
+    window.addEventListener('online', () => {
+      document.getElementById('reconnect-bar').style.display = 'flex';
+    });
+
+    calculateOffline();
+  </script>
+</body>
+</html>

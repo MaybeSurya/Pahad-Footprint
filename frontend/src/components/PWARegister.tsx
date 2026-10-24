@@ -15,6 +15,47 @@ export function PWARegister() {
   useEffect(() => {
     // 1. Register Service Worker for offline PWA capabilities
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      const prewarmOfflineCache = async () => {
+        if (!navigator.onLine || typeof window === 'undefined' || typeof caches === 'undefined') return;
+        const routes = [
+          '/',
+          '/calculator',
+          '/calculator/transport',
+          '/calculator/stay',
+          '/calculator/habits',
+          '/calculator/results',
+          '/restoration',
+          '/verify',
+          '/methodology',
+          '/faq',
+          '/offline.html',
+        ];
+
+        const runWarm = async () => {
+          try {
+            const cache = await caches.open('pahad-footprint-v3.1');
+            for (const r of routes) {
+              const match = await cache.match(r);
+              if (!match) {
+                const res = await fetch(r);
+                if (res && res.status === 200) {
+                  await cache.put(r, res);
+                }
+              }
+            }
+            console.log('[Pahad PWA] All expedition routes pre-warmed for 100% offline mountain navigation.');
+          } catch {
+            // Silently ignore background warm errors
+          }
+        };
+
+        if ('requestIdleCallback' in window) {
+          (window as any).requestIdleCallback(runWarm, { timeout: 4000 });
+        } else {
+          setTimeout(runWarm, 2000);
+        }
+      };
+
       const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
@@ -22,6 +63,8 @@ export function PWARegister() {
             console.log('[Pahad PWA] Service Worker active with scope:', reg.scope);
             // Proactively check for updated worker on page load
             reg.update().catch(() => {});
+            // Warm cache with core routes during idle periods
+            prewarmOfflineCache();
           })
           .catch((err) => {
             console.warn('[Pahad PWA] Service Worker registration note:', err);
@@ -184,9 +227,15 @@ export function PWARegister() {
             <WifiOff className="w-3.5 h-3.5 text-[#B3834D] flex-shrink-0" />
             <span className="text-[12px] font-mono font-medium">
               {language === 'HI'
-                ? '⛰️ पर्वतीय ऑफ़लाइन मोड — नेटवर्क निर्भरता मुक्त, डिवाइस से पूर्णतः कार्यरत'
-                : '⛰️ Offline Mountain Mode — All network dependencies bypassed. 100% functional.'}
+                ? '⛰️ पर्वतीय ऑफ़लाइन मोड — डिवाइस से पूर्णतः कार्यरत'
+                : '⛰️ Offline Mountain Mode — Fully functional on device.'}
             </span>
+            <a
+              href="/offline.html"
+              className="text-[11.5px] font-mono font-bold text-[#E8EDE5] underline hover:text-white ml-1"
+            >
+              {language === 'HI' ? 'फील्ड गाइड →' : 'Field Guide →'}
+            </a>
           </motion.div>
         )}
       </AnimatePresence>
