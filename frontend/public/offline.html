@@ -486,23 +486,52 @@
         const dist = parseFloat(document.getElementById('distance-input').value) || 88;
         const pax = parseInt(document.getElementById('pax-input').value) || 1;
         const netPP = parseFloat(document.getElementById('result-pp').textContent) || 20;
-
-        const stored = localStorage.getItem('pahad_offline_trip_logs');
-        const queue = stored ? JSON.parse(stored) : [];
-        queue.push({
-          id: 'offline_' + Date.now(),
+        const tripId = 'offline_' + Date.now();
+        const tripItem = {
+          id: tripId,
           data: {
             distanceKm: dist,
             passengers: pax,
             co2eKg: netPP,
             timestamp: new Date().toISOString()
           }
-        });
+        };
+
+        // 1. Write to localStorage
+        const stored = localStorage.getItem('pahad_offline_trip_logs');
+        const queue = stored ? JSON.parse(stored) : [];
+        queue.push(tripItem);
         localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(queue));
 
+        // 2. Write to IndexedDB for Service Worker Background Sync access
+        if (typeof indexedDB !== 'undefined') {
+          const req = indexedDB.open('pahad_offline_db', 1);
+          req.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('sync_trips')) {
+              db.createObjectStore('sync_trips', { keyPath: 'id' });
+            }
+          };
+          req.onsuccess = function() {
+            const db = req.result;
+            const tx = db.transaction('sync_trips', 'readwrite');
+            tx.objectStore('sync_trips').put(tripItem);
+          };
+        }
+
+        // 3. Register W3C Background Sync with Service Worker
+        if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+          navigator.serviceWorker.ready.then(function(reg) {
+            if ('sync' in reg) {
+              reg.sync.register('pahad-sync-trips').catch(function() {});
+            }
+          });
+        }
+
         const msg = document.getElementById('save-msg');
+        msg.textContent = '✓ Trip saved! Background sync will transmit to server when network reconnects.';
         msg.style.display = 'block';
-        setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        setTimeout(() => { msg.style.display = 'none'; }, 4500);
       } catch (e) {
         alert('Could not save to offline storage: ' + e.message);
       }

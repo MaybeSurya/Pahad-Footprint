@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, WifiOff, Check, X, Mountain } from 'lucide-react';
+import { Download, WifiOff, Check, X, Mountain, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '../contexts/TranslationContext';
+import { flushOfflineQueue, requestBackgroundSync, getPendingTripsCount } from '../lib/offlineQueue';
 
 export function PWARegister() {
   const { language } = useTranslation();
@@ -11,6 +12,8 @@ export function PWARegister() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [pendingCount, setPendingCount] = useState<number>(0);
+  const [syncToast, setSyncToast] = useState<{ show: boolean; message: string } | null>(null);
 
   useEffect(() => {
     // 1. Register Service Worker for offline PWA capabilities
@@ -33,7 +36,7 @@ export function PWARegister() {
 
         const runWarm = async () => {
           try {
-            const cache = await caches.open('pahad-footprint-v3.1');
+            const cache = await caches.open('pahad-footprint-v3.2');
             for (const r of routes) {
               const match = await cache.match(r);
               if (!match) {
@@ -59,12 +62,27 @@ export function PWARegister() {
       const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
-          .then((reg) => {
+          .then(async (reg) => {
             console.log('[Pahad PWA] Service Worker active with scope:', reg.scope);
             // Proactively check for updated worker on page load
             reg.update().catch(() => {});
             // Warm cache with core routes during idle periods
             prewarmOfflineCache();
+
+            // Register W3C background sync capability
+            try {
+              if ('sync' in reg && typeof (reg as any).sync?.register === 'function') {
+                await (reg as any).sync.register('pahad-sync-trips');
+                console.log('[Pahad PWA] Background Sync registered: pahad-sync-trips');
+              }
+              if ('periodicSync' in reg && typeof (reg as any).periodicSync?.register === 'function') {
+                await (reg as any).periodicSync.register('pahad-periodic-sync', {
+                  minInterval: 12 * 60 * 60 * 1000,
+                });
+              }
+            } catch (syncErr) {
+              console.warn('[Pahad PWA] Background sync registration note:', syncErr);
+            }
           })
           .catch((err) => {
             console.warn('[Pahad PWA] Service Worker registration note:', err);
@@ -78,45 +96,62 @@ export function PWARegister() {
       }
     }
 
-    // 2. Track online / offline events in the hills & trigger background sync
-    const syncOfflineTrips = async () => {
-      try {
-        const stored = localStorage.getItem('pahad_offline_trip_logs');
-        if (!stored) return;
-        const queue = JSON.parse(stored);
-        if (!Array.isArray(queue) || queue.length === 0) return;
+    // Check offline pending trips queue count
+    getPendingTripsCount().then(setPendingCount).catch(() => {});
 
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        const remaining: any[] = [];
-
-        for (const item of queue) {
-          try {
-            const res = await fetch(`${API_BASE_URL}/trips/log`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(item.data),
-            });
-            if (!res.ok) remaining.push(item);
-          } catch {
-            remaining.push(item);
-          }
-        }
-
-        if (remaining.length === 0) {
-          localStorage.removeItem('pahad_offline_trip_logs');
-        } else {
-          localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(remaining));
-        }
-      } catch {
-        // Ignore background sync errors
+    // Listen to messages from Service Worker (e.g. background sync completion)
+    const handleSWMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'PAHAD_SYNC_COMPLETED') {
+        setSyncToast({
+          show: true,
+          message: event.data.message || `Synchronized ${event.data.count} trip(s) recorded offline.`,
+        });
+        getPendingTripsCount().then(setPendingCount).catch(() => {});
+        setTimeout(() => setSyncToast(null), 6000);
       }
     };
 
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    }
+
+    // Listen for custom event fired when client flushes queue
+    const handleCustomSync = (event: any) => {
+      const { synced } = event.detail || {};
+      if (synced > 0) {
+        setSyncToast({
+          show: true,
+          message: `Synchronized ${synced} trip(s) recorded offline in the mountains.`,
+        });
+        getPendingTripsCount().then(setPendingCount).catch(() => {});
+        setTimeout(() => setSyncToast(null), 6000);
+      }
+    };
+    window.addEventListener('pahad:sync-completed', handleCustomSync);
+
+    // 2. Track online / offline events in the hills & trigger background sync
     const handleOnline = () => {
       setIsOffline(false);
-      syncOfflineTrips();
+      // Flush offline queue and schedule sync
+      flushOfflineQueue()
+        .then(({ synced }) => {
+          if (synced > 0) {
+            setSyncToast({
+              show: true,
+              message: `Synchronized ${synced} trip(s) recorded offline in the mountains.`,
+            });
+            setTimeout(() => setSyncToast(null), 6000);
+          }
+          getPendingTripsCount().then(setPendingCount).catch(() => {});
+        })
+        .catch(() => {});
+      requestBackgroundSync().catch(() => {});
     };
-    const handleOffline = () => setIsOffline(true);
+
+    const handleOffline = () => {
+      setIsOffline(true);
+      getPendingTripsCount().then(setPendingCount).catch(() => {});
+    };
 
     if (typeof navigator !== 'undefined') {
       setIsOffline(!navigator.onLine);
@@ -195,6 +230,10 @@ export function PWARegister() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('error', handleChunkLoadError);
       window.removeEventListener('unhandledrejection', handleChunkLoadError);
+      window.removeEventListener('pahad:sync-completed', handleCustomSync);
+      if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', handleSWMessage);
+      }
     };
   }, []);
 
@@ -210,6 +249,36 @@ export function PWARegister() {
 
   return (
     <>
+      {/* Background Sync Success Toast Banner */}
+      <AnimatePresence>
+        {syncToast && syncToast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -25, scale: 0.95 }}
+            className="fixed top-20 right-4 sm:right-8 z-50 px-4 py-3 rounded-lg shadow-elevated border flex items-center gap-3 backdrop-blur-md bg-[#243629] text-white border-[#304B38]"
+          >
+            <div className="w-6 h-6 rounded-full bg-[#304B38] flex items-center justify-center flex-shrink-0 text-[#85C49A]">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <div className="text-[12.5px] font-sans">
+              <span className="font-bold block text-white">
+                {language === 'HI' ? 'डेटा समन्वयित (Synced)' : 'Himalayan Sync Complete'}
+              </span>
+              <span className="text-[#C8D6C9] text-[11.5px]">{syncToast.message}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSyncToast(null)}
+              className="text-[#96A799] hover:text-white ml-2 p-1"
+              aria-label="Close"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Offline Mountain Mode Pill Banner */}
       <AnimatePresence>
         {isOffline && (
@@ -230,6 +299,11 @@ export function PWARegister() {
                 ? '⛰️ पर्वतीय ऑफ़लाइन मोड — डिवाइस से पूर्णतः कार्यरत'
                 : '⛰️ Offline Mountain Mode — Fully functional on device.'}
             </span>
+            {pendingCount > 0 && (
+              <span className="bg-[#B3834D] text-[#1E211D] text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
+                {pendingCount} {pendingCount === 1 ? 'trip queued' : 'trips queued'}
+              </span>
+            )}
             <a
               href="/offline.html"
               className="text-[11.5px] font-mono font-bold text-[#E8EDE5] underline hover:text-white ml-1"

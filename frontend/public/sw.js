@@ -1,7 +1,7 @@
 // Pahad Footprint — Himalayan Expedition Service Worker
 // Designed for resilient 100% offline mountain navigation across Uttarakhand hills
 
-const CACHE_NAME = 'pahad-footprint-v3.1';
+const CACHE_NAME = 'pahad-footprint-v3.2';
 const WEATHER_CACHE_NAME = 'pahad-weather-cache-v3';
 
 // Core immutable static assets & dedicated offline mountain portal
@@ -10,6 +10,13 @@ const STATIC_PRECACHE_URLS = [
   '/manifest.json',
   '/favicon.ico',
   '/icons/icon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-192-maskable.png',
+  '/icons/icon-512.png',
+  '/icons/icon-512-maskable.png',
+  '/images/screenshots/desktop-preview.png',
+  '/images/screenshots/mobile-preview.png',
+  '/widgets/eco-widget.json',
   '/images/hero_mountain.webp',
   '/images/hero_mountain.jpg',
   '/images/footer_panorama.webp',
@@ -263,4 +270,110 @@ self.addEventListener('fetch', (event) => {
         return cached || new Response('', { status: 404 });
       })
   );
+});
+
+// ---------------------------------------------------------------------------
+// Section 7: W3C Background Sync for Unstable Mountain Connectivity
+// Flushes IndexedDB queue when device reconnects to a cell tower or WiFi hotspot
+// ---------------------------------------------------------------------------
+
+function openSyncDB() {
+  return new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') {
+      return reject(new Error('IndexedDB not supported in SW'));
+    }
+    const req = indexedDB.open('pahad_offline_db', 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('sync_trips')) {
+        db.createObjectStore('sync_trips', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function flushIndexedDBQueue() {
+  try {
+    const db = await openSyncDB();
+    const tx = db.transaction('sync_trips', 'readonly');
+    const store = tx.objectStore('sync_trips');
+    const getAllReq = store.getAll();
+    const trips = await new Promise((res, rej) => {
+      getAllReq.onsuccess = () => res(getAllReq.result || []);
+      getAllReq.onerror = () => rej(getAllReq.error);
+    });
+
+    if (!trips || trips.length === 0) return;
+
+    let syncedCount = 0;
+    const targets = [
+      'http://localhost:5000/api/trips/log',
+      `${self.location.origin}/api/trips/log`,
+    ];
+
+    for (const item of trips) {
+      let logged = false;
+      for (const endpoint of targets) {
+        if (logged) break;
+        try {
+          const headers = { 'Content-Type': 'application/json' };
+          if (item.token) headers['Authorization'] = `Bearer ${item.token}`;
+
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(item.data),
+          });
+
+          if (res.ok) {
+            logged = true;
+            const delTx = db.transaction('sync_trips', 'readwrite');
+            delTx.objectStore('sync_trips').delete(item.id);
+            syncedCount++;
+          }
+        } catch (err) {
+          // Continue to next endpoint or retry on next connection
+        }
+      }
+    }
+
+    if (syncedCount > 0) {
+      console.log(`[PWA SW Background Sync] Successfully synchronized ${syncedCount} trip(s).`);
+      const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const client of allClients) {
+        client.postMessage({
+          type: 'PAHAD_SYNC_COMPLETED',
+          count: syncedCount,
+          message: `Synchronized ${syncedCount} trip(s) recorded offline in the mountains.`,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('[PWA SW Background Sync] Queue flush error:', err);
+  }
+}
+
+// Background Sync Event (Standard W3C SyncManager)
+self.addEventListener('sync', (event) => {
+  console.log('[PWA SW] Background sync event triggered with tag:', event.tag);
+  if (event.tag === 'pahad-sync-trips' || event.tag === 'sync-trips') {
+    event.waitUntil(flushIndexedDBQueue());
+  }
+});
+
+// Periodic Background Sync Event
+self.addEventListener('periodicsync', (event) => {
+  console.log('[PWA SW] Periodic background sync event triggered:', event.tag);
+  if (event.tag === 'pahad-periodic-sync') {
+    event.waitUntil(flushIndexedDBQueue());
+  }
+});
+
+// Direct message sync trigger from window clients
+self.addEventListener('message', (event) => {
+  if (event.data && (event.data.type === 'TRIGGER_SYNC' || event.data.type === 'SYNC_NOW')) {
+    event.waitUntil(flushIndexedDBQueue());
+  }
 });

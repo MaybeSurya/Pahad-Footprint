@@ -1,0 +1,34 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Pahad Footprint — Himalayan Carbon Watch",
+      "weight": "Bolder",
+      "size": "Medium",
+      "color": "Dark"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Altitude-aware transit & eco-travel telemetry across Uttarakhand.",
+      "wrap": true,
+      "size": "Small",
+      "isSubtle": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Offline Mode:",
+          "value": "Enabled (IndexedDB + PWA)"
+        },
+        {
+          "title": "Region:",
+          "value": "Uttarakhand Himalayas"
+        }
+      ]
+    }
+  ]
+}

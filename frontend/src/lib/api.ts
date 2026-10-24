@@ -1,4 +1,5 @@
 import { CalculationInput, CalculationOutput, AdminMetrics, AuditTripLog, UserSession } from '../types';
+import { saveOfflineTrip } from './offlineQueue';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -186,20 +187,12 @@ export async function calculateTrip(input: CalculationInput): Promise<Calculatio
 }
 
 export async function logTripRecord(data: any, token?: string) {
-  // When offline in hills, persist in local offline queue
+  // When offline in hills, persist in IndexedDB + localStorage queue & register background sync
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    try {
-      const stored = localStorage.getItem('pahad_offline_trip_logs');
-      const queue = stored ? JSON.parse(stored) : [];
-      queue.push({ id: `offline_${Date.now()}`, data, timestamp: new Date().toISOString() });
-      localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(queue));
-    } catch {
-      // Ignore quota error
-    }
-
+    const offlineId = await saveOfflineTrip(data, token);
     return {
       message: 'Trip saved to offline mountain registry. It will sync automatically when internet returns.',
-      trip: { ...data, id: `offline_${Date.now()}`, offline: true },
+      trip: { ...data, id: offlineId, offline: true },
     };
   }
 
@@ -221,17 +214,12 @@ export async function logTripRecord(data: any, token?: string) {
 
     return await res.json();
   } catch (err: any) {
-    // Fallback: save to offline queue if server is unreachable
-    try {
-      const stored = localStorage.getItem('pahad_offline_trip_logs');
-      const queue = stored ? JSON.parse(stored) : [];
-      queue.push({ id: `offline_${Date.now()}`, data, timestamp: new Date().toISOString() });
-      localStorage.setItem('pahad_offline_trip_logs', JSON.stringify(queue));
-    } catch {}
+    // Fallback: save to offline queue & request background sync if server is unreachable
+    const offlineId = await saveOfflineTrip(data, token);
 
     return {
-      message: 'Trip saved to offline mountain registry (Server unreachable).',
-      trip: { ...data, id: `offline_${Date.now()}`, offline: true },
+      message: 'Trip saved to offline mountain registry (Server unreachable). Sync scheduled.',
+      trip: { ...data, id: offlineId, offline: true },
     };
   }
 }

@@ -5,23 +5,196 @@
   "description": "Completely offline mountain expedition carbon calculator, altitude curvature analyzer, and Uttarakhand travel field guide.",
   "start_url": "/",
   "scope": "/",
+  "lang": "en-IN",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "#F7F6F0",
-  "theme_color": "#304B38",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
   "orientation": "any",
-  "categories": ["travel", "utilities", "sustainability"],
+  "theme_color": "#304B38",
+  "background_color": "#F7F6F0",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "e8436e26-4b88-466d-a602-53d9e8469e38",
+  "categories": [
+    "travel",
+    "utilities",
+    "sustainability",
+    "navigation",
+    "weather"
+  ],
   "icons": [
     {
-      "src": "/icons/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/desktop-preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Pahad Footprint Himalayan Expedition Carbon Accounting"
+    },
+    {
+      "src": "/images/screenshots/mobile-preview.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Pahad Footprint Mobile Mountain Field Guide & Calculator"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Trip Calculator",
+      "short_name": "Calculator",
+      "description": "Calculate Himalayan route emissions with altitude & slope physics",
+      "url": "/calculate",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mountain Field Guide",
+      "short_name": "Field Guide",
+      "description": "Access 100% offline mountain transit guide and offline calculator",
+      "url": "/offline.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Restoration Pledges",
+      "short_name": "Restoration",
+      "description": "Pledge tree saplings across Himalayan catchments",
+      "url": "/restoration",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Verify Certificate",
+      "short_name": "Verify",
+      "description": "Cryptographically verify mountain eco certificates",
+      "url": "/verify",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/calculate",
+      "name": "Pahad Footprint Trip Log",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "accept": {
+        "application/json": [".json"],
+        "application/gpx+xml": [".gpx"]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "auto"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+pahad",
+      "url": "/calculate?route=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/calculate",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "Eco Impact Widget",
+      "short_name": "EcoImpact",
+      "description": "Quick view of mountain transit carbon intensity and local weather",
+      "tag": "pahad-eco-widget",
+      "template": "pahad_widget",
+      "ms_ac_template": "/widgets/eco-widget.json",
+      "data": "/api/trips/summary",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/images/screenshots/mobile-preview.png",
+          "sizes": "750x1334",
+          "label": "Eco Impact Widget Preview"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
+  "note_taking": {
+    "new_note_url": "/calculate?note=new"
+  },
+  "scope_extensions": [
+    {
+      "origin": "https://nav.maybesurya.dev"
+    },
+    {
+      "origin": "https://weather.maybesurya.dev"
     }
   ]
 }
