@@ -136,12 +136,15 @@ export default function RestorationPage() {
   const [name, setName] = useState('');
   const [saplings, setSaplings] = useState(9);
   const [initiative, setInitiative] = useState('Banj Oak Mid-Hill Reforestation');
+  const [certificateId, setCertificateId] = useState<string>('');
 
   const COST_PER_TREE = 120;
   const donationAmount = saplings * COST_PER_TREE;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const certId = certificateId || `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    setCertificateId(certId);
     setPledged(true);
     const traveler = name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
     logActivity({
@@ -149,6 +152,7 @@ export default function RestorationPage() {
       title: 'Native Banj Oak Sapling Pledge',
       travelerName: traveler,
       trees: saplings,
+      certificateId: certId,
       division: initiative,
       status: 'pledged',
     });
@@ -407,6 +411,8 @@ export default function RestorationPage() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
+                const certId = certificateId || `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+                setCertificateId(certId);
                 setDonated(true);
                 const traveler = name.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
                 logActivity({
@@ -415,6 +421,7 @@ export default function RestorationPage() {
                   travelerName: traveler,
                   trees: saplings,
                   amount: donationAmount,
+                  certificateId: certId,
                   partner: 'DevNexis / Uttarakhand Van Panchayat JFM',
                   division: initiative,
                   status: 'confirmed',
@@ -439,6 +446,7 @@ export default function RestorationPage() {
                   species="Himalayan Banj Oak (Quercus leucotrichophora)"
                   isDonation={true}
                   donationAmount={donationAmount}
+                  certificateId={certificateId}
                 />
               </div>
             )}
@@ -479,6 +487,7 @@ export default function RestorationPage() {
                   treeCount={saplings}
                   species="Himalayan Banj Oak (Quercus leucotrichophora)"
                   isDonation={false}
+                  certificateId={certificateId}
                 />
               </div>
             ) : (

@@ -36,12 +36,15 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   const [donated, setDonated] = useState(false);
   const [travelerName, setTravelerName] = useState('');
   const [showCertificate, setShowCertificate] = useState(false);
+  const [certificateId, setCertificateId] = useState<string>('');
 
   // Standard nursery raising & 2-year maintenance cost per high-altitude sapling
   const COST_PER_SAPLING = 120;
   const totalDonationAmount = saplings.total * COST_PER_SAPLING;
 
   const handlePledge = () => {
+    const certId = certificateId || `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    setCertificateId(certId);
     setPledged(true);
     setShowCertificate(true);
     const name = travelerName.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
@@ -50,6 +53,7 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
       title: 'Native Banj Oak Sapling Pledge',
       travelerName: name,
       trees: saplings.total,
+      certificateId: certId,
       division: 'Uttarakhand Van Panchayat Community Lands',
       status: 'pledged',
     });
@@ -57,6 +61,8 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
   };
 
   const handleConfirmDonation = () => {
+    const certId = certificateId || `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    setCertificateId(certId);
     setDonated(true);
     setShowCertificate(true);
     const name = travelerName.trim() || (language === 'HI' ? 'पहाड़ी यात्री' : 'Himalayan Traveler');
@@ -66,6 +72,7 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
       travelerName: name,
       trees: saplings.total,
       amount: totalDonationAmount,
+      certificateId: certId,
       partner: 'DevNexis / Uttarakhand Van Panchayat JFM',
       division: 'Uttarakhand Van Panchayat Community Lands',
       status: 'confirmed',
@@ -322,6 +329,7 @@ export const RestorationPledgeBox: React.FC<RestorationPledgeBoxProps> = ({
             treeCount={saplings.total}
             isDonation={activeTab === 'donate'}
             donationAmount={totalDonationAmount}
+            certificateId={certificateId}
             onClose={() => setShowCertificate(false)}
           />
         </div>

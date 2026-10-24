@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -35,13 +35,37 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
   location = 'Uttarakhand Van Panchayat Community Land',
   isDonation = false,
   donationAmount,
-  certificateId = `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+  certificateId: certificateIdProp,
   onClose,
 }) => {
   const { language } = useTranslation();
   const certRef = useRef<HTMLDivElement>(null);
+  const hasLoggedRef = useRef(false);
 
+  // Stably initialize certificate ID once per mount (prevents re-evaluating Math.random on each render)
+  const [certificateId] = useState<string>(() => {
+    return (
+      certificateIdProp ||
+      `UK-VP-2026-${Math.floor(10000 + Math.random() * 90000)}`
+    );
+  });
+
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString(
+      language === 'HI' ? 'hi-IN' : 'en-IN',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }
+    );
+  }, [language]);
+
+  // Log activity once on certificate issuance
   useEffect(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+
     logActivity({
       type: 'certificate',
       title: 'Mountain Stewardship Certificate Issued',
@@ -51,36 +75,39 @@ export const RecognitionCertificate: React.FC<RecognitionCertificateProps> = ({
       status: 'certified',
       division: location,
     });
-  }, [certificateId]);
-
-  const formattedDate = new Date().toLocaleDateString(
-    language === 'HI' ? 'hi-IN' : 'en-IN',
-    {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }
-  );
+  }, [certificateId, travelerName, treeCount, location]);
 
   // Verification URL pointing to our internal verification page
-  const origin =
-    typeof window !== 'undefined'
-      ? window.location.origin
-      : 'https://nav.maybesurya.dev';
+  const qrVerificationText = useMemo(() => {
+    const origin =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://nav.maybesurya.dev';
 
-  const qrVerificationText = `${origin}/verify?cert=${encodeURIComponent(
-    certificateId
-  )}&name=${encodeURIComponent(travelerName)}&trees=${treeCount}&date=${encodeURIComponent(
-    formattedDate
-  )}`;
+    return `${origin}/verify?cert=${encodeURIComponent(
+      certificateId
+    )}&name=${encodeURIComponent(travelerName)}&trees=${treeCount}&date=${encodeURIComponent(
+      formattedDate
+    )}`;
+  }, [certificateId, travelerName, treeCount, formattedDate]);
 
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
 
   useEffect(() => {
-    // Generate QR code 100% locally with zero network dependencies
-    generateQrCodeDataUrl(qrVerificationText).then((dataUrl) => {
-      setQrCodeDataUrl(dataUrl);
-    });
+    let isMounted = true;
+    generateQrCodeDataUrl(qrVerificationText)
+      .then((dataUrl) => {
+        if (isMounted) {
+          setQrCodeDataUrl(dataUrl);
+        }
+      })
+      .catch((err) => {
+        console.warn('[Pahad QR] QR generation notice:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [qrVerificationText]);
 
   // Completely offline data URI - no network call
