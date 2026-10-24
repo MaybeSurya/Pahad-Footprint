@@ -20,6 +20,8 @@ export function PWARegister() {
           .register('/sw.js')
           .then((reg) => {
             console.log('[Pahad PWA] Service Worker active with scope:', reg.scope);
+            // Proactively check for updated worker on page load
+            reg.update().catch(() => {});
           })
           .catch((err) => {
             console.warn('[Pahad PWA] Service Worker registration note:', err);
@@ -98,10 +100,58 @@ export function PWARegister() {
       setDeferredPrompt(null);
     });
 
+    // 4. Automatic recovery for ChunkLoadError (caused when server redeploys and client requests old chunks)
+    const handleChunkLoadError = (event: any) => {
+      const errorMsg = String(
+        event?.message ||
+        event?.reason?.message ||
+        event?.reason ||
+        event?.error?.message ||
+        ''
+      );
+
+      const isChunkError =
+        errorMsg.includes('ChunkLoadError') ||
+        errorMsg.includes('Loading chunk') ||
+        errorMsg.includes('Failed to fetch dynamically imported module');
+
+      if (isChunkError) {
+        console.warn('[Pahad PWA] Stale chunk error detected post-deployment. Executing clean auto-recovery...');
+        const lastReload = sessionStorage.getItem('pahad_chunk_reload_stamp');
+        const now = Date.now();
+        // Prevent infinite reload loop by throttling to 1 reload every 12 seconds
+        if (!lastReload || now - parseInt(lastReload, 10) > 12000) {
+          sessionStorage.setItem('pahad_chunk_reload_stamp', String(now));
+
+          // Purge stale caches and trigger hard refresh
+          if (typeof caches !== 'undefined') {
+            caches.keys().then((names) => {
+              return Promise.all(
+                names.map((name) => {
+                  if (name.includes('v2') || name.includes('footprint')) {
+                    return caches.delete(name);
+                  }
+                })
+              );
+            }).catch(() => {}).finally(() => {
+              window.location.reload();
+            });
+          } else {
+            window.location.reload();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('error', handleChunkLoadError);
+    window.addEventListener('unhandledrejection', handleChunkLoadError);
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('error', handleChunkLoadError);
+      window.removeEventListener('unhandledrejection', handleChunkLoadError);
     };
   }, []);
 

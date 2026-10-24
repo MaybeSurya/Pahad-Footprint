@@ -1,38 +1,25 @@
 // Pahad Footprint — Himalayan Expedition Service Worker
-// Designed for 100% offline mountain navigation across Uttarakhand hills
+// Designed for resilient offline mountain navigation across Uttarakhand hills
 
-const CACHE_NAME = 'pahad-footprint-v2.0';
-const WEATHER_CACHE_NAME = 'pahad-weather-cache-v2';
+const CACHE_NAME = 'pahad-footprint-v3.0';
+const WEATHER_CACHE_NAME = 'pahad-weather-cache-v3';
 
-// Core routes and critical static assets to precache immediately on install
+// Only precache truly static, immutable assets (NEVER precache dynamic Next.js HTML routes)
 const STATIC_PRECACHE_URLS = [
-  '/',
   '/manifest.json',
+  '/favicon.ico',
   '/icons/icon.svg',
-  '/calculator/route',
-  '/calculator/transport',
-  '/calculator/stay',
-  '/calculator/habits',
-  '/calculator/results',
-  '/methodology',
-  '/restoration',
-  '/verify',
-  '/admin',
-  '/privacy',
-  '/contact',
-  '/faq',
   '/images/hero_mountain.webp',
   '/images/hero_mountain.jpg',
   '/images/footer_panorama.webp',
   '/images/footer_panorama.jpg',
 ];
 
-// Install: Cache core application shell
+// Install: Cache immutable static assets and skip waiting
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Pre-cache individual core pages with Promise.allSettled
       return Promise.allSettled(
         STATIC_PRECACHE_URLS.map((url) =>
           cache.add(url).catch((err) => {
@@ -44,7 +31,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: Clean up older caches and claim clients immediately
+// Activate: Purge older v2 and invalid caches immediately, claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -60,19 +47,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Complete offline interception for Himalayan travel
+// Fetch: Precision routing for Next.js App Router & offline Himalayan travel
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignore non-http requests (e.g. chrome-extension://)
+  // Ignore non-http(s) requests (e.g. chrome-extension://)
   if (!url.protocol.startsWith('http')) {
     return;
   }
 
-  // Handle POST/PUT/DELETE requests when offline
+  // Handle non-GET requests (e.g. offline trip logging queue)
   if (request.method !== 'GET') {
-    // If backend API request fails offline, provide synthetic success response
     if (url.pathname.includes('/api/trips/log')) {
       event.respondWith(
         fetch(request.clone()).catch(() => {
@@ -90,37 +76,44 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // ---------------------------------------------------------------------------
   // Strategy 1: MaybeSurya Weather API & Air Quality endpoints
-  if (url.hostname.includes('maybesurya.dev') || url.hostname.includes('open-meteo.com')) {
-    event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        const networkFetch = fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              const toCache = networkResponse.clone();
-              caches.open(WEATHER_CACHE_NAME).then((cache) => cache.put(request, toCache));
-            }
-            return networkResponse;
-          })
-          .catch(() => {
-            if (cachedResponse) return cachedResponse;
-            return new Response(
-              JSON.stringify({
-                status: 'offline',
-                isOffline: true,
-                message: 'Device is operating offline in Himalayan mountain mode.',
-              }),
-              { status: 200, headers: { 'Content-Type': 'application/json' } }
-            );
-          });
+  // STRICT CHECK: Target ONLY weather.maybesurya.dev or open-meteo.com
+  // NEVER match application domain (e.g. nav.maybesurya.dev)
+  // ---------------------------------------------------------------------------
+  const isWeatherEndpoint =
+    url.hostname === 'weather.maybesurya.dev' ||
+    url.hostname.includes('open-meteo.com');
 
-        return cachedResponse || networkFetch;
-      })
+  if (isWeatherEndpoint) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const toCache = networkResponse.clone();
+            caches.open(WEATHER_CACHE_NAME).then((cache) => cache.put(request, toCache));
+          }
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return new Response(
+            JSON.stringify({
+              status: 'offline',
+              isOffline: true,
+              message: 'Device is operating offline in Himalayan mountain mode.',
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          );
+        })
     );
     return;
   }
 
-  // Strategy 2: OpenStreetMap Tiles
+  // ---------------------------------------------------------------------------
+  // Strategy 2: OpenStreetMap Tiles (Cache-First)
+  // ---------------------------------------------------------------------------
   if (url.hostname.includes('openstreetmap.org')) {
     event.respondWith(
       caches.match(request).then((cachedTile) => {
@@ -135,7 +128,6 @@ self.addEventListener('fetch', (event) => {
             return networkTile;
           })
           .catch(() => {
-            // Return transparent 1x1 fallback tile when offline and not cached
             return new Response('', { status: 200, headers: { 'Content-Type': 'image/png' } });
           });
       })
@@ -143,21 +135,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Strategy 3: Next.js static bundles, scripts, css, fonts, icons, images
-  // Cache-First with Network fallback and SAFE offline default
-  if (
+  // ---------------------------------------------------------------------------
+  // Strategy 3: Next.js static bundles, scripts, styles, fonts, images
+  // Cache-First with Network fallback (Never cache 404s)
+  // ---------------------------------------------------------------------------
+  const isStaticBundle =
     url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/icons/') ||
     url.pathname.startsWith('/images/') ||
+    url.pathname === '/favicon.ico' ||
     url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('fonts.gstatic.com')
-  ) {
+    url.hostname.includes('fonts.gstatic.com');
+
+  if (isStaticBundle) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) return cachedResponse;
 
         return fetch(request)
           .then((networkResponse) => {
+            // Strictly only cache successful 200 responses to prevent chunk poisoning
             if (networkResponse && networkResponse.status === 200) {
               const responseToCache = networkResponse.clone();
               caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
@@ -165,7 +162,6 @@ self.addEventListener('fetch', (event) => {
             return networkResponse;
           })
           .catch(() => {
-            // Safe fallback: never reject or return undefined
             if (url.pathname.endsWith('.css')) {
               return new Response('/* Offline fallback stylesheet */', {
                 status: 200,
@@ -185,8 +181,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // ---------------------------------------------------------------------------
   // Strategy 4: Next.js RSC (React Server Component) payloads & data fetching
-  // e.g. /calculator/route?_rsc=... or /_next/data/...
+  // Network-First with cached fallback
+  // ---------------------------------------------------------------------------
   const isRSC =
     url.searchParams.has('_rsc') ||
     request.headers.get('RSC') === '1' ||
@@ -194,34 +192,35 @@ self.addEventListener('fetch', (event) => {
 
   if (isRSC) {
     event.respondWith(
-      caches.match(request).then((cachedRSC) => {
-        if (cachedRSC) return cachedRSC;
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const toCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, toCache));
+          }
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cachedRSC = await caches.match(request);
+          if (cachedRSC) return cachedRSC;
 
-        return fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              const toCache = networkResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, toCache));
-            }
-            return networkResponse;
-          })
-          .catch(async () => {
-            // Try matching base pathname without RSC query
-            const strippedMatch = await caches.match(url.pathname);
-            if (strippedMatch) return strippedMatch;
+          const strippedMatch = await caches.match(url.pathname);
+          if (strippedMatch) return strippedMatch;
 
-            // Safe fallback response for RSC
-            return new Response('{}', {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' },
-            });
+          return new Response('{}', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
           });
-      })
+        })
     );
     return;
   }
 
+  // ---------------------------------------------------------------------------
   // Strategy 5: HTML Page Navigations (Full page reloads & direct URL hits)
+  // Network-First: Always retrieve the freshest HTML with matching chunk hashes
+  // Fallback to cache/offline page ONLY when offline in the hills
+  // ---------------------------------------------------------------------------
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -235,15 +234,12 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // 1. Try exact route in cache
           const cachedRoute = await caches.match(request);
           if (cachedRoute) return cachedRoute;
 
-          // 2. Try URL pathname without search params
           const pathnameMatch = await caches.match(url.pathname);
           if (pathnameMatch) return pathnameMatch;
 
-          // 3. Fallback to cached home page shell
           const cachedShell = await caches.match('/');
           if (cachedShell) return cachedShell;
 
@@ -256,25 +252,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Default: Stale-While-Revalidate with GUARANTEED safe fallback
+  // ---------------------------------------------------------------------------
+  // Strategy 6: Default fallback for any remaining GET requests
+  // Network-First with safe cache fallback
+  // ---------------------------------------------------------------------------
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // If offline and no cache, return safe empty response (NEVER return undefined)
-          return cached || new Response('', { status: 200 });
-        });
-
-      return cached || fetchPromise;
-    })
+    fetch(request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+        return cached || new Response('', { status: 200 });
+      })
   );
 });
